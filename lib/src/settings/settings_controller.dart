@@ -7,12 +7,10 @@ class SettingsController with ChangeNotifier {
 
   // Make SettingsService a private variable so it is not used directly.
   final SettingsService _settingsService;
-  bool _isLoggedIn = false;
 
   // Make ThemeMode a private variable so it is not updated directly without
   // also persisting the changes with the SettingsService.
   late ThemeMode _themeMode;
-  bool get isLoggedIn => _isLoggedIn;
 
   // Allow Widgets to read the user's preferred ThemeMode.
   ThemeMode get themeMode => _themeMode;
@@ -43,10 +41,5 @@ class SettingsController with ChangeNotifier {
     // Persist the changes to a local database or the internet using the
     // SettingService.
     await _settingsService.updateThemeMode(newThemeMode);
-  }
-
-  Future<void> updateLoginStatus(bool status) async {
-    _isLoggedIn = status;
-    notifyListeners();
   }
 }
