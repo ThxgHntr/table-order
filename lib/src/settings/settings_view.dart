@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_order/src/auth/pages/login_page_view.dart';
 
+import '../auth/pages/sign_up_page_view.dart';
 import 'settings_controller.dart';
 
 /// Displays the various settings that can be customized by the user.
@@ -59,8 +60,7 @@ class SettingsView extends StatelessWidget {
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed:  () {
-                // Thêm hành động cho nút 1 ở đây
-                print('Nút 2 được nhấn');
+                Navigator.restorablePushNamed(context, SignUpPageView.routeName);
               },
               child: const Text("Sign up"),
             ),
