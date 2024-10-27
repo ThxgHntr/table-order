@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:table_order/src/auth/widgets/form_container_widget.dart';
 
-import '../../settings/settings_controller.dart';
+import '../../utils/toast_utils.dart';
 import '../firebase_auth_implementation/firebase_auth_services.dart';
 
 class LoginPageView extends StatefulWidget {
@@ -16,6 +15,7 @@ class LoginPageView extends StatefulWidget {
 }
 
 class _LoginPageViewState extends State<LoginPageView> {
+  bool _isSigning = false;
   final FirebaseAuthServices _auth = FirebaseAuthServices();
 
   final TextEditingController _emailController = TextEditingController();
@@ -67,7 +67,7 @@ class _LoginPageViewState extends State<LoginPageView> {
               ),
               child: TextButton(
                 onPressed: _signIn,
-                child: Text(
+                child: _isSigning ? CircularProgressIndicator(color: Colors.white,): Text(
                   "Login",
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
@@ -92,22 +92,25 @@ class _LoginPageViewState extends State<LoginPageView> {
   }
 
   Future<void> _signIn() async {
+
+    setState(() {
+      _isSigning = true;
+    });
+
     String email = _emailController.text;
     String password = _passwordController.text;
 
     User? user = await _auth.signInWithEmailAndPassword(email, password);
+
+    setState(() {
+      _isSigning = false;
+    });
+
     if (user != null && mounted) {
-      // Sử dụng builder để đảm bảo context có quyền truy cập vào provider
-      context.read<SettingsController>().updateLoginStatus(true);
+      showToast("Login successfully");
       Navigator.of(context).pushNamed("/");
     } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Sign in failed. Please try again."),
-          ),
-        );
-      }
+      showToast("Login failed");
     }
   }
 }

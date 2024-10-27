@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:table_order/src/auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:table_order/src/auth/widgets/form_container_widget.dart';
+import 'package:table_order/src/utils/toast_utils.dart';
 
-import '../../settings/settings_controller.dart';
 
 class SignUpPageView extends StatefulWidget {
   const SignUpPageView({super.key});
@@ -16,11 +15,12 @@ class SignUpPageView extends StatefulWidget {
 }
 
 class _SignUpPageViewState extends State<SignUpPageView> {
+  bool _isSigning = false;
   final FirebaseAuthServices _auth = FirebaseAuthServices();
 
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
@@ -114,17 +114,10 @@ class _SignUpPageViewState extends State<SignUpPageView> {
 
     User? user = await _auth.signUpWithEmailAndPassword(email, password);
     if (user != null && mounted) {
-      // Sử dụng builder để đảm bảo context có quyền truy cập vào provider
-      context.read<SettingsController>().updateLoginStatus(true);
-      Navigator.of(context).pushNamed("/");
+      showToast("Sign up success");
+      Navigator.of(context).pushNamed("/login");
     } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Sign up failed. Please try again."),
-          ),
-        );
-      }
+      showToast("Sign up failed");
     }
   }
 }
