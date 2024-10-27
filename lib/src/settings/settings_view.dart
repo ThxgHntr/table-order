@@ -50,22 +50,34 @@ class SettingsView extends StatelessWidget {
                 )
               ],
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-                onPressed:  () {
-                  Navigator.restorablePushNamed(context, LoginPageView.routeName);
+            const SizedBox(height: 16),
+            if (controller.isLoggedIn == true)
+              ElevatedButton(
+                onPressed: () {
+                  controller.updateLoginStatus(false);
                 },
-                child: const Text("Login"),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed:  () {
-                Navigator.restorablePushNamed(context, SignUpPageView.routeName);
-              },
-              child: const Text("Sign up"),
-            ),
+                child: const Text('Logout'),
+              )
+            else
+              Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(LoginPageView.routeName);
+                    },
+                    child: const Text('Login'),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(SignUpPageView.routeName);
+                    },
+                    child: const Text('Sign Up'),
+                  ),
+                ],
+              ),
           ],
-        )
+        ),
       ),
     );
   }
