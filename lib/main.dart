@@ -9,13 +9,13 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   final settingsController = SettingsController(SettingsService());
   await settingsController.loadSettings();
 
   runApp(MyApp(settingsController: settingsController));
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 }
+
