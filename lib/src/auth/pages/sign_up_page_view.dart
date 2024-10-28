@@ -80,7 +80,7 @@ class _SignUpPageViewState extends State<SignUpPageView> {
               ),
               child: TextButton(
                 onPressed: _signUp,
-                child: Text(
+                child: _isSigning ? CircularProgressIndicator(color: Colors.white,): Text(
                   "Sign up",
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
@@ -108,11 +108,21 @@ class _SignUpPageViewState extends State<SignUpPageView> {
   }
 
   Future<void> _signUp() async {
+
+    setState(() {
+      _isSigning = true;
+    });
+
     String username = _usernameController.text;
     String email = _emailController.text;
     String password = _passwordController.text;
 
     User? user = await _auth.signUpWithEmailAndPassword(email, password);
+
+    setState(() {
+      _isSigning = false;
+    });
+
     if (user != null && mounted) {
       showToast("Sign up success");
       Navigator.of(context).pushNamed("/login");
