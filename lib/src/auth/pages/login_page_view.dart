@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:table_order/src/auth/widgets/form_container_widget.dart';
 
 import '../../utils/toast_utils.dart';
@@ -73,6 +76,27 @@ class _LoginPageViewState extends State<LoginPageView> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 15,
+            ),
+            Container(
+              width: double.infinity,
+              constraints: BoxConstraints(maxHeight: 60),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextButton.icon(
+                onPressed: () {
+                  _signInWithGoogle();
+                },
+                icon: Icon(FontAwesomeIcons.google, color: Colors.white,),
+                label: Text(
+                  "Sign in with Google",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -111,6 +135,32 @@ class _LoginPageViewState extends State<LoginPageView> {
       Navigator.of(context).pushNamed("/");
     } else {
       showToast("Login failed");
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    await googleSignIn.signOut(); // Đăng xuất trước khi đăng nhập lại
+    try {
+      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+        final AuthCredential authCredential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+
+        await FirebaseAuth.instance.signInWithCredential(authCredential);
+        if (mounted) {
+          showToast("Đăng nhập thành công");
+          Navigator.of(context).pushNamed("/");
+        }
+      }
+    } catch (e) {
+      showToast("Đăng nhập thất bại");
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 }
