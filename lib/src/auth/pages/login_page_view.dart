@@ -139,7 +139,8 @@ class _LoginPageViewState extends State<LoginPageView> {
   }
 
   Future<void> _signInWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+    const String googleClientId = "905630379835-spgdqeb1i090663j1jhnu4rt3obsoa2i.apps.googleusercontent.com";
+    final GoogleSignIn googleSignIn = GoogleSignIn(clientId: googleClientId,);
     await googleSignIn.signOut(); // Đăng xuất trước khi đăng nhập lại
     try {
       final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
