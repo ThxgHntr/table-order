@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:table_order/src/utils/toast_utils.dart';
 
 class FirebaseAuthServices {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final _dbRef = FirebaseDatabase.instance.ref();
 
   Future<User?> signInWithEmailAndPassword(String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
@@ -38,6 +40,22 @@ class FirebaseAuthServices {
 
       if (user != null && username != null) {
         await user.updateProfile(displayName: username);
+
+        // Lưu thông tin người dùng vào Firebase Realtime Database
+        final String uid = user.uid;
+        final Map<String, dynamic> userMap = {
+          "uid": uid,
+          "name": username,
+          "email": email,
+          "phone": "",
+          "created_at": DateTime.now().millisecondsSinceEpoch,
+          "role": "user",
+          "profilePhoto": ""
+        };
+
+        print("Attempting to save user data: $userMap");
+        await _dbRef.child("users").child(uid).set(userMap);
+        showToast("User data saved successfully.");
       }
       return user;
     } on FirebaseAuthException catch (e) {
@@ -49,5 +67,4 @@ class FirebaseAuthServices {
     }
     return null;
   }
-
 }
