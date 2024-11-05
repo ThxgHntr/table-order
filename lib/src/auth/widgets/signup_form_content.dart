@@ -110,6 +110,37 @@ class SignupFormContentState extends State<SignupFormContent> {
                   )),
             ),
             _gap(),
+            //reenter password
+            TextFormField(
+              controller: _confirmPasswordController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter some text';
+                }
+
+                if (value != _passwordController.text) {
+                  return 'Password does not match';
+                }
+                return null;
+              },
+              obscureText: !_isPasswordVisible,
+              decoration: InputDecoration(
+                  labelText: 'Confirm Password',
+                  hintText: 'Re-enter your password',
+                  prefixIcon: const Icon(Icons.lock_outline_rounded),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(_isPasswordVisible
+                        ? Icons.visibility_off
+                        : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  )),
+            ),
+            _gap(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -121,7 +152,7 @@ class SignupFormContentState extends State<SignupFormContent> {
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: _isSigning ? CircularProgressIndicator(color: Colors.white,): Text(
-                    'Sign in',
+                    'Sign up',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -145,7 +176,7 @@ class SignupFormContentState extends State<SignupFormContent> {
       ),
     );
   }
-  Widget _gap() => const SizedBox(height: 16);
+  Widget _gap() => const SizedBox(height: 13);
   Future<void> _signUp() async {
     if (_signupFormKey.currentState!.validate()) {
       setState(() {
