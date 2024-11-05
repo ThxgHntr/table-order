@@ -150,7 +150,7 @@ class LoginFormContentState extends State<LoginFormContent> {
     );
   }
 
-  Widget _gap() => const SizedBox(height: 16);
+  Widget _gap() => const SizedBox(height: 13);
 
   Future<void> _signIn() async {
     if (_loginFormKey.currentState?.validate() ?? false) {
