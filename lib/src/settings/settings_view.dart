@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:table_order/src/auth/pages/login_page_view.dart';
-import 'package:table_order/src/auth/pages/sign_up_page_view.dart';
+import 'package:table_order/src/pages/auth_page/login_page_view.dart';
+import 'package:table_order/src/pages/auth_page/sign_up_page_view.dart';
 import 'package:table_order/src/utils/toast_utils.dart';
 
 import 'settings_controller.dart';
