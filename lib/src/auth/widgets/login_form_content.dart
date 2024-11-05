@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -163,12 +164,20 @@ class LoginFormContentState extends State<LoginFormContent> {
 
       try {
         User? user = await _auth.signInWithEmailAndPassword(email, password);
-
         if (user != null && mounted) {
-          showToast("Login successful");
-          Navigator.of(context).pushNamed("/");
+          // Gọi hàm checkRole để kiểm tra vai trò của người dùng
+          String? role = await _auth.checkRole(user);
+
+          // Kiểm tra vai trò và điều hướng tương ứng
+          if (role == "admin" && mounted) {
+            showToast("Login successful as admin");
+            Navigator.of(context).pushNamed("/admin");
+          } else if (mounted) {
+            showToast("Login successful${role != null ? " as $role" : ""}");
+            Navigator.of(context).pushNamed("/");
+          }
         } else {
-          showToast("Login failed");
+          showToast("Login failed: user is null");
         }
       } catch (e) {
         showToast("Login failed: $e");
@@ -192,10 +201,21 @@ class LoginFormContentState extends State<LoginFormContent> {
           idToken: googleSignInAuthentication.idToken,
         );
 
-        await FirebaseAuth.instance.signInWithCredential(authCredential);
-        if (mounted) {
-          showToast("Đăng nhập thành công");
-          Navigator.of(context).pushNamed("/");
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(authCredential);
+        User? user = userCredential.user; // Lấy User sau khi đăng nhập thành công
+
+        if (mounted && user != null) {
+          // Gọi hàm checkRole để kiểm tra vai trò của người dùng
+          String? role = await _auth.checkRole(user);
+
+          // Kiểm tra vai trò và điều hướng tương ứng
+          if (role == "admin" && mounted) {
+            showToast("Login successful as admin");
+            Navigator.of(context).pushNamed("/admin");
+          } else if (mounted) {
+            showToast("Login successful${role != null ? " as $role" : ""}");
+            Navigator.of(context).pushNamed("/");
+          }
         }
       }
     } catch (e) {

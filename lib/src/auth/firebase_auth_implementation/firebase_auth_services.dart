@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:table_order/src/utils/toast_utils.dart';
@@ -66,5 +68,18 @@ class FirebaseAuthServices {
       }
     }
     return null;
+  }
+
+    Future<String?> checkRole(User user) async {
+      final DatabaseEvent event = await _dbRef.child("users").child(user.uid).once();
+      final snapshot = event.snapshot;
+
+      if (snapshot.value != null) {
+        final Map<String, dynamic> values = Map<String, dynamic>.from(snapshot.value as Map);
+        return values["role"] as String?;
+      } else {
+        showToast("User data not found");
+        return null;
+      }
   }
 }
