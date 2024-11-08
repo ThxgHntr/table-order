@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../settings/settings_view.dart';
 import 'sample_item.dart';
 import 'sample_item_details_view.dart';
 
@@ -18,18 +17,6 @@ class SampleItemListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sample Items'),
-        automaticallyImplyLeading: false, // Luôn ẩn nút quay lại
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.restorablePushNamed(context, SettingsView.routeName);
-            },
-          ),
-        ],
-      ),
       body: ListView.builder(
         restorationId: 'sampleItemListView',
         itemCount: items.length,

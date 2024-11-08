@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:table_order/src/pages/auth_page/login_page_view.dart';
+import 'package:table_order/src/pages/user_page/NavigationRailPage.dart';
 
 import 'pages/auth_page/sign_up_page_view.dart';
 import 'sample_feature/sample_item_details_view.dart';
@@ -80,7 +81,7 @@ class MyApp extends StatelessWidget {
                     return const SampleItemDetailsView();
                   case SampleItemListView.routeName:
                   default:
-                    return const SampleItemListView();
+                    return const NavigationRailPage();
                 }
               },
             );

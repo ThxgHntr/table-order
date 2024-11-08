@@ -1,6 +1,7 @@
 {
-  "appTitle": "table_order",
+  "@@locale": "en",
+  "appTitle": "TbO",
   "@appTitle": {
-    "description": "The title of the application"
+    "description": "Table Order"
   }
 }
