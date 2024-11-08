@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../settings/settings_view.dart';
 import 'sample_item.dart';
 import 'sample_item_details_view.dart';
 
