@@ -17,6 +17,9 @@ class _LoginPageViewState extends State<LoginPageView> {
   Widget build(BuildContext context) {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
     return Scaffold(
+        appBar: AppBar(
+          title: const Text('Login'),
+        ),
         body: Center(
             child: isSmallScreen
                 ? Column(

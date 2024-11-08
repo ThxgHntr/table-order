@@ -18,6 +18,9 @@ class _SignUpPageViewState extends State<SignUpPageView> {
   Widget build(BuildContext context) {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Sign Up'),
+      ),
       body: Center(
           child: isSmallScreen
               ? Column(
