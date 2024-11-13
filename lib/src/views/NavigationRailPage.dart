@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../sample_feature/sample_item_list_view.dart';
-import '../../settings/settings_view.dart';
+import 'package:table_order/src/views/user_view/profile_page_view.dart';
+import '../sample_feature/sample_item_list_view.dart';
+import '../settings/settings_view.dart';
 
 class NavigationRailPage extends StatefulWidget {
   const NavigationRailPage({super.key});
@@ -16,9 +17,9 @@ const _navBarItems = [
     label: 'Home',
   ),
   BottomNavigationBarItem(
-    icon: Icon(Icons.bookmark_border_outlined),
-    activeIcon: Icon(Icons.bookmark_rounded),
-    label: 'Bookmarks',
+    icon: Icon(Icons.notifications_none_rounded),
+    activeIcon: Icon(Icons.notifications_rounded),
+    label: 'Notifications',
   ),
   BottomNavigationBarItem(
     icon: Icon(Icons.person_outline_rounded),
@@ -33,7 +34,7 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
   final List<Widget> _pages = [
     const SampleItemListView(), // Trang Home
     Container(color: Colors.blue), // Trang Bookmarks
-    Container(color: Colors.green), // Trang Profile
+    const ProfilePageView(), // Trang Profile
   ];
 
   void _onItemTapped(int index) {
@@ -51,6 +52,7 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Logo here'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),

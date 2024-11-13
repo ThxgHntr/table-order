@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:table_order/src/pages/auth_page/login_page_view.dart';
-import 'package:table_order/src/pages/user_page/NavigationRailPage.dart';
-
-import 'pages/auth_page/sign_up_page_view.dart';
+import 'package:table_order/src/views/auth_view/login_page_view.dart';
+import 'package:table_order/src/views/NavigationRailPage.dart';
+import 'views/auth_view/sign_up_page_view.dart';
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
 import 'settings/settings_controller.dart';

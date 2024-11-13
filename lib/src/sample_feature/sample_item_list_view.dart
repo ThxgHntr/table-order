@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
+import 'package:table_order/src/Model/Restaurant.dart';
 
 import 'sample_item.dart';
 import 'sample_item_details_view.dart';
@@ -13,6 +15,10 @@ class SampleItemListView extends StatelessWidget {
   static const routeName = '/';
 
   final List<SampleItem> items;
+
+  /*static const routeName = '/';
+  const SampleItemListView({super.key, required this.items});
+  final Restaurant items;*/
 
   @override
   Widget build(BuildContext context) {
