@@ -14,17 +14,17 @@ const _navBarItems = [
   BottomNavigationBarItem(
     icon: Icon(Icons.home_outlined),
     activeIcon: Icon(Icons.home_rounded),
-    label: 'Home',
+    label: 'Trang chủ',
   ),
   BottomNavigationBarItem(
     icon: Icon(Icons.notifications_none_rounded),
     activeIcon: Icon(Icons.notifications_rounded),
-    label: 'Notifications',
+    label: 'Thông báo',
   ),
   BottomNavigationBarItem(
     icon: Icon(Icons.person_outline_rounded),
     activeIcon: Icon(Icons.person_rounded),
-    label: 'Profile',
+    label: 'Người dùng',
   ),
 ];
 
