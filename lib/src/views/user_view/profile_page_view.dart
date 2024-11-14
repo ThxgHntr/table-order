@@ -73,15 +73,20 @@ class _ProfilePageViewState extends State<ProfilePageView> {
                 ],
               ),
               _SingleSection(
-                title: "General",
+                title: "Tổng quan",
                 children: [
+                  _CustomListTile(
+                    title: "Quán của bạn",
+                    icon: Icons.store,
+                    onTap: ()  {
+                      Navigator.pushNamed(context, '/restaurant-owner');
+                    },
+                  ),
                   const _CustomListTile(
-                      title: "Become a host", icon: Icons.home_outlined),
-                  const _CustomListTile(
-                      title: "Help & Feedback",
+                      title: "Trợ giúp",
                       icon: Icons.help_outline_rounded),
                   const _CustomListTile(
-                      title: "About", icon: Icons.info_outline_rounded),
+                      title: "Về chúng tôi", icon: Icons.info_outline_rounded),
                 ],
               ),
               const Divider(),
@@ -89,7 +94,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
                 children: user != null
                     ? [
                         _CustomListTile(
-                          title: "Sign out",
+                          title: "Đăng xuất",
                           icon: Icons.exit_to_app_rounded,
                           onTap: () async {
                             await _auth.signOut();
@@ -99,14 +104,14 @@ class _ProfilePageViewState extends State<ProfilePageView> {
                       ]
                     : [
                         _CustomListTile(
-                          title: "Login",
+                          title: "Đăng nhập",
                           icon: Icons.login_rounded,
                           onTap: () {
                             Navigator.pushNamed(context, '/login');
                           },
                         ),
                         _CustomListTile(
-                          title: "Sign up",
+                          title: "Đăng ký",
                           icon: Icons.app_registration_rounded,
                           onTap: () {
                             Navigator.pushNamed(context, '/signup');
