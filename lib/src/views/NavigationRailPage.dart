@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:table_order/src/views/restaurant_view/restaurant_item_list_view.dart';
+import 'package:table_order/src/views/user_view/notify_page_view.dart';
 import 'package:table_order/src/views/user_view/profile_page_view.dart';
-import '../sample_feature/sample_item_list_view.dart';
 import '../settings/settings_view.dart';
 
 class NavigationRailPage extends StatefulWidget {
@@ -32,8 +33,8 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const SampleItemListView(), // Trang Home
-    Container(color: Colors.blue), // Trang Bookmarks
+    const RestaurantItemListView(), // Trang Home
+    const NotifyPageView(), // Trang Bookmarks
     const ProfilePageView(), // Trang Profile
   ];
 
