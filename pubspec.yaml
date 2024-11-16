@@ -10,6 +10,7 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
+  carousel_slider: ^5.0.0
   responsive_builder: ^0.7.1
   scoped_model: ^2.0.0
   fluttertoast: ^8.2.0
