@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../utils/toast_utils.dart';
+
 class ProfilePageView extends StatefulWidget {
   const ProfilePageView({super.key});
 
@@ -56,7 +58,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
                           CircleAvatar(
                             radius: 20,
                             backgroundImage:
-                                AssetImage('assets/images/default_avatar.png'),
+                            AssetImage('assets/images/default_avatar.png'),
                           ),
                           const SizedBox(width: 16),
                           Text(
@@ -78,8 +80,12 @@ class _ProfilePageViewState extends State<ProfilePageView> {
                   _CustomListTile(
                     title: "Quán của bạn",
                     icon: Icons.store,
-                    onTap: ()  {
-                      Navigator.pushNamed(context, '/restaurant-owner');
+                    onTap: () {
+                      if (user == null) {
+                        showToast("Bạn cần đăng nhập để truy cập");
+                      } else {
+                        Navigator.pushNamed(context, '/restaurant-owner');
+                      }
                     },
                   ),
                   const _CustomListTile(
@@ -93,31 +99,31 @@ class _ProfilePageViewState extends State<ProfilePageView> {
               _SingleSection(
                 children: user != null
                     ? [
-                        _CustomListTile(
-                          title: "Đăng xuất",
-                          icon: Icons.exit_to_app_rounded,
-                          onTap: () async {
-                            await _auth.signOut();
-                            setState(() {});
-                          },
-                        ),
-                      ]
+                  _CustomListTile(
+                    title: "Đăng xuất",
+                    icon: Icons.exit_to_app_rounded,
+                    onTap: () async {
+                      await _auth.signOut();
+                      setState(() {});
+                    },
+                  ),
+                ]
                     : [
-                        _CustomListTile(
-                          title: "Đăng nhập",
-                          icon: Icons.login_rounded,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/login');
-                          },
-                        ),
-                        _CustomListTile(
-                          title: "Đăng ký",
-                          icon: Icons.app_registration_rounded,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/signup');
-                          },
-                        ),
-                      ],
+                  _CustomListTile(
+                    title: "Đăng nhập",
+                    icon: Icons.login_rounded,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/login');
+                    },
+                  ),
+                  _CustomListTile(
+                    title: "Đăng ký",
+                    icon: Icons.app_registration_rounded,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/signup');
+                    },
+                  ),
+                ],
               ),
             ],
           ),
