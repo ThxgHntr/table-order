@@ -173,7 +173,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
             children: <Widget>[
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed('/restaurant-owner');
                 },
                 child: const Text('Trở về trang chủ'),
               ),
