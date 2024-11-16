@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
-import 'sample_item.dart';
-import 'sample_item_details_view.dart';
+import 'restaurant_item.dart';
+import 'restaurant_item_details_view.dart';
 
-/// Displays a list of SampleItems.
-class SampleItemListView extends StatelessWidget {
-  const SampleItemListView({
+class RestaurantItemListView extends StatelessWidget {
+  const RestaurantItemListView({
     super.key,
-    this.items = const [SampleItem(1), SampleItem(2), SampleItem(3)],
+    this.items = const [RestaurantItem(1), RestaurantItem(2), RestaurantItem(3)],
   });
 
   static const routeName = '/';
 
-  final List<SampleItem> items;
+  final List<RestaurantItem> items;
 
   /*static const routeName = '/';
   const SampleItemListView({super.key, required this.items});
@@ -60,7 +59,7 @@ class SampleItemListView extends StatelessWidget {
               onTap: () {
                 Navigator.pushNamed(
                   context,
-                  SampleItemDetailsView.routeName,
+                  RestaurantItemDetailsView.routeName,
                   arguments: item,
                 );
               },
