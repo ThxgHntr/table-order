@@ -6,6 +6,7 @@
         android:label="table_order"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true"
         android:extractNativeLibs="true">
         <activity
             android:name=".MainActivity"

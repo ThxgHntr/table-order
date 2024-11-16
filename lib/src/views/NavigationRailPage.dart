@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../sample_feature/sample_item_list_view.dart';
-import '../../settings/settings_view.dart';
+import 'package:table_order/src/views/restaurant_view/restaurant_item_list_view.dart';
+import 'package:table_order/src/views/user_view/notify_page_view.dart';
+import 'package:table_order/src/views/user_view/profile_page_view.dart';
+import '../settings/settings_view.dart';
 
 class NavigationRailPage extends StatefulWidget {
   const NavigationRailPage({super.key});
@@ -13,17 +15,17 @@ const _navBarItems = [
   BottomNavigationBarItem(
     icon: Icon(Icons.home_outlined),
     activeIcon: Icon(Icons.home_rounded),
-    label: 'Home',
+    label: 'Trang chủ',
   ),
   BottomNavigationBarItem(
-    icon: Icon(Icons.bookmark_border_outlined),
-    activeIcon: Icon(Icons.bookmark_rounded),
-    label: 'Bookmarks',
+    icon: Icon(Icons.notifications_none_rounded),
+    activeIcon: Icon(Icons.notifications_rounded),
+    label: 'Thông báo',
   ),
   BottomNavigationBarItem(
     icon: Icon(Icons.person_outline_rounded),
     activeIcon: Icon(Icons.person_rounded),
-    label: 'Profile',
+    label: 'Người dùng',
   ),
 ];
 
@@ -31,9 +33,9 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const SampleItemListView(), // Trang Home
-    Container(color: Colors.blue), // Trang Bookmarks
-    Container(color: Colors.green), // Trang Profile
+    const RestaurantItemListView(), // Trang Home
+    const NotifyPageView(), // Trang Bookmarks
+    const ProfilePageView(), // Trang Profile
   ];
 
   void _onItemTapped(int index) {
@@ -51,6 +53,7 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Logo here'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),

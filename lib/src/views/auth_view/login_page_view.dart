@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../auth/widgets/login_form_content.dart';
-import '../../auth/widgets/logo.dart';
+import '../widgets/login_form_content.dart';
+import '../widgets/logo.dart';
+
+
 
 class LoginPageView extends StatefulWidget {
   const LoginPageView({super.key});

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../auth/firebase_auth_services.dart';
 import '../../utils/toast_utils.dart';
-import '../firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginFormContent extends StatefulWidget {
