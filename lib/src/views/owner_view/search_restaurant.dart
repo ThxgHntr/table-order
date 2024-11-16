@@ -79,7 +79,7 @@ class _SearchRestaurantState extends State<SearchRestaurant> {
                     borderRadius: BorderRadius.circular(4)),
               ),
               onPressed: () {
-
+                Navigator.of(context).pushNamed('/restaurant-registration');
               },
               icon: Icon(Icons.add),
               label: const Padding(
