@@ -6,9 +6,10 @@ import 'package:table_order/src/views/NavigationRailPage.dart';
 import 'package:table_order/src/views/owner_view/restaurant_owner_page_view.dart';
 import 'package:table_order/src/views/owner_view/restaurant_registration.dart';
 import 'package:table_order/src/views/owner_view/search_restaurant.dart';
+import 'package:table_order/src/views/restaurant_view/restaurant_item_details_view.dart';
+import 'package:table_order/src/views/restaurant_view/restaurant_item_list_view.dart';
+import 'package:table_order/src/views/restaurant_view/restaurant_review_view.dart';
 import 'views/auth_view/sign_up_page_view.dart';
-import 'sample_feature/sample_item_details_view.dart';
-import 'sample_feature/sample_item_list_view.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
 
@@ -73,21 +74,26 @@ class MyApp extends StatelessWidget {
               settings: routeSettings,
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
+                  //auth
                   case LoginPageView.routeName:
                     return const LoginPageView();
                   case SignUpPageView.routeName:
                     return const SignUpPageView();
+                  //settings
                   case SettingsView.routeName:
                     return SettingsView(controller: settingsController);
-                  case SampleItemDetailsView.routeName:
-                    return const SampleItemDetailsView();
+                  //restaurant
+                  case RestaurantReviewView.routeName:
+                    return const RestaurantReviewView();
+                  case RestaurantItemDetailsView.routeName:
+                    return const RestaurantItemDetailsView();
                   case RestaurantOwnerPageView.routeName:
                     return const RestaurantOwnerPageView();
                   case SearchRestaurant.routeName:
                     return const SearchRestaurant();
                   case RestaurantRegistration.routeName:
                     return const RestaurantRegistration();
-                  case SampleItemListView.routeName:
+                  case RestaurantItemListView.routeName:
                   default:
                     return const NavigationRailPage();
                 }
