@@ -3,6 +3,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:table_order/src/views/auth_view/login_page_view.dart';
 import 'package:table_order/src/views/NavigationRailPage.dart';
+import 'package:table_order/src/views/owner_view/restaurant_owner_page_view.dart';
+import 'package:table_order/src/views/owner_view/restaurant_registration.dart';
+import 'package:table_order/src/views/owner_view/search_restaurant.dart';
 import 'views/auth_view/sign_up_page_view.dart';
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
@@ -78,6 +81,12 @@ class MyApp extends StatelessWidget {
                     return SettingsView(controller: settingsController);
                   case SampleItemDetailsView.routeName:
                     return const SampleItemDetailsView();
+                  case RestaurantOwnerPageView.routeName:
+                    return const RestaurantOwnerPageView();
+                  case SearchRestaurant.routeName:
+                    return const SearchRestaurant();
+                  case RestaurantRegistration.routeName:
+                    return const RestaurantRegistration();
                   case SampleItemListView.routeName:
                   default:
                     return const NavigationRailPage();
