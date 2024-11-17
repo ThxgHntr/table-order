@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:table_order/src/utils/toast_utils.dart';
+import 'package:table_order/src/views/widgets/basic_restaurant_information_form_content.dart';
+import 'package:table_order/src/views/widgets/restaurant_representative_form_content.dart';
 
 class RestaurantRegistration extends StatefulWidget {
   const RestaurantRegistration({super.key});
@@ -15,8 +17,18 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
   int currentStep = 0;
   bool isCompleted = false;
 
+  // Controllers basic info
   final restaurantName = TextEditingController();
+  final restaurantCity = TextEditingController();
+  final restaurantDistrict = TextEditingController();
+  final restaurantWard = TextEditingController();
+  final restaurantStreet = TextEditingController();
+
+  // Controllers representative info
   final restaurantOwnerName = TextEditingController();
+  final restaurantPhone = TextEditingController();
+  final restaurantEmail = TextEditingController();
+
   final restaurantDescription = TextEditingController();
 
   @override
@@ -51,12 +63,29 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       steps: getSteps(),
       currentStep: currentStep,
       onStepContinue: () {
+        if (currentStep == 0) {
+          // Kiểm tra tính hợp lệ ở bước đầu tiên
+          final isValid = BasicRestaurantInformationFormContent
+                  .formKey.currentState
+                  ?.validate() ??
+              false;
+          if (!isValid) return;
+        } else if (currentStep == 1) {
+          // Kiểm tra tính hợp lệ ở bước thứ hai
+          final isValid = RestaurantRepresentativeFormContent.formKey
+                  .currentState
+                  ?.validate() ??
+              false;
+          if (!isValid) return;
+        }
+
         final isLastStep = currentStep == getSteps().length - 1;
         if (isLastStep) {
           showToast(
             'Tên quán ăn: ${restaurantName.text}\n'
-                'Tên người đại diện: ${restaurantOwnerName.text}\n'
-                'Mô tả: ${restaurantDescription.text}',
+            'Tên người đại diện: ${restaurantOwnerName.text}\n'
+            'Thành phố: ${restaurantCity.text}\n'
+            'Mô tả: ${restaurantDescription.text}',
           );
           setState(() => isCompleted = true);
         } else {
@@ -66,6 +95,22 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
         }
       },
       onStepTapped: (step) {
+        if (currentStep == 0) {
+          // Kiểm tra tính hợp lệ ở bước đầu tiên
+          final isValid = BasicRestaurantInformationFormContent
+                  .formKey.currentState
+                  ?.validate() ??
+              false;
+          if (!isValid) return;
+        } else if (currentStep == 1) {
+          // Kiểm tra tính hợp lệ ở bước thứ hai
+          final isValid = RestaurantRepresentativeFormContent.formKey
+                  .currentState
+                  ?.validate() ??
+              false;
+          if (!isValid) return;
+        }
+
         setState(() {
           currentStep = step;
         });
@@ -108,12 +153,13 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
           title: const Text('Thông tin cơ bản'),
           content: Column(
             children: <Widget>[
-              TextFormField(
-                controller: restaurantName,
-                decoration: const InputDecoration(
-                  hintText: 'Tên quán ăn',
-                ),
-              ),
+              BasicRestaurantInformationFormContent(
+                restaurantName: restaurantName,
+                restaurantCity: restaurantCity,
+                restaurantDistrict: restaurantDistrict,
+                restaurantWard: restaurantWard,
+                restaurantStreet: restaurantStreet,
+              )
             ],
           ),
         ),
@@ -123,12 +169,10 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
           title: const Text('Thông tin người đại diện'),
           content: Column(
             children: <Widget>[
-              TextFormField(
-                controller: restaurantOwnerName,
-                decoration: const InputDecoration(
-                  hintText: 'Họ và tên',
-                ),
-              ),
+              RestaurantRepresentativeFormContent(
+                  restaurantOwnerName: restaurantOwnerName,
+                  restaurantPhone: restaurantPhone,
+                  restaurantEmail: restaurantEmail)
             ],
           ),
         ),
@@ -183,9 +227,21 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
                   setState(() {
                     currentStep = 0;
                     isCompleted = false;
+
+                    //clear tf basic info
                     restaurantName.clear();
+                    restaurantCity.clear();
+                    restaurantDistrict.clear();
+                    restaurantWard.clear();
+                    restaurantStreet.clear();
+
+                    //clear tf representative info
                     restaurantOwnerName.clear();
+                    restaurantPhone.clear();
+                    restaurantEmail.clear();
+
                     restaurantDescription.clear();
+
                   });
                 },
                 child: const Text('Đăng ký quán khác'),
