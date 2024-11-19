@@ -1,70 +1,53 @@
-import 'package:scoped_model/scoped_model.dart';
-import 'package:flutter/material.dart';
+class Restaurant{
+  final String restaurantName;
+  final String restaurantCity;
+  final String restaurantDistrict;
+  final String restaurantWard;
+  final String restaurantStreet;
+  final String restaurantOwnerName;
+  final String restaurantPhone;
+  final String restaurantEmail;
+  final String restaurantDescription;
+  final List<String> selectedKeywords;
+  final dynamic selectedImage;
+  final Map<String, Map<String, String>> openCloseTimes;
+  final String userId;
 
-class RestaurantModel extends Model {
-  // Basic info
-  final restaurantName = TextEditingController();
-  final restaurantCity = TextEditingController();
-  final restaurantDistrict = TextEditingController();
-  final restaurantWard = TextEditingController();
-  final restaurantStreet = TextEditingController();
+  Restaurant({
+    required this.restaurantName,
+    required this.restaurantCity,
+    required this.restaurantDistrict,
+    required this.restaurantWard,
+    required this.restaurantStreet,
+    required this.restaurantOwnerName,
+    required this.restaurantPhone,
+    required this.restaurantEmail,
+    required this.restaurantDescription,
+    required this.selectedKeywords,
+    required this.selectedImage,
+    required this.openCloseTimes,
+    required this.userId,
+  });
 
-  // Representative info
-  final restaurantOwnerName = TextEditingController();
-  final restaurantPhone = TextEditingController();
-  final restaurantEmail = TextEditingController();
-
-  // Restaurant details
-  final openTimeControllers = {
-    'Chủ nhật': TextEditingController(),
-    'Thứ hai': TextEditingController(),
-    'Thứ ba': TextEditingController(),
-    'Thứ tư': TextEditingController(),
-    'Thứ năm': TextEditingController(),
-    'Thứ sáu': TextEditingController(),
-    'Thứ bảy': TextEditingController(),
-  };
-  final closeTimeControllers = {
-    'Chủ nhật': TextEditingController(),
-    'Thứ hai': TextEditingController(),
-    'Thứ ba': TextEditingController(),
-    'Thứ tư': TextEditingController(),
-    'Thứ năm': TextEditingController(),
-    'Thứ sáu': TextEditingController(),
-    'Thứ bảy': TextEditingController(),
-  };
-  final isOpened = {
-    'Chủ nhật': false,
-    'Thứ hai': false,
-    'Thứ ba': false,
-    'Thứ tư': false,
-    'Thứ năm': false,
-    'Thứ sáu': false,
-    'Thứ bảy': false,
-  };
-  final restaurantDescription = TextEditingController();
-  final selectedKeywords = <String>[];
-
-  void completeRegistration() {
-    // Logic to complete registration
-    notifyListeners();
-  }
-
-  void reset() {
-    // Logic to reset all controllers
-    restaurantName.clear();
-    restaurantCity.clear();
-    restaurantDistrict.clear();
-    restaurantWard.clear();
-    restaurantStreet.clear();
-    restaurantOwnerName.clear();
-    restaurantPhone.clear();
-    restaurantEmail.clear();
-    restaurantDescription.clear();
-    selectedKeywords.clear();
-    isOpened.updateAll((key, value) => false);
-    openTimeControllers.forEach((key, controller) => controller.clear());
-    closeTimeControllers.forEach((key, controller) => controller.clear());
-    notifyListeners();
+  // Hàm chuyển đổi model thành Map để lưu vào Firebase
+  Map<String, dynamic> toMap() {
+    return {
+      'restaurantName': restaurantName,
+      'restaurantCity': restaurantCity,
+      'restaurantDistrict': restaurantDistrict,
+      'restaurantWard': restaurantWard,
+      'restaurantStreet': restaurantStreet,
+      'restaurantOwnerName': restaurantOwnerName,
+      'restaurantPhone': restaurantPhone,
+      'restaurantEmail': restaurantEmail,
+      'restaurantDescription': restaurantDescription,
+      'selectedKeywords': selectedKeywords,
+      'selectedImage': selectedImage,
+      'openCloseTimes': openCloseTimes,
+      'ownerID': userId,
+      'type': '0', // 0: Chờ duyệt, 1: Đã duyệt, 2: Từ chối
+      'createdAt': DateTime.now().millisecondsSinceEpoch,
+      'updatedAt': DateTime.now().millisecondsSinceEpoch,
+    };
   }
 }
