@@ -21,3 +21,37 @@ const Map<String, Map<String, List<String>>> cityDistrictMap = {
     'Tân Bình': ['Phường 1', 'Phường 4'],
   },
 };
+
+// List of days in Vietnamese
+final List<String> daysOfTheWeek = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
+
+// List of available restaurant types
+final List<String> restaurantTypes = [
+  'Fast Food',
+  'Casual Dining',
+  'Fine Dining',
+  'Cafe',
+  'Buffet',
+  'Food Truck',
+];
+
+// List of available keywords
+final List<String> availableKeywords = [
+  'Pizza',
+  'Burgers',
+  'Sushi',
+  'Vegan',
+  'Seafood',
+  'Grill',
+  'Pasta',
+  'Coffee',
+  'Desserts',
+];
