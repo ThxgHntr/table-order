@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:table_order/src/utils/toast_utils.dart';
 import 'package:table_order/src/views/widgets/basic_restaurant_information_form_content.dart';
 import 'package:table_order/src/views/widgets/restaurant_details_form.dart';
 import 'package:table_order/src/views/widgets/restaurant_representative_form_content.dart';
+import '../../model/restaurant.dart';
+import '../../services/firebase_restaurants_services.dart';
 
 class RestaurantRegistration extends StatefulWidget {
   const RestaurantRegistration({super.key});
@@ -18,48 +21,52 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
   int currentStep = 0;
   bool isCompleted = false;
 
-  // Controllers basic info
+  // Controllers for basic info
   final restaurantName = TextEditingController();
   final restaurantCity = TextEditingController();
   final restaurantDistrict = TextEditingController();
   final restaurantWard = TextEditingController();
   final restaurantStreet = TextEditingController();
 
-  // Controllers representative info
+  // Controllers for representative info
   final restaurantOwnerName = TextEditingController();
   final restaurantPhone = TextEditingController();
   final restaurantEmail = TextEditingController();
 
-  // Controllers restaurant details
+  // Controllers for restaurant details
   final openTimeControllers = {
-    'Chủ nhật': TextEditingController(),
-    'Thứ hai': TextEditingController(),
-    'Thứ ba': TextEditingController(),
-    'Thứ tư': TextEditingController(),
-    'Thứ năm': TextEditingController(),
-    'Thứ sáu': TextEditingController(),
-    'Thứ bảy': TextEditingController(),
+    'Monday': TextEditingController(),
+    'Tuesday': TextEditingController(),
+    'Wednesday': TextEditingController(),
+    'Thursday': TextEditingController(),
+    'Friday': TextEditingController(),
+    'Saturday': TextEditingController(),
+    'Sunday': TextEditingController(),
   };
   final closeTimeControllers = {
-    'Chủ nhật': TextEditingController(),
-    'Thứ hai': TextEditingController(),
-    'Thứ ba': TextEditingController(),
-    'Thứ tư': TextEditingController(),
-    'Thứ năm': TextEditingController(),
-    'Thứ sáu': TextEditingController(),
-    'Thứ bảy': TextEditingController(),
+    'Monday': TextEditingController(),
+    'Tuesday': TextEditingController(),
+    'Wednesday': TextEditingController(),
+    'Thursday': TextEditingController(),
+    'Friday': TextEditingController(),
+    'Saturday': TextEditingController(),
+    'Sunday': TextEditingController(),
   };
   final isOpened = {
-    'Chủ nhật': false,
-    'Thứ hai': false,
-    'Thứ ba': false,
-    'Thứ tư': false,
-    'Thứ năm': false,
-    'Thứ sáu': false,
-    'Thứ bảy': false,
+    'Monday': true,
+    'Tuesday': true,
+    'Wednesday': true,
+    'Thursday': true,
+    'Friday': true,
+    'Saturday': true,
+    'Sunday': true,
   };
   final restaurantDescription = TextEditingController();
   final selectedKeywords = <String>[];
+  //image
+  late final selectedImage = null;
+
+  final FirebaseRestaurantsServices _firebaseAuthServices = FirebaseRestaurantsServices();  // Initialize Firebase service
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +83,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
         child: ResponsiveBuilder(
           builder: (context, sizingInformation) {
             return buildStepper(
-              sizingInformation.deviceScreenType ==
-                  DeviceScreenType.mobile
+              sizingInformation.deviceScreenType == DeviceScreenType.mobile
                   ? StepperType.vertical
                   : StepperType.horizontal,
             );
@@ -94,30 +100,21 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       currentStep: currentStep,
       onStepContinue: () {
         if (currentStep == 0) {
-          // Kiểm tra tính hợp lệ ở bước đầu tiên
           final isValid = BasicRestaurantInformationFormContent
               .formKey.currentState
-              ?.validate() ??
-              false;
+              ?.validate() ?? false;
           if (!isValid) return;
         } else if (currentStep == 1) {
-          // Kiểm tra tính hợp lệ ở bước thứ hai
           final isValid = RestaurantRepresentativeFormContent
               .formKey.currentState
-              ?.validate() ??
-              false;
+              ?.validate() ?? false;
           if (!isValid) return;
         }
 
         final isLastStep = currentStep == getSteps().length - 1;
         if (isLastStep) {
-          showToast(
-            'Tên quán ăn: ${restaurantName.text}\n'
-                'Tên người đại diện: ${restaurantOwnerName.text}\n'
-                'Thành phố: ${restaurantCity.text}\n'
-                'Mô tả: ${restaurantDescription.text}',
-          );
-          setState(() => isCompleted = true);
+          // Lưu thông tin vào Firebase
+          saveRestaurantInfoToDatabase();
         } else {
           setState(() {
             currentStep += 1;
@@ -126,18 +123,14 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       },
       onStepTapped: (step) {
         if (currentStep == 0) {
-          // Kiểm tra tính hợp lệ ở bước đầu tiên
           final isValid = BasicRestaurantInformationFormContent
               .formKey.currentState
-              ?.validate() ??
-              false;
+              ?.validate() ?? false;
           if (!isValid) return;
         } else if (currentStep == 1) {
-          // Kiểm tra tính hợp lệ ở bước thứ hai
           final isValid = RestaurantRepresentativeFormContent
               .formKey.currentState
-              ?.validate() ??
-              false;
+              ?.validate() ?? false;
           if (!isValid) return;
         }
 
@@ -215,14 +208,67 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
           RestaurantDetailsForm(
             openTimeControllers: openTimeControllers,
             closeTimeControllers: closeTimeControllers,
-            restaurantDescription: restaurantDescription,
             isOpened: isOpened,
+            restaurantDescription: restaurantDescription,
             selectedKeywords: selectedKeywords,
           )
         ],
       ),
     ),
   ];
+
+  Future<void> saveRestaurantInfoToDatabase() async {
+    final selectedDays = <String>[]; // Danh sách các ngày được chọn
+    final openCloseTimes = <String, Map<String, String>>{}; // Thời gian mở/đóng của các ngày được chọn
+
+    // Lặp qua các ngày trong 'isOpened' và lấy những ngày được chọn
+    isOpened.forEach((day, isSelected) {
+      if (isSelected) {
+        selectedDays.add(day);
+        openCloseTimes[day] = {
+          'open': openTimeControllers[day]?.text ?? '',
+          'close': closeTimeControllers[day]?.text ?? '',
+        };
+      }
+    });
+
+    // Lấy UID của người dùng đăng nhập từ Firebase Auth
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      showToast('Vui lòng đăng nhập trước khi đăng ký nhà hàng.');
+      return;
+    }
+
+    final userId = user.uid; // UID của người dùng đăng nhập
+
+    // Tạo đối tượng RestaurantInfo từ dữ liệu người dùng nhập
+    final restaurantInfo = Restaurant(
+      restaurantName: restaurantName.text,
+      restaurantCity: restaurantCity.text,
+      restaurantDistrict: restaurantDistrict.text,
+      restaurantWard: restaurantWard.text,
+      restaurantStreet: restaurantStreet.text,
+      restaurantOwnerName: restaurantOwnerName.text,
+      restaurantPhone: restaurantPhone.text,
+      restaurantEmail: restaurantEmail.text,
+      restaurantDescription: restaurantDescription.text,
+      selectedKeywords: selectedKeywords,
+      selectedImage: selectedImage,
+      openCloseTimes: openCloseTimes,
+      userId: userId,
+    );
+
+    // Lưu thông tin vào Firebase
+    final result = await _firebaseAuthServices.saveRestaurantInfo(restaurantInfo);
+
+    if (result) {
+      setState(() {
+        isCompleted = true;
+      });
+    } else {
+      showToast('Lỗi khi lưu thông tin. Vui lòng thử lại.');
+    }
+  }
 
   buildCompleted() {
     return Center(
@@ -259,22 +305,31 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
                     currentStep = 0;
                     isCompleted = false;
 
-                    //clear tf basic info
+                    // Clear form data
                     restaurantName.clear();
                     restaurantCity.clear();
                     restaurantDistrict.clear();
                     restaurantWard.clear();
                     restaurantStreet.clear();
 
-                    //clear tf representative info
                     restaurantOwnerName.clear();
                     restaurantPhone.clear();
                     restaurantEmail.clear();
-
                     restaurantDescription.clear();
+
+                    openTimeControllers.forEach((key, value) {
+                      value.clear();
+                    });
+                    closeTimeControllers.forEach((key, value) {
+                      value.clear();
+                    });
+                    isOpened.forEach((key, value) {
+                      isOpened[key] = true;
+                    });
+                    selectedKeywords.clear();
                   });
                 },
-                child: const Text('Đăng ký quán khác'),
+                child: const Text('Đăng ký thêm quán ăn'),
               ),
             ],
           ),
