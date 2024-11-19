@@ -1,9 +1,15 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'list_map.dart';
 
 class RestaurantDetailsForm extends StatefulWidget {
+  final Map<String, TextEditingController> openTimeControllers;
+  final Map<String, TextEditingController> closeTimeControllers;
+  final TextEditingController restaurantDescription;
+  final Map<String, bool> isOpened;
+  final List<String> selectedKeywords;
+
   const RestaurantDetailsForm({
     super.key,
     required this.openTimeControllers,
@@ -12,13 +18,6 @@ class RestaurantDetailsForm extends StatefulWidget {
     required this.isOpened,
     required this.selectedKeywords,
   });
-
-  final Map<String, TextEditingController> openTimeControllers;
-  final Map<String, TextEditingController> closeTimeControllers;
-  final TextEditingController restaurantDescription;
-  final Map<String, bool> isOpened;
-
-  final List<String> selectedKeywords;
 
   static final formKey = GlobalKey<FormState>();
 
@@ -29,67 +28,11 @@ class RestaurantDetailsForm extends StatefulWidget {
 class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
   File? _selectedImage;
 
-  final Map<String, bool> isOpened = {
-    'Chủ nhật': false,
-    'Thứ hai': false,
-    'Thứ ba': false,
-    'Thứ tư': false,
-    'Thứ năm': false,
-    'Thứ sáu': false,
-    'Thứ bảy': false,
-  };
-
-  final Map<String, TextEditingController> openTimeControllers = {
-    'Chủ nhật': TextEditingController(),
-    'Thứ hai': TextEditingController(),
-    'Thứ ba': TextEditingController(),
-    'Thứ tư': TextEditingController(),
-    'Thứ năm': TextEditingController(),
-    'Thứ sáu': TextEditingController(),
-    'Thứ bảy': TextEditingController(),
-  };
-
-  final Map<String, TextEditingController> closeTimeControllers = {
-    'Chủ nhật': TextEditingController(),
-    'Thứ hai': TextEditingController(),
-    'Thứ ba': TextEditingController(),
-    'Thứ tư': TextEditingController(),
-    'Thứ năm': TextEditingController(),
-    'Thứ sáu': TextEditingController(),
-    'Thứ bảy': TextEditingController(),
-  };
-
-  final List<String> restaurantTypes = [
-    'Fast Food',
-    'Casual Dining',
-    'Fine Dining',
-    'Cafe',
-    'Buffet',
-    'Food Truck',
-  ];
-
-  final List<String> selectedKeywords = [];
-  final List<String> hints = [];
-
-  final TextEditingController restaurantTypeController =
-  TextEditingController();
-
-  Future<void> _selectTime(
-      BuildContext context, TextEditingController controller) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        controller.text = picked.format(context);
-      });
-    }
-  }
+  TextEditingController keywordController = TextEditingController();
+  List<String> filteredKeywords = [];
 
   Future _pickImageFromGallery() async {
-    final returnedImage =
-    await ImagePicker().pickImage(source: ImageSource.gallery);
+    final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (returnedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -102,17 +45,28 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
   }
 
   Future _pickImageFromCamera() async {
-    final returnedImage =
-    await ImagePicker().pickImage(source: ImageSource.camera);
+    final returnedImage = await ImagePicker().pickImage(source: ImageSource.camera);
 
     if (returnedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Không có ảnh nào được chụp!')));
+          const SnackBar(content: Text('Không có ảnh nào được chọn!')));
       return;
     }
     setState(() {
       _selectedImage = File(returnedImage.path);
     });
+  }
+
+  Future<void> _selectTime(BuildContext context, TextEditingController controller) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        controller.text = picked.format(context);
+      });
+    }
   }
 
   @override
@@ -126,7 +80,56 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('Thời gian mở cửa'),
-            ...isOpened.keys.map((day) => _buildDaySchedule(day)),
+            ...daysOfTheWeek.map((day) {
+              return Column(
+                children: [
+                  CheckboxListTile(
+                    title: Text(day),
+                    value: widget.isOpened[day] ?? false, // Ensure it's never null
+                    onChanged: (value) {
+                      setState(() {
+                        widget.isOpened[day] = value ?? false;
+                        if (widget.isOpened[day] == false) {
+                          // Initialize controllers to avoid null values
+                          widget.openTimeControllers[day] ??= TextEditingController();
+                          widget.closeTimeControllers[day] ??= TextEditingController();
+                          widget.openTimeControllers[day]?.clear();
+                          widget.closeTimeControllers[day]?.clear();
+                        }
+                      });
+                    },
+                  ),
+                  if (widget.isOpened[day] == true)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: widget.openTimeControllers[day] ??= TextEditingController(),
+                            readOnly: true,
+                            onTap: () => _selectTime(context, widget.openTimeControllers[day]!),
+                            decoration: const InputDecoration(
+                              labelText: 'Thời gian mở cửa',
+                              hintText: 'Chọn thời gian mở cửa',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextFormField(
+                            controller: widget.closeTimeControllers[day] ??= TextEditingController(),
+                            readOnly: true,
+                            onTap: () => _selectTime(context, widget.closeTimeControllers[day]!),
+                            decoration: const InputDecoration(
+                              labelText: 'Thời gian đóng cửa',
+                              hintText: 'Chọn thời gian đóng cửa',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              );
+            }).toList(),
             _gap(),
             TextFormField(
               controller: widget.restaurantDescription,
@@ -165,52 +168,56 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
             )
                 : const Text('Chưa chọn ảnh'),
             _gap(),
-            Autocomplete<String>(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                if (textEditingValue.text.isEmpty) {
-                  return const Iterable<String>.empty();
-                }
-                return restaurantTypes.where((String option) {
-                  return option
-                      .toLowerCase()
-                      .contains(textEditingValue.text.toLowerCase());
-                });
-              },
-              onSelected: (String selection) {
+            // Keyword input field with dynamic hints
+            TextFormField(
+              controller: keywordController,
+              decoration: const InputDecoration(
+                labelText: 'Nhập từ khóa',
+                hintText: 'Nhập từ khóa...',
+              ),
+              onChanged: (input) {
                 setState(() {
-                  if (!selectedKeywords.contains(selection)) {
-                    selectedKeywords.add(selection);
-                    hints.add(selection);
-                  }
-                  restaurantTypeController.clear();
+                  // Filter the available keywords based on input
+                  filteredKeywords = availableKeywords
+                      .where((keyword) => keyword.toLowerCase().contains(input.toLowerCase()))
+                      .toList();
                 });
-              },
-              fieldViewBuilder: (BuildContext context,
-                  TextEditingController fieldTextEditingController,
-                  FocusNode fieldFocusNode,
-                  VoidCallback onFieldSubmitted) {
-                return TextFormField(
-                  controller: fieldTextEditingController,
-                  focusNode: fieldFocusNode,
-                  decoration: const InputDecoration(
-                    labelText: 'Nhập loại nhà hàng',
-                    hintText: 'Nhập loại nhà hàng',
-                  ),
-                  onChanged: (value) {
-                    restaurantTypeController.text = value;
-                  },
-                );
               },
             ),
+            if (filteredKeywords.isNotEmpty) ...[
+              // Show filtered keywords as hints below the input field
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: filteredKeywords.length,
+                itemBuilder: (context, index) {
+                  final keyword = filteredKeywords[index];
+                  return ListTile(
+                    title: Text(keyword),
+                    onTap: () {
+                      setState(() {
+                        if (!widget.selectedKeywords.contains(keyword)) {
+                          widget.selectedKeywords.add(keyword);
+                        }
+                        keywordController.clear(); // Clear input after selection
+                        filteredKeywords.clear(); // Clear suggestions
+                      });
+                    },
+                  );
+                },
+              ),
+            ],
+            _gap(),
+            // Display selected keywords with remove button
             Wrap(
-              spacing: 6.0,
-              children: selectedKeywords.map((String keyword) {
+              children: widget.selectedKeywords.map((selectedKeyword) {
                 return Chip(
-                  label: Text(keyword),
+                  label: Text(selectedKeyword),
+                  backgroundColor: Colors.green,
+                  deleteIcon: Icon(Icons.remove_circle_outline),
                   onDeleted: () {
                     setState(() {
-                      selectedKeywords.remove(keyword);
-                      hints.remove(keyword);
+                      widget.selectedKeywords.remove(selectedKeyword);
                     });
                   },
                 );
@@ -219,48 +226,6 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildDaySchedule(String day) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Switch(
-              value: isOpened[day]!,
-              onChanged: (value) {
-                setState(() {
-                  isOpened[day] = value;
-                });
-              },
-            ),
-            Text(day),
-            isOpened[day]! ? const Text('Mở cửa') : const Text('Đóng cửa'),
-          ],
-        ),
-        if (isOpened[day]!)
-          TextFormField(
-            controller: openTimeControllers[day],
-            readOnly: true,
-            onTap: () => _selectTime(context, openTimeControllers[day]!),
-            decoration: const InputDecoration(
-              labelText: 'Giờ mở cửa',
-              hintText: 'Chọn giờ mở cửa',
-            ),
-          ),
-        if (isOpened[day]!)
-          TextFormField(
-            controller: closeTimeControllers[day],
-            readOnly: true,
-            onTap: () => _selectTime(context, closeTimeControllers[day]!),
-            decoration: const InputDecoration(
-              labelText: 'Giờ đóng cửa',
-              hintText: 'Chọn giờ đóng cửa',
-            ),
-          ),
-        _gap(),
-      ],
     );
   }
 
