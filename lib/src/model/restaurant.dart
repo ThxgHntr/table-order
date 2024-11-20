@@ -1,4 +1,5 @@
 class Restaurant{
+  final String restaurantId;
   final String restaurantName;
   final String restaurantCity;
   final String restaurantDistrict;
@@ -9,11 +10,15 @@ class Restaurant{
   final String restaurantEmail;
   final String restaurantDescription;
   final List<String> selectedKeywords;
-  final dynamic selectedImage;
+  List<String> selectedImage;
   final Map<String, Map<String, String>> openCloseTimes;
-  final String userId;
+  final String ownerId;
+  final String type;
+  final int createdAt;
+  final int updatedAt;
 
   Restaurant({
+    required this.restaurantId,
     required this.restaurantName,
     required this.restaurantCity,
     required this.restaurantDistrict,
@@ -26,12 +31,16 @@ class Restaurant{
     required this.selectedKeywords,
     required this.selectedImage,
     required this.openCloseTimes,
-    required this.userId,
+    required this.ownerId,
+    required this.type,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   // Hàm chuyển đổi model thành Map để lưu vào Firebase
   Map<String, dynamic> toMap() {
     return {
+      'restaurantId': restaurantId,
       'restaurantName': restaurantName,
       'restaurantCity': restaurantCity,
       'restaurantDistrict': restaurantDistrict,
@@ -44,10 +53,7 @@ class Restaurant{
       'selectedKeywords': selectedKeywords,
       'selectedImage': selectedImage,
       'openCloseTimes': openCloseTimes,
-      'ownerID': userId,
-      'type': '0', // 0: Chờ duyệt, 1: Đã duyệt, 2: Từ chối
-      'createdAt': DateTime.now().millisecondsSinceEpoch,
-      'updatedAt': DateTime.now().millisecondsSinceEpoch,
+      'ownerID': ownerId,
     };
   }
 }
