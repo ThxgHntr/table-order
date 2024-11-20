@@ -10,6 +10,9 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
+  intl: ^0.19.0
+  aws_s3_upload_lite: ^0.1.5
+  flutter_dotenv: ^5.2.1
   image_picker: ^1.1.2
   carousel_slider: ^5.0.0
   responsive_builder: ^0.7.1
@@ -42,3 +45,4 @@ flutter:
   assets:
     # Add assets from the images directory to the application.
     - assets/images/
+    - .env
