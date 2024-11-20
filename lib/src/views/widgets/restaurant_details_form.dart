@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../utils/toast_utils.dart';
 import 'list_map.dart';
 
 class RestaurantDetailsForm extends StatefulWidget {
@@ -9,6 +10,8 @@ class RestaurantDetailsForm extends StatefulWidget {
   final TextEditingController restaurantDescription;
   final Map<String, bool> isOpened;
   final List<String> selectedKeywords;
+  final List<File> selectedImages;
+  final Function(List<File>) onImagesSelected;
 
   const RestaurantDetailsForm({
     super.key,
@@ -17,6 +20,8 @@ class RestaurantDetailsForm extends StatefulWidget {
     required this.restaurantDescription,
     required this.isOpened,
     required this.selectedKeywords,
+    required this.selectedImages,
+    required this.onImagesSelected,
   });
 
   static final formKey = GlobalKey<FormState>();
@@ -26,35 +31,26 @@ class RestaurantDetailsForm extends StatefulWidget {
 }
 
 class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
-  File? _selectedImage;
-
+  final List<File> _selectedImages = [];
   TextEditingController keywordController = TextEditingController();
   List<String> filteredKeywords = [];
 
-  Future _pickImageFromGallery() async {
-    final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+  Future<void> _pickImagesFromGallery() async {
+    try {
+      final List<XFile> returnedImages = await ImagePicker().pickMultiImage();
+      if (returnedImages.isEmpty) {
+        showToast('Không có ảnh nào được chọn!');
+        return;
+      }
 
-    if (returnedImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Không có ảnh nào được chọn!')));
-      return;
+      setState(() {
+        _selectedImages.addAll(returnedImages.map((img) => File(img.path)));
+      });
+
+      showToast('Đã chọn ${returnedImages.length} ảnh.');
+    } catch (e) {
+      showToast('Lỗi khi chọn ảnh: $e');
     }
-    setState(() {
-      _selectedImage = File(returnedImage.path);
-    });
-  }
-
-  Future _pickImageFromCamera() async {
-    final returnedImage = await ImagePicker().pickImage(source: ImageSource.camera);
-
-    if (returnedImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Không có ảnh nào được chọn!')));
-      return;
-    }
-    setState(() {
-      _selectedImage = File(returnedImage.path);
-    });
   }
 
   Future<void> _selectTime(BuildContext context, TextEditingController controller) async {
@@ -77,7 +73,6 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
         key: RestaurantDetailsForm.formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('Thời gian mở cửa'),
             ...daysOfTheWeek.map((day) {
@@ -85,14 +80,11 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                 children: [
                   CheckboxListTile(
                     title: Text(day),
-                    value: widget.isOpened[day] ?? false, // Ensure it's never null
+                    value: widget.isOpened[day] ?? false,
                     onChanged: (value) {
                       setState(() {
                         widget.isOpened[day] = value ?? false;
-                        if (widget.isOpened[day] == false) {
-                          // Initialize controllers to avoid null values
-                          widget.openTimeControllers[day] ??= TextEditingController();
-                          widget.closeTimeControllers[day] ??= TextEditingController();
+                        if (!widget.isOpened[day]!) {
                           widget.openTimeControllers[day]?.clear();
                           widget.closeTimeControllers[day]?.clear();
                         }
@@ -130,12 +122,12 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                 ],
               );
             }).toList(),
-            _gap(),
+            const SizedBox(height: 10),
             TextFormField(
               controller: widget.restaurantDescription,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Làm ơn nhập mô tả quán ăn';
+                  return 'Vui lòng nhập mô tả quán ăn';
                 }
                 return null;
               },
@@ -144,31 +136,45 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                 hintText: 'Nhập mô tả quán ăn',
               ),
             ),
-            _gap(),
-            Text('Chọn ảnh'),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: _pickImageFromGallery,
-                  child: const Text('Chọn ảnh'),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: _pickImageFromCamera,
-                  child: const Text('Chụp ảnh'),
-                ),
-              ],
+            const SizedBox(height: 10),
+            const Text('Chọn nhiều ảnh'),
+            ElevatedButton(
+              onPressed: _pickImagesFromGallery,
+              child: const Text('Chọn ảnh từ thư viện'),
             ),
-            _selectedImage != null
-                ? Image.file(
-              _selectedImage!,
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
+            const SizedBox(height: 10),
+            _selectedImages.isNotEmpty
+                ? Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: _selectedImages.map((image) {
+                return Stack(
+                  children: [
+                    Image.file(
+                      image,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: IconButton(
+                        icon: const Icon(Icons.remove_circle, color: Colors.red),
+                        onPressed: () {
+                          setState(() {
+                            _selectedImages.remove(image);
+                          });
+                          widget.onImagesSelected(_selectedImages);
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
             )
-                : const Text('Chưa chọn ảnh'),
-            _gap(),
-            // Keyword input field with dynamic hints
+                : const Text('Chưa chọn ảnh nào'),
+            const SizedBox(height: 10),
             TextFormField(
               controller: keywordController,
               decoration: const InputDecoration(
@@ -177,18 +183,15 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
               ),
               onChanged: (input) {
                 setState(() {
-                  // Filter the available keywords based on input
                   filteredKeywords = availableKeywords
                       .where((keyword) => keyword.toLowerCase().contains(input.toLowerCase()))
                       .toList();
                 });
               },
             ),
-            if (filteredKeywords.isNotEmpty) ...[
-              // Show filtered keywords as hints below the input field
+            if (filteredKeywords.isNotEmpty)
               ListView.builder(
                 shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
                 itemCount: filteredKeywords.length,
                 itemBuilder: (context, index) {
                   final keyword = filteredKeywords[index];
@@ -199,25 +202,21 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                         if (!widget.selectedKeywords.contains(keyword)) {
                           widget.selectedKeywords.add(keyword);
                         }
-                        keywordController.clear(); // Clear input after selection
-                        filteredKeywords.clear(); // Clear suggestions
+                        keywordController.clear();
+                        filteredKeywords.clear();
                       });
                     },
                   );
                 },
               ),
-            ],
-            _gap(),
-            // Display selected keywords with remove button
+            const SizedBox(height: 10),
             Wrap(
-              children: widget.selectedKeywords.map((selectedKeyword) {
+              children: widget.selectedKeywords.map((keyword) {
                 return Chip(
-                  label: Text(selectedKeyword),
-                  backgroundColor: Colors.green,
-                  deleteIcon: Icon(Icons.remove_circle_outline),
+                  label: Text(keyword),
                   onDeleted: () {
                     setState(() {
-                      widget.selectedKeywords.remove(selectedKeyword);
+                      widget.selectedKeywords.remove(keyword);
                     });
                   },
                 );
@@ -227,9 +226,5 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
         ),
       ),
     );
-  }
-
-  Widget _gap() {
-    return const SizedBox(height: 10);
   }
 }
