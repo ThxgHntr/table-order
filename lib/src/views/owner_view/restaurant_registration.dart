@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -63,8 +64,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
   };
   final restaurantDescription = TextEditingController();
   final selectedKeywords = <String>[];
-  //image
-  late final selectedImage = null;
+  final List<File> selectedImages = [];
 
   final FirebaseRestaurantsServices _firebaseAuthServices = FirebaseRestaurantsServices();  // Initialize Firebase service
 
@@ -182,7 +182,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
             restaurantDistrict: restaurantDistrict,
             restaurantWard: restaurantWard,
             restaurantStreet: restaurantStreet,
-          )
+          ),
         ],
       ),
     ),
@@ -195,7 +195,8 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
           RestaurantRepresentativeFormContent(
               restaurantOwnerName: restaurantOwnerName,
               restaurantPhone: restaurantPhone,
-              restaurantEmail: restaurantEmail)
+              restaurantEmail: restaurantEmail
+          ),
         ],
       ),
     ),
@@ -211,17 +212,23 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
             isOpened: isOpened,
             restaurantDescription: restaurantDescription,
             selectedKeywords: selectedKeywords,
-          )
+            selectedImages: selectedImages,
+            onImagesSelected: (images) {
+              setState(() {
+                selectedImages.clear();
+                selectedImages.addAll(images);
+              });
+            },
+          ),
         ],
       ),
     ),
   ];
 
   Future<void> saveRestaurantInfoToDatabase() async {
-    final selectedDays = <String>[]; // Danh sách các ngày được chọn
-    final openCloseTimes = <String, Map<String, String>>{}; // Thời gian mở/đóng của các ngày được chọn
+    final selectedDays = <String>[];
+    final openCloseTimes = <String, Map<String, String>>{};
 
-    // Lặp qua các ngày trong 'isOpened' và lấy những ngày được chọn
     isOpened.forEach((day, isSelected) {
       if (isSelected) {
         selectedDays.add(day);
@@ -232,17 +239,17 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       }
     });
 
-    // Lấy UID của người dùng đăng nhập từ Firebase Auth
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       showToast('Vui lòng đăng nhập trước khi đăng ký nhà hàng.');
       return;
     }
 
-    final userId = user.uid; // UID của người dùng đăng nhập
+    final ownerId = user.uid;
+    final restaurantId = ownerId + DateTime.now().millisecondsSinceEpoch.toString();
 
-    // Tạo đối tượng RestaurantInfo từ dữ liệu người dùng nhập
     final restaurantInfo = Restaurant(
+      restaurantId: restaurantId,
       restaurantName: restaurantName.text,
       restaurantCity: restaurantCity.text,
       restaurantDistrict: restaurantDistrict.text,
@@ -253,12 +260,14 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       restaurantEmail: restaurantEmail.text,
       restaurantDescription: restaurantDescription.text,
       selectedKeywords: selectedKeywords,
-      selectedImage: selectedImage,
+      selectedImage: selectedImages.isNotEmpty ? selectedImages.map((image) => image.path).toList() : [],
       openCloseTimes: openCloseTimes,
-      userId: userId,
+      ownerId: ownerId,
+      type: '0',
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
     );
 
-    // Lưu thông tin vào Firebase
     final result = await _firebaseAuthServices.saveRestaurantInfo(restaurantInfo);
 
     if (result) {
@@ -297,39 +306,6 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
                   Navigator.of(context).pushNamed('/restaurant-owner');
                 },
                 child: const Text('Trở về trang chủ'),
-              ),
-              const SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    currentStep = 0;
-                    isCompleted = false;
-
-                    // Clear form data
-                    restaurantName.clear();
-                    restaurantCity.clear();
-                    restaurantDistrict.clear();
-                    restaurantWard.clear();
-                    restaurantStreet.clear();
-
-                    restaurantOwnerName.clear();
-                    restaurantPhone.clear();
-                    restaurantEmail.clear();
-                    restaurantDescription.clear();
-
-                    openTimeControllers.forEach((key, value) {
-                      value.clear();
-                    });
-                    closeTimeControllers.forEach((key, value) {
-                      value.clear();
-                    });
-                    isOpened.forEach((key, value) {
-                      isOpened[key] = true;
-                    });
-                    selectedKeywords.clear();
-                  });
-                },
-                child: const Text('Đăng ký thêm quán ăn'),
               ),
             ],
           ),
