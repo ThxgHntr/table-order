@@ -263,7 +263,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       selectedImage: selectedImages.isNotEmpty ? selectedImages.map((image) => image.path).toList() : [],
       openCloseTimes: openCloseTimes,
       ownerId: ownerId,
-      type: '0',
+      type: '0', // 0: Chờ duyệt, 1: Đã duyệt, 2: Từ chối
       createdAt: DateTime.now().millisecondsSinceEpoch,
       updatedAt: DateTime.now().millisecondsSinceEpoch,
     );
@@ -303,7 +303,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
             children: <Widget>[
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamed('/restaurant-owner');
+                  Navigator.of(context).pushNamed('/');
                 },
                 child: const Text('Trở về trang chủ'),
               ),
