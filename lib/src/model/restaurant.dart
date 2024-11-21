@@ -1,3 +1,5 @@
+import 'package:firebase_database/firebase_database.dart';
+
 class Restaurant{
   final String restaurantId;
   final String restaurantName;
@@ -37,6 +39,37 @@ class Restaurant{
     required this.updatedAt,
   });
 
+  // Hàm chuyển đổi DataSnapshot từ Firebase thành model
+  factory Restaurant.fromSnapshot(DataSnapshot snapshot) {
+    final data = snapshot.value as Map<dynamic, dynamic>;
+    return Restaurant(
+      restaurantId: snapshot.key ?? '',
+      restaurantName: data['restaurantName'] ?? '',
+      restaurantCity: data['restaurantCity'] ?? '',
+      restaurantDistrict: data['restaurantDistrict'] ?? '',
+      createdAt: data['createdAt'] ?? 0,
+      type: data['type'] ?? '',
+      restaurantWard: data['restaurantWard'] ?? '',
+      restaurantStreet: data['restaurantStreet'] ?? '',
+      restaurantOwnerName: data['restaurantOwnerName'] ?? '',
+      restaurantPhone: data['restaurantPhone'] ?? '',
+      restaurantEmail: data['restaurantEmail'] ?? '',
+      restaurantDescription: data['restaurantDescription'] ?? '',
+      selectedKeywords: List<String>.from(data['selectedKeywords'] ?? []),
+      selectedImage: List<String>.from(data['selectedImage'] ?? []),
+      openCloseTimes: (data['openCloseTimes'] as Map<dynamic, dynamic>?)?.map(
+            (key, value) => MapEntry(
+          key as String,
+          Map<String, String>.from(value as Map),
+        ),
+      ) ??
+          {},
+      ownerId: data['ownerId'] ?? '',
+      updatedAt: data['updatedAt'] ?? 0,
+    );
+  }
+
+
   // Hàm chuyển đổi model thành Map để lưu vào Firebase
   Map<String, dynamic> toMap() {
     return {
@@ -54,6 +87,9 @@ class Restaurant{
       'selectedImage': selectedImage,
       'openCloseTimes': openCloseTimes,
       'ownerID': ownerId,
+      'type': type,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
     };
   }
 }
