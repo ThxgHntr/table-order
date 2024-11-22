@@ -31,6 +31,7 @@ class RestaurantDetailsForm extends StatefulWidget {
 }
 
 class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
+  final List<File> _selectedImages = [];
   TextEditingController keywordController = TextEditingController();
   List<String> filteredKeywords = [];
 
@@ -43,11 +44,11 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
       }
 
       setState(() {
-        widget.selectedImages.addAll(returnedImages.map((img) => File(img.path)));
+        _selectedImages.addAll(returnedImages.map((img) => File(img.path)));
       });
 
-      // Ensure that selectedImages is passed back to the parent widget
-      widget.onImagesSelected(widget.selectedImages);
+      // Đảm bảo rằng selectedImages được truyền lại cho widget cha
+      widget.onImagesSelected(_selectedImages);
 
       showToast('Đã chọn ${returnedImages.length} ảnh.');
     } catch (e) {
@@ -145,11 +146,11 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
               child: const Text('Chọn ảnh từ thư viện'),
             ),
             const SizedBox(height: 10),
-            widget.selectedImages.isNotEmpty
+            _selectedImages.isNotEmpty
                 ? Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: widget.selectedImages.map((image) {
+              children: _selectedImages.map((image) {
                 return Stack(
                   children: [
                     Image.file(
@@ -165,9 +166,9 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                         icon: const Icon(Icons.remove_circle, color: Colors.red),
                         onPressed: () {
                           setState(() {
-                            widget.selectedImages.remove(image);
+                            _selectedImages.remove(image);
                           });
-                          widget.onImagesSelected(widget.selectedImages);
+                          widget.onImagesSelected(_selectedImages);
                         },
                       ),
                     ),
