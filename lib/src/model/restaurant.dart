@@ -1,6 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 
-class Restaurant{
+class Restaurant {
   final String restaurantId;
   final String restaurantName;
   final String restaurantCity;
@@ -39,7 +39,7 @@ class Restaurant{
     required this.updatedAt,
   });
 
-  // Hàm chuyển đổi DataSnapshot từ Firebase thành model
+  // Convert Firebase DataSnapshot to model
   factory Restaurant.fromSnapshot(DataSnapshot snapshot) {
     final data = snapshot.value as Map<dynamic, dynamic>;
     return Restaurant(
@@ -62,15 +62,13 @@ class Restaurant{
           key as String,
           Map<String, String>.from(value as Map),
         ),
-      ) ??
-          {},
+      ) ?? {},
       ownerId: data['ownerId'] ?? '',
       updatedAt: data['updatedAt'] ?? 0,
     );
   }
 
-
-  // Hàm chuyển đổi model thành Map để lưu vào Firebase
+  // Convert model to Map for Firebase storage
   Map<String, dynamic> toMap() {
     return {
       'restaurantId': restaurantId,

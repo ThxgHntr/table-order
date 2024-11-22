@@ -31,7 +31,6 @@ class RestaurantDetailsForm extends StatefulWidget {
 }
 
 class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
-  final List<File> _selectedImages = [];
   TextEditingController keywordController = TextEditingController();
   List<String> filteredKeywords = [];
 
@@ -44,8 +43,11 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
       }
 
       setState(() {
-        _selectedImages.addAll(returnedImages.map((img) => File(img.path)));
+        widget.selectedImages.addAll(returnedImages.map((img) => File(img.path)));
       });
+
+      // Ensure that selectedImages is passed back to the parent widget
+      widget.onImagesSelected(widget.selectedImages);
 
       showToast('Đã chọn ${returnedImages.length} ảnh.');
     } catch (e) {
@@ -121,7 +123,7 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                     ),
                 ],
               );
-            }).toList(),
+            }),
             const SizedBox(height: 10),
             TextFormField(
               controller: widget.restaurantDescription,
@@ -143,11 +145,11 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
               child: const Text('Chọn ảnh từ thư viện'),
             ),
             const SizedBox(height: 10),
-            _selectedImages.isNotEmpty
+            widget.selectedImages.isNotEmpty
                 ? Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: _selectedImages.map((image) {
+              children: widget.selectedImages.map((image) {
                 return Stack(
                   children: [
                     Image.file(
@@ -163,9 +165,9 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                         icon: const Icon(Icons.remove_circle, color: Colors.red),
                         onPressed: () {
                           setState(() {
-                            _selectedImages.remove(image);
+                            widget.selectedImages.remove(image);
                           });
-                          widget.onImagesSelected(_selectedImages);
+                          widget.onImagesSelected(widget.selectedImages);
                         },
                       ),
                     ),

@@ -1,94 +1,86 @@
 import 'dart:io';
-import 'package:aws_s3_upload_lite/aws_s3_upload_lite.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart';
 
 import '../model/restaurant.dart';
 
 class FirebaseRestaurantsServices {
-  final storage = FirebaseStorage.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseDatabase _database = FirebaseDatabase.instance;
 
-  Future<String?> uploadImageToS3(File image) async {
+  // Upload image to Firebase Storage with restaurantId in the path
+  Future<String?> uploadImageToFirebaseStorage(String restaurantId, File image) async {
     try {
-      //final bucketName = dotenv.env['AWS_BUCKET_NAME'] ?? 'your-bucket-name';
-      final accessKey = dotenv.env['AWS_ACCESS_KEY'] ?? 'your-access';
-      final secretKey = dotenv.env['AWS_SECRET_KEY'] ?? 'your-secret';
-      final file = image;
-      final bucket = dotenv.env['AWS_BUCKET_NAME'] ?? 'your-bucket-name';
-      final region = dotenv.env['AWS_REGION'] ?? 'your-region';
-      final destDir =
-          'restaurant_pictures/${DateTime.now().millisecondsSinceEpoch}_${image.path.split('/').last}';
-      final filename = destDir.split('/').last;
-
-      String uploadResult = await AwsS3.uploadFile(
-          accessKey: accessKey,
-          secretKey: secretKey,
-          bucket: bucket,
-          file: file,
-          region: region,
-          destDir: destDir,
-          filename: filename);
-
-      /*// Cấu hình thông tin để upload ảnh lên S3
-      final s3Uploader = AwsS3(
-        awsS3AccessKey: accessKey,
-        awsS3SecretKey: secretKey,
-        defaultBucketName: bucketName,
-        awsRegion: region,
-
-      );
-
-      // Tải ảnh lên S3 và lấy URL
-      final uploadResult = await s3Uploader.uploadFile(
-        image,
-        fileName: imagePath,
-      );*/
-
-      /*if (uploadResult != null) {
-        print(
-            'Image uploaded successfully: $uploadResult'); // Log URL của ảnh đã tải lên
-        return uploadResult;
-      } else {
-        print('Failed to get S3 URL');
-        return null;
-      }*/
+      final fileName = '${restaurantId}_${DateTime.now().millisecondsSinceEpoch}_${image.path.split('/').last}';
+      final ref = _storage.ref().child('restaurant_pictures/$restaurantId/$fileName');
+      final uploadTask = ref.putFile(image);
+      final snapshot = await uploadTask.whenComplete(() => {});
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      if (kDebugMode) {
+        print('Image uploaded successfully: $downloadUrl');
+      }
+      return downloadUrl;
     } catch (e) {
-      print('Error uploading image to S3: $e');
+      if (kDebugMode) {
+        print('Error uploading image to Firebase Storage: $e');
+      }
       return null;
     }
   }
 
-  Future<List<String>> uploadImages(List<File> images) async {
+  // Upload multiple images with restaurantId
+  Future<List<String>> uploadImages(String restaurantId, List<File> images) async {
     List<String> downloadUrls = [];
-
     for (var image in images) {
-      try {
-        final s3Url = await uploadImageToS3(image);
-        if (s3Url != null) {
-          downloadUrls.add(s3Url);
+      if (kDebugMode) {
+        print('Uploading image: ${image.path}');
+      }
+      final imageUrl = await uploadImageToFirebaseStorage(restaurantId, image);
+      if (imageUrl != null) {
+        downloadUrls.add(imageUrl);
+      } else {
+        if (kDebugMode) {
+          print('Failed to upload image: ${image.path}');
         }
-      } catch (e) {
-        print('Error uploading image: $e');
       }
     }
-
     return downloadUrls;
   }
 
+  // Save restaurant info to Firebase Realtime Database, including uploaded image URLs
   Future<bool> saveRestaurantInfo(Restaurant restaurant) async {
     try {
+      if (restaurant.selectedImage.isEmpty) {
+        if (kDebugMode) {
+          print('No images selected. Cannot save restaurant info.');
+        }
+        return false;  // Return early if no images are selected
+      }
+
       final imageUrls = await uploadImages(
-          restaurant.selectedImage.map((path) => File(path)).toList());
+          restaurant.restaurantId, restaurant.selectedImage.map((path) => File(path)).toList());
+      if (imageUrls.isEmpty) {
+        if (kDebugMode) {
+          print('No images uploaded. Cannot save restaurant info.');
+        }
+        return false;  // Return early if image upload fails
+      }
       restaurant.selectedImage = imageUrls;
 
-      final ref = FirebaseDatabase.instance.ref().child('restaurants').push();
+      final ref = _database.ref().child('restaurants').push();
       await ref.set(restaurant.toMap());
 
+      if (kDebugMode) {
+        print('Restaurant info saved successfully.');
+      }
       return true;
     } catch (e) {
-      print('Error saving data: $e');
+      if (kDebugMode) {
+        print('Error saving restaurant info: $e');
+      }
       return false;
     }
   }
+
 }

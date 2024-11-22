@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:table_order/src/utils/toast_utils.dart';
@@ -218,6 +219,9 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
                 selectedImages.clear();
                 selectedImages.addAll(images);
               });
+              if (kDebugMode) {
+                print('Selected images: $selectedImages');
+              }
             },
           ),
         ],
