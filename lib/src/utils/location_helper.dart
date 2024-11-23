@@ -63,7 +63,7 @@ Future<String> getAddressFromGeopoint(GeoPoint geopoint) async {
     List<Placemark> placemarks =
         await placemarkFromCoordinates(geopoint.latitude, geopoint.longitude);
     if (placemarks.isNotEmpty) {
-      return "${placemarks.first.street}, ${placemarks.first.country}";
+      return "${placemarks.first.street}, ${placemarks.first.administrativeArea}, ${placemarks.first.country}";
     }
   } catch (e) {
     if (kDebugMode) {
