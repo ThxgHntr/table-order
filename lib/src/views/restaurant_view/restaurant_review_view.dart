@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class RestaurantReviewView extends StatelessWidget {
-  const RestaurantReviewView({super.key});
+  final String restaurantId;
+  const RestaurantReviewView({super.key, required this.restaurantId});
 
   static const routeName = '/restaurant_review';
 
