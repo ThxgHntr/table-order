@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -70,7 +69,8 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
   final minPriceController = TextEditingController();
   final maxPriceController = TextEditingController();
 
-  final FirebaseRestaurantsServices _firebaseAuthServices = FirebaseRestaurantsServices();  // Initialize Firebase service
+  final FirebaseRestaurantsServices _firebaseAuthServices =
+      FirebaseRestaurantsServices(); // Initialize Firebase service
 
   @override
   Widget build(BuildContext context) {
@@ -81,19 +81,20 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       body: isCompleted
           ? buildCompleted()
           : Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: ColorScheme.light(primary: Colors.blue),
-        ),
-        child: ResponsiveBuilder(
-          builder: (context, sizingInformation) {
-            return buildStepper(
-              sizingInformation.deviceScreenType == DeviceScreenType.mobile
-                  ? StepperType.vertical
-                  : StepperType.horizontal,
-            );
-          },
-        ),
-      ),
+              data: Theme.of(context).copyWith(
+                colorScheme: ColorScheme.light(primary: Colors.blue),
+              ),
+              child: ResponsiveBuilder(
+                builder: (context, sizingInformation) {
+                  return buildStepper(
+                    sizingInformation.deviceScreenType ==
+                            DeviceScreenType.mobile
+                        ? StepperType.vertical
+                        : StepperType.horizontal,
+                  );
+                },
+              ),
+            ),
     );
   }
 
@@ -105,13 +106,15 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       onStepContinue: () {
         if (currentStep == 0) {
           final isValid = BasicRestaurantInformationFormContent
-              .formKey.currentState
-              ?.validate() ?? false;
+                  .formKey.currentState
+                  ?.validate() ??
+              false;
           if (!isValid) return;
         } else if (currentStep == 1) {
           final isValid = RestaurantRepresentativeFormContent
-              .formKey.currentState
-              ?.validate() ?? false;
+                  .formKey.currentState
+                  ?.validate() ??
+              false;
           if (!isValid) return;
         }
 
@@ -128,13 +131,15 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       onStepTapped: (step) {
         if (currentStep == 0) {
           final isValid = BasicRestaurantInformationFormContent
-              .formKey.currentState
-              ?.validate() ?? false;
+                  .formKey.currentState
+                  ?.validate() ??
+              false;
           if (!isValid) return;
         } else if (currentStep == 1) {
           final isValid = RestaurantRepresentativeFormContent
-              .formKey.currentState
-              ?.validate() ?? false;
+                  .formKey.currentState
+                  ?.validate() ??
+              false;
           if (!isValid) return;
         }
 
@@ -174,65 +179,64 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
   }
 
   List<Step> getSteps() => [
-    Step(
-      state: currentStep >= 0 ? StepState.complete : StepState.indexed,
-      isActive: currentStep >= 0,
-      title: const Text('Thông tin cơ bản'),
-      content: Column(
-        children: <Widget>[
-          BasicRestaurantInformationFormContent(
-            restaurantName: restaurantName,
-            restaurantCity: restaurantCity,
-            restaurantDistrict: restaurantDistrict,
-            restaurantWard: restaurantWard,
-            restaurantStreet: restaurantStreet,
+        Step(
+          state: currentStep >= 0 ? StepState.complete : StepState.indexed,
+          isActive: currentStep >= 0,
+          title: const Text('Thông tin cơ bản'),
+          content: Column(
+            children: <Widget>[
+              BasicRestaurantInformationFormContent(
+                restaurantName: restaurantName,
+                restaurantCity: restaurantCity,
+                restaurantDistrict: restaurantDistrict,
+                restaurantWard: restaurantWard,
+                restaurantStreet: restaurantStreet,
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
-    Step(
-      state: currentStep >= 1 ? StepState.complete : StepState.indexed,
-      isActive: currentStep >= 1,
-      title: const Text('Thông tin người đại diện'),
-      content: Column(
-        children: <Widget>[
-          RestaurantRepresentativeFormContent(
-              restaurantOwnerName: restaurantOwnerName,
-              restaurantPhone: restaurantPhone,
-              restaurantEmail: restaurantEmail
+        ),
+        Step(
+          state: currentStep >= 1 ? StepState.complete : StepState.indexed,
+          isActive: currentStep >= 1,
+          title: const Text('Thông tin người đại diện'),
+          content: Column(
+            children: <Widget>[
+              RestaurantRepresentativeFormContent(
+                  restaurantOwnerName: restaurantOwnerName,
+                  restaurantPhone: restaurantPhone,
+                  restaurantEmail: restaurantEmail),
+            ],
           ),
-        ],
-      ),
-    ),
-    Step(
-      state: currentStep >= 2 ? StepState.complete : StepState.indexed,
-      isActive: currentStep >= 2,
-      title: const Text('Thông tin chi tiết'),
-      content: Column(
-        children: <Widget>[
-          RestaurantDetailsForm(
-            openTimeControllers: openTimeControllers,
-            closeTimeControllers: closeTimeControllers,
-            minPriceController: minPriceController,
-            maxPriceController: maxPriceController,
-            isOpened: isOpened,
-            restaurantDescription: restaurantDescription,
-            selectedKeywords: selectedKeywords,
-            selectedImages: selectedImages,
-            onImagesSelected: (images) {
-              setState(() {
-                selectedImages.clear();
-                selectedImages.addAll(images);
-              });
-              if (kDebugMode) {
-                print('Selected images: $selectedImages');
-              }
-            },
+        ),
+        Step(
+          state: currentStep >= 2 ? StepState.complete : StepState.indexed,
+          isActive: currentStep >= 2,
+          title: const Text('Thông tin chi tiết'),
+          content: Column(
+            children: <Widget>[
+              RestaurantDetailsForm(
+                openTimeControllers: openTimeControllers,
+                closeTimeControllers: closeTimeControllers,
+                minPriceController: minPriceController,
+                maxPriceController: maxPriceController,
+                isOpened: isOpened,
+                restaurantDescription: restaurantDescription,
+                selectedKeywords: selectedKeywords,
+                selectedImages: selectedImages,
+                onImagesSelected: (images) {
+                  setState(() {
+                    selectedImages.clear();
+                    selectedImages.addAll(images);
+                  });
+                  if (kDebugMode) {
+                    print('Selected images: $selectedImages');
+                  }
+                },
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
-  ];
+        ),
+      ];
 
   Future<void> saveRestaurantInfoToDatabase() async {
     final selectedDays = <String>[];
@@ -255,7 +259,8 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
     }
 
     final ownerId = user.uid;
-    final restaurantId = ownerId + DateTime.now().millisecondsSinceEpoch.toString();
+    final restaurantId =
+        ownerId + DateTime.now().millisecondsSinceEpoch.toString();
 
     final restaurantInfo = Restaurant(
       restaurantId: restaurantId,
@@ -269,16 +274,20 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       restaurantEmail: restaurantEmail.text,
       restaurantDescription: restaurantDescription.text,
       selectedKeywords: selectedKeywords,
-      selectedImage: selectedImages.isNotEmpty ? selectedImages.map((image) => image.path).toList() : [],
+      selectedImage: selectedImages.isNotEmpty
+          ? selectedImages.map((image) => image.path).toList()
+          : [],
       openCloseTimes: openCloseTimes,
       ownerId: ownerId,
       type: '0', // 0: Chờ duyệt, 1: Đã duyệt, 2: Từ chối
       createdAt: DateTime.now().millisecondsSinceEpoch,
       updatedAt: DateTime.now().millisecondsSinceEpoch,
-      priceRange: '${minPriceController.text}-${maxPriceController.text}', // Combine min and max price
+      priceRange:
+          '${minPriceController.text}-${maxPriceController.text}', // Combine min and max price
     );
 
-    final result = await _firebaseAuthServices.saveRestaurantInfo(restaurantInfo);
+    final result =
+        await _firebaseAuthServices.saveRestaurantInfo(restaurantInfo);
 
     if (result) {
       setState(() {
