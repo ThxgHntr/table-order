@@ -18,7 +18,7 @@ class _RestaurantOwnerPageViewState extends State<RestaurantOwnerPageView> {
       length: 2, // Number of tabs
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Nhà hàng của bạn',
+          title: Text('Danh sách nhà hàng',
               style: Theme.of(context).textTheme.headlineSmall),
         ),
         body: Container(

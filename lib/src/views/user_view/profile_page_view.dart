@@ -78,7 +78,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
                 title: "Tổng quan",
                 children: [
                   _CustomListTile(
-                    title: "Nhà hàng của bạn",
+                    title: "Danh sách nhà hàng",
                     icon: Icons.store,
                     onTap: () {
                       if (user == null) {
