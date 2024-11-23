@@ -82,13 +82,15 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Thời gian mở cửa'),
+            Text('Ngày mở cửa', style: Theme.of(context).textTheme.titleMedium),
             ...daysOfTheWeek.map((day) {
               return Column(
                 children: [
                   CheckboxListTile(
-                    title: Text(day),
+                    title:
+                        Text(day, style: Theme.of(context).textTheme.bodyLarge),
                     value: widget.isOpened[day] ?? false,
+                    side: const BorderSide(color: Colors.grey),
                     onChanged: (value) {
                       setState(() {
                         widget.isOpened[day] = value ?? false;
@@ -100,7 +102,7 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
             }),
             //giá ca bao gom 1 hang co min price - max price
             const SizedBox(height: 10),
-            const Text('Thời gian hoạt động'),
+            Text('Giờ mở cửa', style: Theme.of(context).textTheme.titleMedium),
             Row(
               children: [
                 Expanded(
@@ -110,7 +112,12 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                     onTap: () =>
                         _selectTime(context, widget.openTimeController),
                     decoration: const InputDecoration(
-                      labelText: 'Mở cửa vào lúc',
+                      labelText: 'Từ',
+                      labelStyle: TextStyle(color: Colors.grey),
+                      floatingLabelStyle: TextStyle(color: Colors.blue),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
                     ),
                   ),
                 ),
@@ -122,7 +129,12 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                     onTap: () =>
                         _selectTime(context, widget.closeTimeController),
                     decoration: const InputDecoration(
-                      labelText: 'Đóng cửa vào lúc',
+                      labelText: 'Đến',
+                      labelStyle: TextStyle(color: Colors.grey),
+                      floatingLabelStyle: TextStyle(color: Colors.blue),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
                     ),
                   ),
                 ),
@@ -139,12 +151,18 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
               },
               decoration: const InputDecoration(
                 labelText: 'Mô tả nhà hàng',
+                labelStyle: TextStyle(color: Colors.grey),
+                floatingLabelStyle: TextStyle(color: Colors.blue),
                 hintText: 'Nhập mô tả nhà hàng',
+                hintStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
               ),
             ),
             //giá ca bao gom 1 hang co min price - max price
             const SizedBox(height: 10),
-            const Text('Giá cả'),
+            Text('Giá cả', style: Theme.of(context).textTheme.titleMedium),
             Row(
               children: [
                 Expanded(
@@ -153,7 +171,13 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       labelText: 'Giá thấp nhất',
+                      labelStyle: TextStyle(color: Colors.grey),
+                      floatingLabelStyle: TextStyle(color: Colors.blue),
                       hintText: 'Nhập giá thấp nhất',
+                      hintStyle: TextStyle(color: Colors.grey),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
                     ),
                   ),
                 ),
@@ -164,7 +188,13 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       labelText: 'Giá cao nhất',
+                      labelStyle: TextStyle(color: Colors.grey),
+                      floatingLabelStyle: TextStyle(color: Colors.blue),
                       hintText: 'Nhập giá cao nhất',
+                      hintStyle: TextStyle(color: Colors.grey),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
                     ),
                   ),
                 ),
@@ -212,8 +242,14 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
             TextFormField(
               controller: keywordController,
               decoration: const InputDecoration(
-                labelText: 'Nhập từ khóa',
-                hintText: 'Nhập từ khóa...',
+                labelText: 'Từ khóa',
+                labelStyle: TextStyle(color: Colors.grey),
+                floatingLabelStyle: TextStyle(color: Colors.blue),
+                hintText: 'Nhập từ khóa',
+                hintStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
               ),
               onChanged: (input) {
                 setState(() {
@@ -246,9 +282,14 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
               ),
             const SizedBox(height: 10),
             Wrap(
+              spacing: 8.0,
+              runSpacing: 4.0,
               children: widget.selectedKeywords.map((keyword) {
                 return Chip(
                   label: Text(keyword),
+                  labelStyle: const TextStyle(color: Colors.grey),
+                  side: BorderSide(color: Colors.grey),
+                  deleteIconColor: Colors.grey,
                   onDeleted: () {
                     setState(() {
                       widget.selectedKeywords.remove(keyword);

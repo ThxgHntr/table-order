@@ -58,7 +58,8 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đăng ký nhà hàng'),
+        title: Text('Đăng ký nhà hàng',
+            style: Theme.of(context).textTheme.headlineSmall),
       ),
       body: isCompleted
           ? buildCompleted()
@@ -164,7 +165,8 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
         Step(
           state: currentStep >= 0 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 0,
-          title: const Text('Thông tin cơ bản'),
+          title: Text('Thông tin cơ bản',
+              style: Theme.of(context).textTheme.titleLarge),
           content: Column(
             children: <Widget>[
               BasicRestaurantInformationFormContent(
@@ -180,7 +182,8 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
         Step(
           state: currentStep >= 1 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 1,
-          title: const Text('Thông tin người đại diện'),
+          title: Text('Thông tin người đại diện',
+              style: Theme.of(context).textTheme.titleLarge),
           content: Column(
             children: <Widget>[
               RestaurantRepresentativeFormContent(
@@ -192,7 +195,8 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
         Step(
           state: currentStep >= 2 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 2,
-          title: const Text('Thông tin chi tiết'),
+          title: Text('Thông tin chi tiết',
+              style: Theme.of(context).textTheme.titleLarge),
           content: Column(
             children: <Widget>[
               RestaurantDetailsForm(

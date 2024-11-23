@@ -39,7 +39,13 @@ class RestaurantRepresentativeFormContentState
               },
               decoration: const InputDecoration(
                 labelText: 'Số điện thoại',
+                labelStyle: TextStyle(color: Colors.grey),
+                floatingLabelStyle: TextStyle(color: Colors.blue),
                 hintText: 'Nhập số điện thoại',
+                hintStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
               ),
             ),
             _gap(),
@@ -53,7 +59,13 @@ class RestaurantRepresentativeFormContentState
               },
               decoration: const InputDecoration(
                 labelText: 'Email',
+                labelStyle: TextStyle(color: Colors.grey),
+                floatingLabelStyle: TextStyle(color: Colors.blue),
                 hintText: 'Nhập email',
+                hintStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                )
               ),
             ),
           ],

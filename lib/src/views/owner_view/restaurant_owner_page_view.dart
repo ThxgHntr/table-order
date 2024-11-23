@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_order/src/views/owner_view/restaurant_owner_tab1_view.dart';
 import 'package:table_order/src/views/owner_view/restaurant_owner_tab2_view.dart';
 
-class RestaurantOwnerPageView extends StatefulWidget  {
-
+class RestaurantOwnerPageView extends StatefulWidget {
   static const routeName = '/restaurant-owner';
 
   const RestaurantOwnerPageView({super.key});
@@ -19,7 +18,8 @@ class _RestaurantOwnerPageViewState extends State<RestaurantOwnerPageView> {
       length: 2, // Number of tabs
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Quán của bạn'),
+          title: Text('Nhà hàng của bạn',
+              style: Theme.of(context).textTheme.headlineSmall),
         ),
         body: Container(
           padding: const EdgeInsets.all(16),
@@ -28,7 +28,7 @@ class _RestaurantOwnerPageViewState extends State<RestaurantOwnerPageView> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Đăng ký quán',
+                  'Đăng ký nhà hàng',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -49,8 +49,9 @@ class _RestaurantOwnerPageViewState extends State<RestaurantOwnerPageView> {
                   label: const Padding(
                     padding: EdgeInsets.all(10.0),
                     child: Text(
-                      'Tạo quán mới',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      'Tạo nhà hàng mới',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -58,8 +59,8 @@ class _RestaurantOwnerPageViewState extends State<RestaurantOwnerPageView> {
               const SizedBox(height: 10),
               const TabBar(
                 tabs: [
-                  Tab(text: 'Quán của tôi'),
-                  Tab(text: 'Quán đã đăng ký'),
+                  Tab(text: 'Nhà hàng của tôi'),
+                  Tab(text: 'Nhà hàng đã đăng ký'),
                 ],
               ),
               Expanded(

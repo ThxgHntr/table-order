@@ -64,7 +64,7 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
         actions: [
           Text(
             locationText ?? '',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w300,
                   fontSize: 16,
                 ),
