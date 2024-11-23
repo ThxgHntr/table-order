@@ -15,7 +15,7 @@ class _SearchRestaurantState extends State<SearchRestaurant> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tìm quán ăn'),
+        title: const Text('Tìm nhà hàng'),
       ),
       body: Container(
         padding: const EdgeInsets.all(20),
@@ -23,7 +23,7 @@ class _SearchRestaurantState extends State<SearchRestaurant> {
           children: <Widget>[
             const TextField(
               decoration: InputDecoration(
-                hintText: 'Nhập tên quán ăn',
+                hintText: 'Nhập tên nhà hàng',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(4)),

@@ -58,7 +58,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đăng ký quán ăn'),
+        title: const Text('Đăng ký nhà hàng'),
       ),
       body: isCompleted
           ? buildCompleted()
@@ -297,7 +297,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Đăng ký quán ăn thành công!',
+            'Đăng ký nhà hàng thành công!',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,

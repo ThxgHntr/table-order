@@ -133,13 +133,13 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
               controller: widget.restaurantDescription,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Vui lòng nhập mô tả quán ăn';
+                  return 'Vui lòng nhập mô tả nhà hàng';
                 }
                 return null;
               },
               decoration: const InputDecoration(
-                labelText: 'Mô tả quán ăn',
-                hintText: 'Nhập mô tả quán ăn',
+                labelText: 'Mô tả nhà hàng',
+                hintText: 'Nhập mô tả nhà hàng',
               ),
             ),
             //giá ca bao gom 1 hang co min price - max price
