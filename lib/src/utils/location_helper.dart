@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:table_order/src/utils/toast_utils.dart';
@@ -37,4 +40,35 @@ Future<Position?> getCurrentLocation() async {
     }
   }
   return null;
+}
+
+Future<GeoPoint> getGeopointFromAddress(String address) async {
+  try {
+    // Convert address to coordinates using geocoding
+    List<Location> locations = await locationFromAddress(address);
+    if (locations.isNotEmpty) {
+      return GeoPoint(locations.first.latitude, locations.first.longitude);
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print("Geocoding error: $e");
+    }
+  }
+  return GeoPoint(0, 0);
+}
+
+Future<String> getAddressFromGeopoint(GeoPoint geopoint) async {
+  try {
+    // Convert coordinates to address using reverse geocoding
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(geopoint.latitude, geopoint.longitude);
+    if (placemarks.isNotEmpty) {
+      return "${placemarks.first.street}, ${placemarks.first.country}";
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print("Reverse geocoding error: $e");
+    }
+  }
+  return "Unknown Address";
 }
