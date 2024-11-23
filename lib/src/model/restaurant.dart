@@ -18,6 +18,7 @@ class Restaurant {
   final String type;
   final int createdAt;
   final int updatedAt;
+  final String priceRange;
 
   Restaurant({
     required this.restaurantId,
@@ -37,6 +38,7 @@ class Restaurant {
     required this.type,
     required this.createdAt,
     required this.updatedAt,
+    required this.priceRange,
   });
 
   // Convert Firebase DataSnapshot to model
@@ -65,6 +67,7 @@ class Restaurant {
       ) ?? {},
       ownerId: data['ownerId'] ?? '',
       updatedAt: data['updatedAt'] ?? 0,
+      priceRange: data['priceRange'] ?? '',
     );
   }
 
@@ -88,6 +91,7 @@ class Restaurant {
       'type': type,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
+      'priceRange': priceRange,
     };
   }
 }
