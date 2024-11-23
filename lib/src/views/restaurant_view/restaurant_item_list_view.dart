@@ -6,7 +6,11 @@ import 'restaurant_item_details_view.dart';
 class RestaurantItemListView extends StatelessWidget {
   const RestaurantItemListView({
     super.key,
-    this.items = const [RestaurantItem(1), RestaurantItem(2), RestaurantItem(3)],
+    this.items = const [
+      RestaurantItem(1),
+      RestaurantItem(2),
+      RestaurantItem(3)
+    ],
   });
 
   static const routeName = '/';
@@ -23,7 +27,7 @@ class RestaurantItemListView extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Nhà hàng gần bạn',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight
                     .bold, // Thêm fontWeight: FontWeight.bold để làm đậm
               ),
@@ -84,7 +88,8 @@ class RestaurantItemListView extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 4.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

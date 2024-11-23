@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 class RestaurantRepresentativeFormContent extends StatefulWidget {
   const RestaurantRepresentativeFormContent(
       {super.key,
-      required this.restaurantOwnerName,
       required this.restaurantPhone,
       required this.restaurantEmail});
 
-  final TextEditingController restaurantOwnerName;
   final TextEditingController restaurantPhone;
   final TextEditingController restaurantEmail;
 
@@ -30,19 +28,6 @@ class RestaurantRepresentativeFormContentState
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextFormField(
-              controller: widget.restaurantOwnerName,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Làm ơn nhập tên chủ quán';
-                }
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: 'Tên chủ quán',
-                hintText: 'Nhập tên chủ quán',
-              ),
-            ),
             _gap(),
             TextFormField(
               controller: widget.restaurantPhone,
@@ -54,7 +39,13 @@ class RestaurantRepresentativeFormContentState
               },
               decoration: const InputDecoration(
                 labelText: 'Số điện thoại',
+                labelStyle: TextStyle(color: Colors.grey),
+                floatingLabelStyle: TextStyle(color: Colors.blue),
                 hintText: 'Nhập số điện thoại',
+                hintStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
               ),
             ),
             _gap(),
@@ -68,7 +59,13 @@ class RestaurantRepresentativeFormContentState
               },
               decoration: const InputDecoration(
                 labelText: 'Email',
+                labelStyle: TextStyle(color: Colors.grey),
+                floatingLabelStyle: TextStyle(color: Colors.blue),
                 hintText: 'Nhập email',
+                hintStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                )
               ),
             ),
           ],

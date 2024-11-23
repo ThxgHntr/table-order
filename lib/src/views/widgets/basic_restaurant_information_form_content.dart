@@ -26,7 +26,6 @@ class BasicRestaurantInformationFormContent extends StatefulWidget {
 
 class BasicRestaurantInformationFormContentState
     extends State<BasicRestaurantInformationFormContent> {
-
   String? selectedCity;
   String? selectedDistrict;
   String? selectedWard;
@@ -59,10 +58,15 @@ class BasicRestaurantInformationFormContentState
               },
               decoration: const InputDecoration(
                 labelText: 'Tên nhà hàng',
+                labelStyle: TextStyle(color: Colors.grey),
+                floatingLabelStyle: TextStyle(color: Colors.blue),
                 hintText: 'Nhập tên nhà hàng',
+                hintStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
               ),
             ),
-            _gap(),
             FormField<String>(
               validator: (value) {
                 if (selectedCity == null) {
@@ -85,7 +89,8 @@ class BasicRestaurantInformationFormContentState
                         widget.restaurantCity.text = newCity ?? '';
                         state.didChange(newCity);
                       },
-                      items: cityDistrictMap.keys.map<DropdownMenuItem<String>>((city) {
+                      items: cityDistrictMap.keys
+                          .map<DropdownMenuItem<String>>((city) {
                         return DropdownMenuItem<String>(
                           value: city,
                           child: Text(city),
@@ -93,19 +98,25 @@ class BasicRestaurantInformationFormContentState
                       }).toList(),
                       decoration: const InputDecoration(
                         labelText: 'Thành phố',
+                        labelStyle: TextStyle(color: Colors.grey),
+                        floatingLabelStyle: TextStyle(color: Colors.blue),
                         hintText: 'Chọn thành phố',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
                       ),
                     ),
                     if (state.hasError)
                       Text(
                         state.errorText!,
-                        style: TextStyle(color: Theme.of(context).colorScheme.error),
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.error),
                       ),
                   ],
                 );
               },
             ),
-            _gap(),
             FormField<String>(
               validator: (value) {
                 if (selectedDistrict == null) {
@@ -130,28 +141,34 @@ class BasicRestaurantInformationFormContentState
                       items: selectedCity == null
                           ? []
                           : cityDistrictMap[selectedCity]!
-                          .keys
-                          .map<DropdownMenuItem<String>>((district) {
-                        return DropdownMenuItem<String>(
-                          value: district,
-                          child: Text(district),
-                        );
-                      }).toList(),
+                              .keys
+                              .map<DropdownMenuItem<String>>((district) {
+                              return DropdownMenuItem<String>(
+                                value: district,
+                                child: Text(district),
+                              );
+                            }).toList(),
                       decoration: const InputDecoration(
                         labelText: 'Quận/Huyện',
+                        labelStyle: TextStyle(color: Colors.grey),
+                        floatingLabelStyle: TextStyle(color: Colors.blue),
                         hintText: 'Chọn quận/huyện',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
                       ),
                     ),
                     if (state.hasError)
                       Text(
                         state.errorText!,
-                        style: TextStyle(color: Theme.of(context).colorScheme.error),
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.error),
                       ),
                   ],
                 );
               },
             ),
-            _gap(),
             FormField<String>(
               validator: (value) {
                 if (selectedWard == null) {
@@ -175,27 +192,33 @@ class BasicRestaurantInformationFormContentState
                       items: selectedDistrict == null
                           ? []
                           : cityDistrictMap[selectedCity]?[selectedDistrict]!
-                          .map<DropdownMenuItem<String>>((ward) {
-                        return DropdownMenuItem<String>(
-                          value: ward,
-                          child: Text(ward),
-                        );
-                      }).toList(),
+                              .map<DropdownMenuItem<String>>((ward) {
+                              return DropdownMenuItem<String>(
+                                value: ward,
+                                child: Text(ward),
+                              );
+                            }).toList(),
                       decoration: const InputDecoration(
                         labelText: 'Phường',
+                        labelStyle: TextStyle(color: Colors.grey),
+                        floatingLabelStyle: TextStyle(color: Colors.blue),
                         hintText: 'Chọn phường',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
                       ),
                     ),
                     if (state.hasError)
                       Text(
                         state.errorText!,
-                        style: TextStyle(color: Theme.of(context).colorScheme.error),
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.error),
                       ),
                   ],
                 );
               },
             ),
-            _gap(),
             TextFormField(
               controller: widget.restaurantStreet,
               validator: (value) {
@@ -206,17 +229,18 @@ class BasicRestaurantInformationFormContentState
               },
               decoration: const InputDecoration(
                 labelText: 'Đường',
+                labelStyle: TextStyle(color: Colors.grey),
+                floatingLabelStyle: TextStyle(color: Colors.blue),
                 hintText: 'Nhập đường',
+                hintStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
               ),
             ),
-            _gap(),
           ],
         ),
       ),
     );
-  }
-
-  Widget _gap() {
-    return const SizedBox(height: 10);
   }
 }
