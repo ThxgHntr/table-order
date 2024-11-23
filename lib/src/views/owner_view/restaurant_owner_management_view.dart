@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:table_order/src/views/owner_view/restaurant_management_view/table_management_view.dart';
 
 class RestaurantOwnerManagementView extends StatefulWidget {
   final String restaurantId;
@@ -34,7 +35,7 @@ class _RestaurantOwnerManagementViewState
         children: <Widget>[
           _buildDashboardItem(Icons.table_bar, 'Bàn đã đặt'),
           _buildDashboardItem(Icons.star, 'Đánh giá'),
-          _buildDashboardItem(Icons.help, 'Trung tâm Trợ giúp'),
+          _buildDashboardItem(Icons.pivot_table_chart_rounded, 'Quản lý bàn'),
           _buildDashboardItem(Icons.group, 'Quản lý nhân viên'),
         ],
       ),
@@ -43,16 +44,31 @@ class _RestaurantOwnerManagementViewState
 
   Widget _buildDashboardItem(IconData icon, String title) {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: InkWell(
         onTap: () {
-          // Handle navigation to other pages
+          if (title == 'Quản lý bàn') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TableManagementView(
+                  restaurantId: widget.restaurantId,
+                ),
+              ),
+            );
+            /*Navigator.pushNamed(
+              context,
+              TableManagementView.routeName,
+              arguments: {'restaurantId': widget.restaurantId},
+            );*/
+          }
+          // Handle other navigation cases if needed
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(icon, size: 50.0),
-            Text(title, style: TextStyle(fontSize: 16.0)),
+            Text(title, style: const TextStyle(fontSize: 16.0)),
           ],
         ),
       ),
