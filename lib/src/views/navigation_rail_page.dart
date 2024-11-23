@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:table_order/src/utils/location_helper.dart';
-import 'package:table_order/src/utils/text_handle.dart';
 import 'package:table_order/src/views/restaurant_view/restaurant_item_list_view.dart';
 import 'package:table_order/src/views/user_view/notify_page_view.dart';
 import 'package:table_order/src/views/user_view/profile_page_view.dart';
@@ -80,10 +79,9 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                 );
                 if (placemarks.isNotEmpty) {
                   Placemark place = placemarks.first;
-                  String address = '${place.street}, ${place.subLocality}, '
-                      '${place.locality}, ${place.country}';
                   setState(() {
-                    locationText = truncateWithEllipsis(15, address);
+                    locationText =
+                        '${place.street}, ${place.administrativeArea}';
                   });
                 }
               }
