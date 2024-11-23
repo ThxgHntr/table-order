@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -55,17 +56,19 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
     'Sunday': TextEditingController(),
   };
   final isOpened = {
-    'Monday': true,
-    'Tuesday': true,
-    'Wednesday': true,
-    'Thursday': true,
-    'Friday': true,
-    'Saturday': true,
-    'Sunday': true,
+    'Monday': false,
+    'Tuesday': false,
+    'Wednesday': false,
+    'Thursday': false,
+    'Friday': false,
+    'Saturday': false,
+    'Sunday': false,
   };
   final restaurantDescription = TextEditingController();
   final selectedKeywords = <String>[];
   final List<File> selectedImages = [];
+  final minPriceController = TextEditingController();
+  final maxPriceController = TextEditingController();
 
   final FirebaseRestaurantsServices _firebaseAuthServices = FirebaseRestaurantsServices();  // Initialize Firebase service
 
@@ -210,6 +213,8 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
           RestaurantDetailsForm(
             openTimeControllers: openTimeControllers,
             closeTimeControllers: closeTimeControllers,
+            minPriceController: minPriceController,
+            maxPriceController: maxPriceController,
             isOpened: isOpened,
             restaurantDescription: restaurantDescription,
             selectedKeywords: selectedKeywords,
@@ -270,6 +275,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       type: '0', // 0: Chờ duyệt, 1: Đã duyệt, 2: Từ chối
       createdAt: DateTime.now().millisecondsSinceEpoch,
       updatedAt: DateTime.now().millisecondsSinceEpoch,
+      priceRange: '${minPriceController.text}-${maxPriceController.text}', // Combine min and max price
     );
 
     final result = await _firebaseAuthServices.saveRestaurantInfo(restaurantInfo);
