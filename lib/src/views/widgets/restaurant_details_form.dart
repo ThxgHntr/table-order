@@ -7,6 +7,8 @@ import 'list_map.dart';
 class RestaurantDetailsForm extends StatefulWidget {
   final Map<String, TextEditingController> openTimeControllers;
   final Map<String, TextEditingController> closeTimeControllers;
+  final TextEditingController minPriceController;
+  final TextEditingController maxPriceController;
   final TextEditingController restaurantDescription;
   final Map<String, bool> isOpened;
   final List<String> selectedKeywords;
@@ -17,6 +19,8 @@ class RestaurantDetailsForm extends StatefulWidget {
     super.key,
     required this.openTimeControllers,
     required this.closeTimeControllers,
+    required this.minPriceController,
+    required this.maxPriceController,
     required this.restaurantDescription,
     required this.isOpened,
     required this.selectedKeywords,
@@ -138,6 +142,34 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                 labelText: 'Mô tả quán ăn',
                 hintText: 'Nhập mô tả quán ăn',
               ),
+            ),
+            //giá ca bao gom 1 hang co min price - max price
+            const SizedBox(height: 10),
+            const Text('Giá cả'),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: widget.minPriceController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Giá thấp nhất',
+                      hintText: 'Nhập giá thấp nhất',
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextFormField(
+                    controller: widget.maxPriceController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Giá cao nhất',
+                      hintText: 'Nhập giá cao nhất',
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             const Text('Chọn nhiều ảnh'),
