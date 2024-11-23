@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 class RestaurantRepresentativeFormContent extends StatefulWidget {
   const RestaurantRepresentativeFormContent(
       {super.key,
-      required this.restaurantOwnerName,
       required this.restaurantPhone,
       required this.restaurantEmail});
 
-  final TextEditingController restaurantOwnerName;
   final TextEditingController restaurantPhone;
   final TextEditingController restaurantEmail;
 
@@ -30,19 +28,6 @@ class RestaurantRepresentativeFormContentState
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextFormField(
-              controller: widget.restaurantOwnerName,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Làm ơn nhập tên chủ quán';
-                }
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: 'Tên chủ quán',
-                hintText: 'Nhập tên chủ quán',
-              ),
-            ),
             _gap(),
             TextFormField(
               controller: widget.restaurantPhone,

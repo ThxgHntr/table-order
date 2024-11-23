@@ -5,8 +5,8 @@ import '../../utils/toast_utils.dart';
 import 'list_map.dart';
 
 class RestaurantDetailsForm extends StatefulWidget {
-  final Map<String, TextEditingController> openTimeControllers;
-  final Map<String, TextEditingController> closeTimeControllers;
+  final TextEditingController openTimeController;
+  final TextEditingController closeTimeController;
   final TextEditingController minPriceController;
   final TextEditingController maxPriceController;
   final TextEditingController restaurantDescription;
@@ -17,8 +17,8 @@ class RestaurantDetailsForm extends StatefulWidget {
 
   const RestaurantDetailsForm({
     super.key,
-    required this.openTimeControllers,
-    required this.closeTimeControllers,
+    required this.openTimeController,
+    required this.closeTimeController,
     required this.minPriceController,
     required this.maxPriceController,
     required this.restaurantDescription,
@@ -60,7 +60,8 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
     }
   }
 
-  Future<void> _selectTime(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectTime(
+      BuildContext context, TextEditingController controller) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -91,44 +92,42 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                     onChanged: (value) {
                       setState(() {
                         widget.isOpened[day] = value ?? false;
-                        if (!widget.isOpened[day]!) {
-                          widget.openTimeControllers[day]?.clear();
-                          widget.closeTimeControllers[day]?.clear();
-                        }
                       });
                     },
                   ),
-                  if (widget.isOpened[day] == true)
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: widget.openTimeControllers[day] ??= TextEditingController(),
-                            readOnly: true,
-                            onTap: () => _selectTime(context, widget.openTimeControllers[day]!),
-                            decoration: const InputDecoration(
-                              labelText: 'Thời gian mở cửa',
-                              hintText: 'Chọn thời gian mở cửa',
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextFormField(
-                            controller: widget.closeTimeControllers[day] ??= TextEditingController(),
-                            readOnly: true,
-                            onTap: () => _selectTime(context, widget.closeTimeControllers[day]!),
-                            decoration: const InputDecoration(
-                              labelText: 'Thời gian đóng cửa',
-                              hintText: 'Chọn thời gian đóng cửa',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                 ],
               );
             }),
+            //giá ca bao gom 1 hang co min price - max price
+            const SizedBox(height: 10),
+            const Text('Thời gian hoạt động'),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: widget.openTimeController,
+                    readOnly: true,
+                    onTap: () =>
+                        _selectTime(context, widget.openTimeController),
+                    decoration: const InputDecoration(
+                      labelText: 'Mở cửa vào lúc',
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextFormField(
+                    controller: widget.closeTimeController,
+                    readOnly: true,
+                    onTap: () =>
+                        _selectTime(context, widget.closeTimeController),
+                    decoration: const InputDecoration(
+                      labelText: 'Đóng cửa vào lúc',
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 10),
             TextFormField(
               controller: widget.restaurantDescription,
@@ -172,7 +171,6 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
               ],
             ),
             const SizedBox(height: 10),
-            const Text('Chọn nhiều ảnh'),
             ElevatedButton(
               onPressed: _pickImagesFromGallery,
               child: const Text('Chọn ảnh từ thư viện'),
@@ -180,34 +178,35 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
             const SizedBox(height: 10),
             _selectedImages.isNotEmpty
                 ? Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: _selectedImages.map((image) {
-                return Stack(
-                  children: [
-                    Image.file(
-                      image,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: IconButton(
-                        icon: const Icon(Icons.remove_circle, color: Colors.red),
-                        onPressed: () {
-                          setState(() {
-                            _selectedImages.remove(image);
-                          });
-                          widget.onImagesSelected(_selectedImages);
-                        },
-                      ),
-                    ),
-                  ],
-                );
-              }).toList(),
-            )
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: _selectedImages.map((image) {
+                      return Stack(
+                        children: [
+                          Image.file(
+                            image,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: IconButton(
+                              icon: const Icon(Icons.remove_circle,
+                                  color: Colors.red),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedImages.remove(image);
+                                });
+                                widget.onImagesSelected(_selectedImages);
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  )
                 : const Text('Chưa chọn ảnh nào'),
             const SizedBox(height: 10),
             TextFormField(
@@ -219,7 +218,8 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
               onChanged: (input) {
                 setState(() {
                   filteredKeywords = availableKeywords
-                      .where((keyword) => keyword.toLowerCase().contains(input.toLowerCase()))
+                      .where((keyword) =>
+                          keyword.toLowerCase().contains(input.toLowerCase()))
                       .toList();
                 });
               },

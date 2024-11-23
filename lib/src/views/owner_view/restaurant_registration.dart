@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,9 @@ import 'package:table_order/src/utils/toast_utils.dart';
 import 'package:table_order/src/views/widgets/basic_restaurant_information_form_content.dart';
 import 'package:table_order/src/views/widgets/restaurant_details_form.dart';
 import 'package:table_order/src/views/widgets/restaurant_representative_form_content.dart';
-import '../../model/restaurant.dart';
+import '../../model/restaurant_model.dart';
 import '../../services/firebase_restaurants_services.dart';
+import '../../utils/location_helper.dart'; // Import the location helper
 
 class RestaurantRegistration extends StatefulWidget {
   const RestaurantRegistration({super.key});
@@ -31,29 +33,12 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
   final restaurantStreet = TextEditingController();
 
   // Controllers for representative info
-  final restaurantOwnerName = TextEditingController();
   final restaurantPhone = TextEditingController();
   final restaurantEmail = TextEditingController();
 
   // Controllers for restaurant details
-  final openTimeControllers = {
-    'Monday': TextEditingController(),
-    'Tuesday': TextEditingController(),
-    'Wednesday': TextEditingController(),
-    'Thursday': TextEditingController(),
-    'Friday': TextEditingController(),
-    'Saturday': TextEditingController(),
-    'Sunday': TextEditingController(),
-  };
-  final closeTimeControllers = {
-    'Monday': TextEditingController(),
-    'Tuesday': TextEditingController(),
-    'Wednesday': TextEditingController(),
-    'Thursday': TextEditingController(),
-    'Friday': TextEditingController(),
-    'Saturday': TextEditingController(),
-    'Sunday': TextEditingController(),
-  };
+  final openTimeController = TextEditingController();
+  final closeTimeController = TextEditingController();
   final isOpened = {
     'Monday': false,
     'Tuesday': false,
@@ -64,13 +49,10 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
     'Sunday': false,
   };
   final restaurantDescription = TextEditingController();
-  final selectedKeywords = <String>[];
+  final selectedKeywords = List<String>.empty(growable: true);
   final List<File> selectedImages = [];
   final minPriceController = TextEditingController();
   final maxPriceController = TextEditingController();
-
-  final FirebaseRestaurantsServices _firebaseAuthServices =
-      FirebaseRestaurantsServices(); // Initialize Firebase service
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +184,6 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
           content: Column(
             children: <Widget>[
               RestaurantRepresentativeFormContent(
-                  restaurantOwnerName: restaurantOwnerName,
                   restaurantPhone: restaurantPhone,
                   restaurantEmail: restaurantEmail),
             ],
@@ -215,8 +196,8 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
           content: Column(
             children: <Widget>[
               RestaurantDetailsForm(
-                openTimeControllers: openTimeControllers,
-                closeTimeControllers: closeTimeControllers,
+                openTimeController: openTimeController,
+                closeTimeController: closeTimeController,
                 minPriceController: minPriceController,
                 maxPriceController: maxPriceController,
                 isOpened: isOpened,
@@ -240,17 +221,16 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
 
   Future<void> saveRestaurantInfoToDatabase() async {
     final selectedDays = <String>[];
-    final openCloseTimes = <String, Map<String, String>>{};
+    final openCloseTimes = <String, String>{};
 
     isOpened.forEach((day, isSelected) {
       if (isSelected) {
         selectedDays.add(day);
-        openCloseTimes[day] = {
-          'open': openTimeControllers[day]?.text ?? '',
-          'close': closeTimeControllers[day]?.text ?? '',
-        };
       }
     });
+
+    openCloseTimes['open'] = openTimeController.text;
+    openCloseTimes['close'] = closeTimeController.text;
 
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -258,36 +238,43 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       return;
     }
 
-    final ownerId = user.uid;
     final restaurantId =
-        ownerId + DateTime.now().millisecondsSinceEpoch.toString();
+        user.uid + DateTime.now().millisecondsSinceEpoch.toString();
 
-    final restaurantInfo = Restaurant(
+    final ownerId = user.uid;
+
+    final address =
+        '${restaurantStreet.text}, ${restaurantWard.text}, ${restaurantDistrict.text}, ${restaurantCity.text}';
+    final location = await getGeopointFromAddress(address);
+
+    final restaurantInfo = RestaurantModel(
       restaurantId: restaurantId,
-      restaurantName: restaurantName.text,
-      restaurantCity: restaurantCity.text,
-      restaurantDistrict: restaurantDistrict.text,
-      restaurantWard: restaurantWard.text,
-      restaurantStreet: restaurantStreet.text,
-      restaurantOwnerName: restaurantOwnerName.text,
-      restaurantPhone: restaurantPhone.text,
-      restaurantEmail: restaurantEmail.text,
-      restaurantDescription: restaurantDescription.text,
-      selectedKeywords: selectedKeywords,
-      selectedImage: selectedImages.isNotEmpty
+      name: restaurantName.text,
+      phone: restaurantPhone.text,
+      description: restaurantDescription.text,
+      dishesStyle: selectedKeywords,
+      priceRange: PriceRange(
+        lowest: int.parse(minPriceController.text.trim()),
+        highest: int.parse(maxPriceController.text.trim()),
+      ),
+      openDates: selectedDays,
+      openTime: openCloseTimes,
+      rating: 0.0,
+      photos: selectedImages.isNotEmpty
           ? selectedImages.map((image) => image.path).toList()
           : [],
-      openCloseTimes: openCloseTimes,
       ownerId: ownerId,
-      type: '0', // 0: Chờ duyệt, 1: Đã duyệt, 2: Từ chối
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      updatedAt: DateTime.now().millisecondsSinceEpoch,
-      priceRange:
-          '${minPriceController.text}-${maxPriceController.text}', // Combine min and max price
+      location: location,
+      state: 0, // 0: Chờ duyệt, 1: Đã duyệt, 2: Từ chối
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+      floors: [],
+      employees: [],
+      reviews: [],
     );
 
     final result =
-        await _firebaseAuthServices.saveRestaurantInfo(restaurantInfo);
+        await FirebaseRestaurantsServices().saveRestaurantInfo(restaurantInfo);
 
     if (result) {
       setState(() {
