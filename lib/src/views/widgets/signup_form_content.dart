@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../auth/firebase_auth_services.dart';
+import '../../services/firebase_auth_services.dart';
 import '../../utils/toast_utils.dart';
 
 class SignupFormContent extends StatefulWidget {

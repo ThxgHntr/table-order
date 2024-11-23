@@ -1,25 +1,41 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart' as foundation;
 
 import 'firebase_options.dart';
 import 'src/app.dart';
 import 'src/settings/settings_controller.dart';
 import 'src/settings/settings_service.dart';
 
-import 'package:firebase_core/firebase_core.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    // Kiểm tra nếu đang chạy trên mobile (Android/iOS) hoặc web
+    if (foundation.kIsWeb) {
+      // Khởi tạo Firebase cho web
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } else {
+      // Khởi tạo Firebase cho mobile
+      await Firebase.initializeApp(
+        name: 'SecondaryApp',
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
 
     final settingsController = SettingsController(SettingsService());
     await settingsController.loadSettings();
 
     runApp(MyApp(settingsController: settingsController));
   } catch (e, stackTrace) {
-    print('Error during Firebase initialization: $e');
-    print(stackTrace);
+    if (kDebugMode) {
+      print('Error during Firebase initialization: $e');
+    }
+    if (kDebugMode) {
+      print(stackTrace);
+    }
   }
 }

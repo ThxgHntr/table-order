@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../../auth/firebase_auth_services.dart';
+import '../../services/firebase_auth_services.dart';
 import '../../utils/toast_utils.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -218,9 +218,20 @@ class LoginFormContentState extends State<LoginFormContent> {
         }
       }
     } catch (e) {
+      // In lỗi chi tiết ra console để debug
       showToast("Đăng nhập thất bại");
       if (kDebugMode) {
-        print(e);
+        // In ra lỗi cụ thể để debug dễ dàng
+        print("Error: ${e.toString()}");
+
+        // Kiểm tra lỗi chi tiết từ FirebaseAuth
+        if (e is FirebaseAuthException) {
+          // Bạn có thể in ra mã lỗi và mô tả chi tiết của FirebaseAuthException
+          print("FirebaseAuthError: ${e.code} - ${e.message}");
+        } else {
+          // Xử lý các lỗi khác (nếu có)
+          print("Non-Firebase error: $e");
+        }
       }
     }
   }

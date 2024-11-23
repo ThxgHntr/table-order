@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:table_order/src/utils/toast_utils.dart';
 
 class FirebaseAuthServices {
@@ -55,7 +56,9 @@ class FirebaseAuthServices {
           "profilePhoto": ""
         };
 
-        print("Attempting to save user data: $userMap");
+        if (kDebugMode) {
+          print("Attempting to save user data: $userMap");
+        }
         await _dbRef.child("users").child(uid).set(userMap);
         showToast("User data saved successfully.");
       }

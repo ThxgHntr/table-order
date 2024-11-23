@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:table_order/src/views/owner_view/restaurant_owner_tab1_view.dart';
+import 'package:table_order/src/views/owner_view/restaurant_owner_tab2_view.dart';
 
 class RestaurantOwnerPageView extends StatefulWidget  {
 
@@ -63,8 +65,8 @@ class _RestaurantOwnerPageViewState extends State<RestaurantOwnerPageView> {
               Expanded(
                 child: TabBarView(
                   children: [
-                    Center(child: Text('Content for Tab 1')),
-                    Center(child: Text('Content for Tab 2')),
+                    RestaurantOwnerTab1View(),
+                    RestaurantOwnerTab2View(),
                   ],
                 ),
               ),
