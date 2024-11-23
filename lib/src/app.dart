@@ -83,10 +83,6 @@ class MyApp extends StatelessWidget {
                   case SettingsView.routeName:
                     return SettingsView(controller: settingsController);
                   //restaurant
-                  case RestaurantReviewView.routeName:
-                    return const RestaurantReviewView();
-                  case RestaurantItemDetailsView.routeName:
-                    return const RestaurantItemDetailsView();
                   case RestaurantOwnerPageView.routeName:
                     return const RestaurantOwnerPageView();
                   case SearchRestaurant.routeName:
