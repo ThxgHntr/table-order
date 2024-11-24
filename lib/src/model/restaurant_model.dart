@@ -65,8 +65,8 @@ class RestaurantModel {
       ownerId: data['ownerId'] ?? '',
       location: data['location'] ?? GeoPoint(0, 0),
       state: data['state'] ?? 0,
-      createdAt: data['createdAt'] ?? 0,
-      updatedAt: data['updatedAt'] ?? 0,
+      createdAt: data['createdAt'] ?? Timestamp.now(),
+      updatedAt: data['updatedAt'] ?? Timestamp.now(),
       floors: data['floors'] is Iterable
           ? List<FloorModel>.from(data['floors'])
           : [],
@@ -120,4 +120,3 @@ class PriceRange {
     };
   }
 }
-
