@@ -267,7 +267,10 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                 itemBuilder: (context, index) {
                   final keyword = filteredKeywords[index];
                   return ListTile(
-                    title: Text(keyword),
+                    title: Text(
+                      keyword,
+                      style: TextStyle(color: Colors.grey),
+                    ),
                     onTap: () {
                       setState(() {
                         if (!widget.selectedKeywords.contains(keyword)) {

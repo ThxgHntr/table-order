@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:table_order/src/views/auth_view/login_page_view.dart';
-import 'package:table_order/src/views/NavigationRailPage.dart';
+import 'package:table_order/src/views/navigation_rail_page.dart';
 import 'package:table_order/src/views/owner_view/restaurant_owner_page_view.dart';
 import 'package:table_order/src/views/owner_view/restaurant_registration.dart';
 import 'package:table_order/src/views/owner_view/search_restaurant.dart';

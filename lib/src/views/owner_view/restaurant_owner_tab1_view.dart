@@ -70,29 +70,41 @@ class _RestaurantOwnerTab1ViewState extends State<RestaurantOwnerTab1View> {
 
           return ListView.builder(
             itemCount: restaurants.length,
-            itemBuilder: (context, index) {
+            itemBuilder: (BuildContext context, int index) {
               final restaurantData = restaurants[index];
-              final restaurantId = restaurantData.id;
-              final data = restaurantData.data()
-                  as DocumentSnapshot<Map<String, dynamic>>;
-
-              final restaurant = RestaurantModel.fromFirestore(data);
+              final restaurant = RestaurantModel.fromFirestore(
+                  restaurantData as DocumentSnapshot<Map<String, dynamic>>);
 
               final restaurantName =
                   restaurant.name.isNotEmpty ? restaurant.name : "Chưa có tên";
-              final restaurantAddress = getAddressFromGeopoint(GeoPoint(
-                  restaurant.location.latitude, restaurant.location.longitude));
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: ListTile(
                   onTap: () => navigateToManageRestaurantPage(
-                      restaurantId, restaurantName),
+                      restaurant.restaurantId, restaurantName),
                   title: Text(
                     restaurantName,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text(restaurantAddress as String),
+                  subtitle: FutureBuilder<String>(
+                    future: getAddressFromGeopoint(restaurant.location),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        final address = snapshot.data ?? 'Unknown address';
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(address), // Restaurant address
+                          ],
+                        );
+                      }
+                    },
+                  ),
                   trailing: const Text(
                     "Thay đổi >",
                     style: TextStyle(color: Colors.blue),

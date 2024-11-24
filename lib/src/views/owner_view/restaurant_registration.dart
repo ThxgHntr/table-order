@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:table_order/src/utils/file_name_handler.dart';
 import 'package:table_order/src/utils/toast_utils.dart';
 import 'package:table_order/src/views/widgets/basic_restaurant_information_form_content.dart';
 import 'package:table_order/src/views/widgets/restaurant_details_form.dart';
@@ -264,8 +265,11 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       openDates: selectedDays,
       openTime: openCloseTimes,
       rating: 0.0,
+      photosToSave: selectedImages,
       photos: selectedImages.isNotEmpty
-          ? selectedImages.map((image) => image.path).toList()
+          ? selectedImages
+              .map((image) => getFileNameToSave(restaurantId, image))
+              .toList()
           : [],
       ownerId: ownerId,
       location: location,

@@ -234,7 +234,7 @@ class _TableManagementViewState extends State<TableManagementView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quản lý bàn'),
+        title: Text('Quản lý tầng'),
       ),
       body: ListView.builder(
         itemCount: floors.length,

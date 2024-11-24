@@ -33,9 +33,10 @@ class _RestaurantOwnerManagementViewState
       body: GridView.count(
         crossAxisCount: 2,
         children: <Widget>[
-          _buildDashboardItem(Icons.table_bar, 'Bàn đã đặt'),
+          _buildDashboardItem(Icons.table_bar, 'Bàn đã được đặt'),
           _buildDashboardItem(Icons.star, 'Đánh giá'),
-          _buildDashboardItem(Icons.pivot_table_chart_rounded, 'Quản lý bàn'),
+          _buildDashboardItem(
+              Icons.pivot_table_chart_rounded, 'Quản lý tầng'),
           _buildDashboardItem(Icons.group, 'Quản lý nhân viên'),
         ],
       ),

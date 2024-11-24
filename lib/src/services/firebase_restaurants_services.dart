@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:table_order/src/utils/file_name_handler.dart';
 import '../model/restaurant_model.dart';
 
 class FirebaseRestaurantsServices {
@@ -12,10 +13,15 @@ class FirebaseRestaurantsServices {
   Future<String?> uploadImagetoFirestoreStorage(
       String restaurantId, File image) async {
     try {
-      final fileName =
-          '${restaurantId}_${DateTime.now().millisecondsSinceEpoch}_${image.path.split('/').last}';
-      final ref =
-          _storage.ref().child('restaurant_pictures/$restaurantId/$fileName');
+      if (!image.existsSync()) {
+        if (kDebugMode) {
+          print('File does not exist: ${image.path}');
+        }
+        return null;
+      }
+
+      final fileName = getFileNameToSave(restaurantId, image);
+      final ref = _storage.ref().child(fileName);
       final uploadTask = ref.putFile(image);
       final snapshot = await uploadTask.whenComplete(() => {});
       final downloadUrl = await snapshot.ref.getDownloadURL();
@@ -66,14 +72,16 @@ class FirebaseRestaurantsServices {
       await restaurantRef.set(restaurant.toFirestore());
 
       final imageUrls = await uploadImages(restaurant.restaurantId,
-          restaurant.photos.map((path) => File(path)).toList());
+          restaurant.photosToSave.map((file) => file).toList());
       if (imageUrls.isEmpty) {
         if (kDebugMode) {
           print('No images uploaded. Cannot save restaurant info.');
         }
         return false; // Return early if image upload fails
       }
-      restaurant.photos = imageUrls;
+
+      // Update the restaurant document with the image URLs
+      await restaurantRef.update({'photos': imageUrls});
 
       if (kDebugMode) {
         print('Restaurant info saved successfully.');
