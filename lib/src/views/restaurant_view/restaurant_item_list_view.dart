@@ -13,10 +13,10 @@ class RestaurantItemListView extends StatefulWidget {
   static const routeName = '/';
 
   @override
-  State<StatefulWidget> createState() => _RestaurantItemListViewState();
+  State<StatefulWidget> createState() => RestaurantItemListViewState();
 }
 
-class _RestaurantItemListViewState extends State<RestaurantItemListView> {
+class RestaurantItemListViewState extends State<RestaurantItemListView> {
   Position? currentPosition;
   int _nearbyLimit = 6;
   int _allLimit = 6;
@@ -24,6 +24,13 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
   // Lấy vị trí hiện tại của người dùng
   Future<void> getUserLocation() async {
     currentPosition = await getCurrentLocation();
+  }
+
+  Future<void> reloadData() async {
+    setState(() {
+      _nearbyLimit = 6;
+      _allLimit = 6;
+    });
   }
 
   @override
@@ -57,9 +64,11 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
           final restaurants = snapshot.data!.docs;
 
           return FutureBuilder(
-            future: getUserLocation(), // Lấy vị trí người dùng trước khi tính khoảng cách
+            future:
+                getUserLocation(), // Lấy vị trí người dùng trước khi tính khoảng cách
             builder: (context, userLocationSnapshot) {
-              if (userLocationSnapshot.connectionState == ConnectionState.waiting) {
+              if (userLocationSnapshot.connectionState ==
+                  ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
 
@@ -78,7 +87,8 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
                         currentPosition!.longitude,
                         restaurantLocation.latitude,
                         restaurantLocation.longitude,
-                      ) / 1000; // Convert to kilometers
+                      ) /
+                      1000; // Convert to kilometers
                 }
 
                 restaurantList.add({
@@ -95,13 +105,15 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
               }
 
               // Sort all restaurants by distance
-              restaurantList.sort((a, b) => a['distance'].compareTo(b['distance']));
+              restaurantList
+                  .sort((a, b) => a['distance'].compareTo(b['distance']));
 
               return SingleChildScrollView(
                 child: Column(
                   children: [
                     if (nearbyRestaurants.isEmpty)
-                      const Center(child: Text("Không có nhà hàng nào gần bạn.")),
+                      const Center(
+                          child: Text("Không có nhà hàng nào gần bạn.")),
                     if (nearbyRestaurants.isNotEmpty)
                       Column(
                         children: [
@@ -109,7 +121,8 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
                             padding: const EdgeInsets.all(10),
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               crossAxisSpacing: 10,
                               mainAxisSpacing: 10,
@@ -120,9 +133,12 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
                                 : nearbyRestaurants.length,
                             itemBuilder: (context, index) {
                               final restaurantData = nearbyRestaurants[index];
-                              final restaurant = restaurantData['restaurant'] as RestaurantModel;
-                              final distance = restaurantData['distance'] as double;
-                              final imageUrl = Future.value(restaurant.photos.first);
+                              final restaurant = restaurantData['restaurant']
+                                  as RestaurantModel;
+                              final distance =
+                                  restaurantData['distance'] as double;
+                              final imageUrl =
+                                  Future.value(restaurant.photos.first);
 
                               return Card(
                                 shape: RoundedRectangleBorder(
@@ -134,45 +150,60 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => RestaurantItemDetailsView(
+                                        builder: (context) =>
+                                            RestaurantItemDetailsView(
                                           restaurantId: restaurant.restaurantId,
                                         ),
                                       ),
                                     );
                                   },
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         child: FutureBuilder<String>(
                                           future: imageUrl,
                                           builder: (context, snapshot) {
-                                            if (snapshot.connectionState == ConnectionState.waiting) {
-                                              return const Center(child: CircularProgressIndicator());
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const Center(
+                                                  child:
+                                                      CircularProgressIndicator());
                                             }
 
-                                            if (snapshot.hasError || !snapshot.hasData) {
-                                              return const Icon(Icons.broken_image);
+                                            if (snapshot.hasError ||
+                                                !snapshot.hasData) {
+                                              return const Icon(
+                                                  Icons.broken_image);
                                             }
 
                                             final image = snapshot.data!;
                                             return ClipRRect(
-                                              borderRadius: const BorderRadius.vertical(
-                                                  top: Radius.circular(8.0)),
+                                              borderRadius:
+                                                  const BorderRadius.vertical(
+                                                      top:
+                                                          Radius.circular(8.0)),
                                               child: image.startsWith('http')
                                                   ? Image.network(
                                                       image,
                                                       fit: BoxFit.cover,
                                                       width: double.infinity,
-                                                      errorBuilder: (context, error, stackTrace) =>
-                                                          const Icon(Icons.broken_image),
+                                                      errorBuilder: (context,
+                                                              error,
+                                                              stackTrace) =>
+                                                          const Icon(Icons
+                                                              .broken_image),
                                                     )
                                                   : Image.file(
                                                       File(image),
                                                       fit: BoxFit.cover,
                                                       width: double.infinity,
-                                                      errorBuilder: (context, error, stackTrace) =>
-                                                          const Icon(Icons.broken_image),
+                                                      errorBuilder: (context,
+                                                              error,
+                                                              stackTrace) =>
+                                                          const Icon(Icons
+                                                              .broken_image),
                                                     ),
                                             );
                                           },
@@ -191,13 +222,16 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
                                         ),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0, vertical: 4.0),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Row(
                                               children: [
-                                                const Icon(Icons.location_on, size: 16),
+                                                const Icon(Icons.location_on,
+                                                    size: 16),
                                                 SizedBox(width: 4),
                                                 Text((distance < 1
                                                     ? '${(distance * 1000).toStringAsFixed(0)}m'
@@ -206,8 +240,11 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
                                             ),
                                             Row(
                                               children: [
-                                                const Icon(Icons.star, size: 16, color: Colors.yellow),
-                                                Text(restaurant.rating.toString()),
+                                                const Icon(Icons.star,
+                                                    size: 16,
+                                                    color: Colors.yellow),
+                                                Text(restaurant.rating
+                                                    .toString()),
                                               ],
                                             ),
                                           ],
@@ -233,9 +270,10 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
                     const SizedBox(height: 20),
                     Text(
                       'Tất cả nhà hàng',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                     GridView.builder(
                       shrinkWrap: true,
@@ -252,7 +290,8 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
                           : restaurantList.length,
                       itemBuilder: (context, index) {
                         final restaurantData = restaurantList[index];
-                        final restaurant = restaurantData['restaurant'] as RestaurantModel;
+                        final restaurant =
+                            restaurantData['restaurant'] as RestaurantModel;
                         final distance = restaurantData['distance'] as double;
                         final imageUrl = Future.value(restaurant.photos.first);
 
@@ -266,7 +305,8 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => RestaurantItemDetailsView(
+                                  builder: (context) =>
+                                      RestaurantItemDetailsView(
                                     restaurantId: restaurant.restaurantId,
                                   ),
                                 ),
@@ -279,32 +319,40 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
                                   child: FutureBuilder<String>(
                                     future: imageUrl,
                                     builder: (context, snapshot) {
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        return const Center(child: CircularProgressIndicator());
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Center(
+                                            child: CircularProgressIndicator());
                                       }
 
-                                      if (snapshot.hasError || !snapshot.hasData) {
+                                      if (snapshot.hasError ||
+                                          !snapshot.hasData) {
                                         return const Icon(Icons.broken_image);
                                       }
 
                                       final image = snapshot.data!;
                                       return ClipRRect(
-                                        borderRadius: const BorderRadius.vertical(
-                                            top: Radius.circular(8.0)),
+                                        borderRadius:
+                                            const BorderRadius.vertical(
+                                                top: Radius.circular(8.0)),
                                         child: image.startsWith('http')
                                             ? Image.network(
                                                 image,
                                                 fit: BoxFit.cover,
                                                 width: double.infinity,
-                                                errorBuilder: (context, error, stackTrace) =>
-                                                    const Icon(Icons.broken_image),
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    const Icon(
+                                                        Icons.broken_image),
                                               )
                                             : Image.file(
                                                 File(image),
                                                 fit: BoxFit.cover,
                                                 width: double.infinity,
-                                                errorBuilder: (context, error, stackTrace) =>
-                                                    const Icon(Icons.broken_image),
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    const Icon(
+                                                        Icons.broken_image),
                                               ),
                                       );
                                     },
@@ -323,13 +371,16 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0, vertical: 4.0),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Row(
                                         children: [
-                                          const Icon(Icons.location_on, size: 16),
+                                          const Icon(Icons.location_on,
+                                              size: 16),
                                           SizedBox(width: 4),
                                           Text((distance < 1
                                               ? '${(distance * 1000).toStringAsFixed(0)}m'
@@ -338,7 +389,8 @@ class _RestaurantItemListViewState extends State<RestaurantItemListView> {
                                       ),
                                       Row(
                                         children: [
-                                          const Icon(Icons.star, size: 16, color: Colors.yellow),
+                                          const Icon(Icons.star,
+                                              size: 16, color: Colors.yellow),
                                           Text(restaurant.rating.toString()),
                                         ],
                                       ),
