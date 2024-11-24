@@ -17,7 +17,7 @@ class RestaurantItemListView extends StatefulWidget {
 }
 
 class RestaurantItemListViewState extends State<RestaurantItemListView> {
-  GeoPoint? currentLocation;
+  GeoPoint? currentLocationGeoPoint;
   final int _pageSize = 6;
   DocumentSnapshot? _lastNearbyDocument;
   DocumentSnapshot? _lastAllDocument;
@@ -36,24 +36,30 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
   }
 
   Future<void> _initialize() async {
-    await _getCurrentLocation();
-    _loadNearbyRestaurants();
-    _loadAllRestaurants();
+    await _getCurrentGeopoint();
+    _loadRestaurants(isNearby: true);
+    _loadRestaurants(isNearby: false);
   }
 
-  Future<void> _getCurrentLocation() async {
-    final location = await getGeopointFromCurrentLocation();
+  Future<void> _getCurrentGeopoint() async {
+    final geopoint = await getGeopointFromCurrentLocation();
     setState(() {
-      currentLocation = location;
+      currentLocationGeoPoint = geopoint;
       _isLoadingLocation = false;
     });
   }
 
-  Future<void> _loadNearbyRestaurants() async {
-    if (_isLoadingMoreNearby || !_hasMoreNearbyData || _isLoadingLocation)
-      return;
+  Future<void> _loadRestaurants({required bool isNearby}) async {
+    if ((isNearby && (_isLoadingMoreNearby || !_hasMoreNearbyData)) ||
+        (!isNearby && (_isLoadingMoreAll || !_hasMoreAllData)) ||
+        _isLoadingLocation) return;
+
     setState(() {
-      _isLoadingMoreNearby = true;
+      if (isNearby) {
+        _isLoadingMoreNearby = true;
+      } else {
+        _isLoadingMoreAll = true;
+      }
     });
 
     Query query = FirebaseFirestore.instance
@@ -61,14 +67,21 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
         .where('state', isEqualTo: 1)
         .limit(_pageSize);
 
-    if (_lastNearbyDocument != null) {
+    if (isNearby && _lastNearbyDocument != null) {
       query = query.startAfterDocument(_lastNearbyDocument!);
+    } else if (!isNearby && _lastAllDocument != null) {
+      query = query.startAfterDocument(_lastAllDocument!);
     }
 
     final snapshot = await query.get();
     if (snapshot.docs.isNotEmpty) {
-      _lastNearbyDocument = snapshot.docs.last;
-      _hasMoreNearbyData = snapshot.docs.length == _pageSize;
+      if (isNearby) {
+        _lastNearbyDocument = snapshot.docs.last;
+        _hasMoreNearbyData = snapshot.docs.length == _pageSize;
+      } else {
+        _lastAllDocument = snapshot.docs.last;
+        _hasMoreAllData = snapshot.docs.length == _pageSize;
+      }
 
       for (var restaurantData in snapshot.docs) {
         final restaurant = RestaurantModel.fromFirestore(
@@ -76,85 +89,49 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
         final restaurantLocation = restaurant.location;
         double distance = 0.0;
 
-        if (currentLocation != null) {
+        if (currentLocationGeoPoint != null) {
           distance = Geolocator.distanceBetween(
-                currentLocation!.latitude,
-                currentLocation!.longitude,
+                currentLocationGeoPoint!.latitude,
+                currentLocationGeoPoint!.longitude,
                 restaurantLocation.latitude,
                 restaurantLocation.longitude,
               ) /
               1000; // Convert to kilometers
         }
 
-        if (distance <= 50) {
+        if (isNearby && distance <= 50) {
           _nearbyRestaurants.add({
+            'restaurant': restaurant,
+            'distance': distance,
+          });
+        } else if (!isNearby) {
+          _restaurantList.add({
             'restaurant': restaurant,
             'distance': distance,
           });
         }
       }
 
-      // Sort nearby restaurants by distance
-      _nearbyRestaurants.sort((a, b) => a['distance'].compareTo(b['distance']));
-    } else {
-      _hasMoreNearbyData = false;
-    }
-
-    setState(() {
-      _isLoadingMoreNearby = false;
-    });
-  }
-
-  Future<void> _loadAllRestaurants() async {
-    if (_isLoadingMoreAll || !_hasMoreAllData || _isLoadingLocation) return;
-    setState(() {
-      _isLoadingMoreAll = true;
-    });
-
-    Query query = FirebaseFirestore.instance
-        .collection('restaurants')
-        .where('state', isEqualTo: 1)
-        .limit(_pageSize);
-
-    if (_lastAllDocument != null) {
-      query = query.startAfterDocument(_lastAllDocument!);
-    }
-
-    final snapshot = await query.get();
-    if (snapshot.docs.isNotEmpty) {
-      _lastAllDocument = snapshot.docs.last;
-      _hasMoreAllData = snapshot.docs.length == _pageSize;
-
-      for (var restaurantData in snapshot.docs) {
-        final restaurant = RestaurantModel.fromFirestore(
-            restaurantData as DocumentSnapshot<Map<String, dynamic>>);
-        final restaurantLocation = restaurant.location;
-        double distance = 0.0;
-
-        if (currentLocation != null) {
-          distance = Geolocator.distanceBetween(
-                currentLocation!.latitude,
-                currentLocation!.longitude,
-                restaurantLocation.latitude,
-                restaurantLocation.longitude,
-              ) /
-              1000; // Convert to kilometers
-        }
-
-        _restaurantList.add({
-          'restaurant': restaurant,
-          'distance': distance,
-        });
+      if (isNearby) {
+        _nearbyRestaurants
+            .sort((a, b) => a['distance'].compareTo(b['distance']));
+      } else {
+        _restaurantList.sort((a, b) => a['distance'].compareTo(b['distance']));
       }
-
-      // Sort all restaurants by distance
-      _restaurantList.sort((a, b) => a['distance'].compareTo(b['distance']));
     } else {
-      _hasMoreAllData = false;
+      if (isNearby) {
+        _hasMoreNearbyData = false;
+      } else {
+        _hasMoreAllData = false;
+      }
     }
 
     setState(() {
-      _isLoadingMoreAll = false;
+      if (isNearby) {
+        _isLoadingMoreNearby = false;
+      } else {
+        _isLoadingMoreAll = false;
+      }
     });
   }
 
@@ -214,7 +191,7 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                         ),
                         if (_hasMoreNearbyData)
                           TextButton(
-                            onPressed: _loadNearbyRestaurants,
+                            onPressed: () => _loadRestaurants(isNearby: true),
                             child: _isLoadingMoreNearby
                                 ? const CircularProgressIndicator()
                                 : const Text('Xem thêm'),
@@ -252,7 +229,7 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                   ),
                   if (_hasMoreAllData)
                     TextButton(
-                      onPressed: _loadAllRestaurants,
+                      onPressed: () => _loadRestaurants(isNearby: false),
                       child: _isLoadingMoreAll
                           ? const CircularProgressIndicator()
                           : const Text('Xem thêm'),
