@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReservationModel {
   final String reservationId;
-  final String restaurantID;
-  final String floorID;
-  final String tableID;
+  final String restaurantId;
+  final String floorId;
+  final String tableId;
   final Timestamp reservationDate;
   final Timestamp reservationTime;
   final String status;
@@ -13,9 +13,9 @@ class ReservationModel {
 
   ReservationModel({
     required this.reservationId,
-    required this.restaurantID,
-    required this.floorID,
-    required this.tableID,
+    required this.restaurantId,
+    required this.floorId,
+    required this.tableId,
     required this.reservationDate,
     required this.reservationTime,
     required this.status,
@@ -23,12 +23,14 @@ class ReservationModel {
     required this.createdAt,
   });
 
-  factory ReservationModel.fromFirestore(DocumentSnapshot data) {
+  factory ReservationModel.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    final data = snapshot.data() ?? {};
     return ReservationModel(
       reservationId: data['reservationId'] ?? '',
-      restaurantID: data['restaurantID'] ?? '',
-      floorID: data['floorID'] ?? '',
-      tableID: data['tableID'] ?? '',
+      restaurantId: data['restaurantID'] ?? '',
+      floorId: data['floorID'] ?? '',
+      tableId: data['tableID'] ?? '',
       reservationDate: data['reservationDate'] ?? Timestamp.now(),
       reservationTime: data['reservationTime'] ?? Timestamp.now(),
       status: data['status'] ?? 'Pending',
@@ -40,9 +42,9 @@ class ReservationModel {
   Map<String, dynamic> toFirestore() {
     return {
       'reservationId': reservationId,
-      'restaurantID': restaurantID,
-      'floorID': floorID,
-      'tableID': tableID,
+      'restaurantId': restaurantId,
+      'floorId': floorId,
+      'tableId': tableId,
       'reservationDate': reservationDate,
       'reservationTime': reservationTime,
       'status': status,

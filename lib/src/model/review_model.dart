@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReviewModel {
+  final String reviewId;
   final String userID;
   final String restaurantID;
   final int rating;
@@ -9,6 +10,7 @@ class ReviewModel {
   final Timestamp createdAt;
 
   ReviewModel({
+    this.reviewId = '',
     required this.userID,
     required this.restaurantID,
     required this.rating,
@@ -17,8 +19,11 @@ class ReviewModel {
     required this.createdAt,
   });
 
-  factory ReviewModel.fromFirestore(DocumentSnapshot data) {
+  factory ReviewModel.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    final data = snapshot.data() ?? {};
     return ReviewModel(
+      reviewId: snapshot.id,
       userID: data['userID'] ?? '',
       restaurantID: data['restaurantID'] ?? '',
       rating: data['rating'] ?? 0,

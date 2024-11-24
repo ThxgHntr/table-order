@@ -77,7 +77,8 @@ class FirebaseRestaurantsServices {
       }
 
       // Save the restaurant info to Firestore
-      final restaurantRef = _firestore.collection('restaurants').doc();
+      final restaurantRef =
+          _firestore.collection('restaurants').doc(restaurant.restaurantId);
       await restaurantRef.set(restaurant.toFirestore());
       restaurantRef.collection('floors').doc().set({});
       restaurantRef.collection('employees').doc().set({});

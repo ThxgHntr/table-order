@@ -50,7 +50,7 @@ class RestaurantModel {
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
     final data = snapshot.data() ?? {};
     return RestaurantModel(
-      restaurantId: data['restaurantId'] ?? '',
+      restaurantId: snapshot.id,
       name: data['name'] ?? '',
       phone: data['phone'] ?? '',
       description: data['description'] ?? '',
@@ -81,7 +81,6 @@ class RestaurantModel {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'restaurantId': restaurantId,
       'name': name,
       'phone': phone,
       'description': description,
