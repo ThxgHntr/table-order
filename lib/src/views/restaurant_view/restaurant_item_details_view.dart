@@ -1,153 +1,292 @@
+import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:table_order/src/views/restaurant_view/restaurant_review_view.dart';
+import 'package:table_order/src/model/restaurant_model.dart';
+import '../../utils/location_helper.dart';
 
 class RestaurantItemDetailsView extends StatefulWidget {
-  const RestaurantItemDetailsView({super.key});
+  final String restaurantId;
+
+  const RestaurantItemDetailsView({super.key, required this.restaurantId});
 
   static const routeName = '/sample_item';
 
   @override
-  State<RestaurantItemDetailsView> createState() => _RestaurantItemDetailsViewState();
+  State<RestaurantItemDetailsView> createState() =>
+      _RestaurantItemDetailsViewState();
 }
 
 class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
-  final int _current = 0;
+  late Future<RestaurantModel> restaurantData;
 
-  final List<String> imgList = [
-    'https://via.placeholder.com/150',
-    'https://via.placeholder.com/150',
-    'https://via.placeholder.com/150',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    restaurantData = _fetchRestaurantData();
+  }
+
+  Future<RestaurantModel> _fetchRestaurantData() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(widget.restaurantId)
+          .get();
+
+      if (snapshot.exists) {
+        return RestaurantModel.fromFirestore(snapshot);
+      } else {
+        throw Exception("Restaurant not found");
+      }
+    } catch (e) {
+      throw Exception("Error fetching restaurant data: $e");
+    }
+  }
+
+  String getTodayOpenCloseTimes(
+      List<String> openDates, Map<String, dynamic> openTime) {
+    final today = DateTime.now().weekday;
+    final days = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
+    final todayKey = days[today - 1];
+
+    if (openDates.contains(todayKey)) {
+      return '${openTime['open'] ?? 'N/A'} - ${openTime['close'] ?? 'N/A'}';
+    } else {
+      return 'Closed';
+    }
+  }
+
+  String getPriceRangeString(PriceRange priceRange) {
+    return '${priceRange.lowest} - ${priceRange.highest} VND';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tên nhà hàng ở đây'),
-        //border bottom
-        shape: const Border(
-          bottom: BorderSide(
-            color: Colors.deepOrange,
-            width: 1,
-          ),
-        ),
+        title: const Text('Thông tin nhà hàng'),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: <Widget>[
-            CarouselSlider(
-              items: imgList
-                  .map(
-                    (item) => Center(
-                  child: Image.network(
-                    item,
-                    fit: BoxFit.cover,
-                    width: 1000,
-                  ),
-                ),
-              )
-                  .toList(),
-              options: CarouselOptions(
-                height: 170,
-                aspectRatio: 16 / 9,
-                viewportFraction: 0.8,
-                initialPage: 0,
-                enableInfiniteScroll: true,
-                reverse: false,
-                autoPlay: true,
-                autoPlayInterval: Duration(seconds: 3),
-                autoPlayAnimationDuration: Duration(milliseconds: 800),
-                autoPlayCurve: Curves.fastOutSlowIn,
-                enlargeCenterPage: true,
-                scrollDirection: Axis.horizontal,
+      body: FutureBuilder<RestaurantModel>(
+        future: restaurantData,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            return _buildRestaurantDetails(snapshot.data!);
+          } else {
+            return const Center(child: Text('No data available'));
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildRestaurantDetails(RestaurantModel restaurantData) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const SizedBox(height: 10),
+          _buildImageCarousel(restaurantData),
+          const SizedBox(height: 15),
+          _buildHeader(restaurantData),
+          const SizedBox(height: 15),
+          _buildDetailsCard(restaurantData),
+          const SizedBox(height: 10),
+          _buildReviewsSection(restaurantData),
+          const SizedBox(height: 30),
+          ElevatedButton(
+            onPressed: () {
+              // Add reservation functionality
+            },
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              backgroundColor: Colors.green,
+            ),
+            child: const Text(
+              'Đặt chỗ ngay',
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(RestaurantModel restaurantData) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      decoration: _cardDecoration(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            restaurantData.name,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.favorite_border),
+                onPressed: () {
+                  // Favorite button functionality
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.share),
+                onPressed: () {
+                  // Share functionality
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailsCard(RestaurantModel restaurantData) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      decoration: _cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildInfoRow(
+              Icons.description, 'Mô tả', restaurantData.description),
+          const SizedBox(height: 10),
+          FutureBuilder<String>(
+            future: getAddressFromGeopoint(restaurantData.location),
+            builder: (context, snapshot) {
+              return _buildInfoRow(
+                Icons.location_on,
+                'Địa chỉ',
+                snapshot.data ?? 'Đang tải...',
+              );
+            },
+          ),
+          const SizedBox(height: 10),
+          _buildInfoRow(
+            Icons.access_time,
+            'Giờ mở cửa',
+            getTodayOpenCloseTimes(
+                restaurantData.openDates, restaurantData.openTime),
+          ),
+          const SizedBox(height: 10),
+          _buildInfoRow(
+            Icons.attach_money,
+            'Giá cả',
+            getPriceRangeString(restaurantData.priceRange),
+          ),
+          const SizedBox(height: 10),
+          _buildInfoRow(
+            Icons.restaurant_menu,
+            'Loại món ăn',
+            restaurantData.dishesStyle.join(' | '),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewsSection(RestaurantModel restaurantData) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      decoration: _cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: List.generate(
+              5,
+                  (index) => Icon(
+                index < restaurantData.rating.round()
+                    ? Icons.star
+                    : Icons.star_border,
+                color: Colors.yellow,
+                size: 20,
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: imgList.map((url) {
-                int index = imgList.indexOf(url);
-                return Container(
-                  width: 8.0,
-                  height: 8.0,
-                  margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _current == index
-                        ? Color.fromRGBO(0, 0, 0, 0.9)
-                        : Color.fromRGBO(0, 0, 0, 0.4),
-                  ),
-                );
-              }).toList(),
+          ),
+          const SizedBox(height: 5),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      RestaurantReviewView(restaurantId: widget.restaurantId),
+                ),
+              );
+            },
+            child: Text(
+              'Xem tất cả các đánh giá',
+              style: TextStyle(fontSize: 16, color: Colors.blue),
             ),
-            const Divider(
-              height: 20,
-              thickness: 2,
-            ),
-            const SizedBox(height: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.location_on, size: 16),
-                    SizedBox(width: 4),
-                    Text('123 Đường ABC, Quận XYZ, TP. HCM'), // Hiển thị khoảng cách
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Icon(Icons.timer, size: 16),
-                    SizedBox(width: 4),
-                    Text('10:30 AM - 11:00 PM'), // Hiển thị khoảng cách
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Icon(Icons.star, size: 16, color: Colors.yellow),
-                    Text('5.0'), // Hiển thị số sao
-                    SizedBox(width: 4),
-                    Text('(100 đánh giá)'), // Hiển thị số sao
-                    //xem tất cả đánh giá
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/restaurant_review');
-                      },
-                      child: Text('Xem tất cả đánh giá'),
-                    ),
-                  ],
-                ),
-                //Mô tả
-                Row(
-                  children: [
-                    Icon(Icons.description, size: 16),
-                    SizedBox(width: 4),
-                    Text('Mô tả: '),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Mô tả nhà hàng ở đây',
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Center(
-                  child: Text(
-                    'Vị trí đặt bàn ở đây',
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                )
-              ],
-            )
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildImageCarousel(RestaurantModel restaurantData) {
+    return CarouselSlider(
+      items: restaurantData.photos.map((photoPath) {
+        return Image.file(
+          File(photoPath),
+          fit: BoxFit.cover,
+          width: double.infinity,
+        );
+      }).toList(),
+      options: CarouselOptions(
+        height: 200.0,
+        viewportFraction: 1.0,
+        autoPlay: true,
+        autoPlayInterval: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String content) {
+    return Row(
+      children: [
+        Icon(icon, size: 25, color: Colors.blueGrey),
+        const SizedBox(width: 15),
+        Expanded(
+          child: Text(
+            '$label: $content',
+            style: const TextStyle(fontSize: 16),
+          ),
+        ),
+      ],
+    );
+  }
+
+  BoxDecoration _cardDecoration() {
+    return BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.3),
+          blurRadius: 5,
+          offset: const Offset(0, 3),
+        ),
+      ],
     );
   }
 }
