@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -24,6 +25,7 @@ import 'package:table_order/src/utils/toast_utils.dart';
 Future<Position?> getCurrentLocation() async {
   PermissionStatus permission = await Permission.location.request();
   if (permission.isDenied || permission.isPermanentlyDenied) {
+    await openAppSettings();
     showToast('Users refuse to access positions');
     return null;
   }
@@ -44,6 +46,25 @@ Future<Position?> getCurrentLocation() async {
     }
   }
   return null;
+}
+
+/// Retrieves the geographical coordinates of the current device location.
+/// 
+/// This function first calls the `getCurrentLocation` function to obtain the
+/// current location of the device. If the location is successfully obtained,
+/// it returns a `GeoPoint` object containing the latitude and longitude of
+/// the location. If the location is null, it returns a `GeoPoint` object with
+/// default coordinates (0, 0).
+/// 
+/// - Returns: A `Future` that resolves to a `GeoPoint` object representing the
+///  current location coordinates, or (0, 0) if the operation fails.
+/// 
+Future<GeoPoint> getGeopointFromCurrentLocation() async {
+  Position? position = await getCurrentLocation();
+  if (position != null) {
+    return GeoPoint(position.latitude, position.longitude);
+  }
+  return GeoPoint(0, 0);
 }
 
 /// Converts a given address into geographical coordinates (latitude and longitude).
@@ -97,4 +118,31 @@ Future<String> getAddressFromGeopoint(GeoPoint geopoint) async {
     }
   }
   return "Unknown Address";
+}
+
+/// Retrieves the human-readable address of the current authenticated user's
+/// location from Firestore.
+///
+/// This function first checks whether a user is currently authenticated.
+/// If the user is authenticated, it retrieves the user's location from
+/// Firestore, and then converts the location coordinates into a human-readable
+/// address using reverse geocoding.
+///
+/// - Returns: A `Future` that resolves to a `String` representing the
+///   address of the user's location, or an empty string if the user is not
+///   authenticated.
+Future<String> getUserLocationFromFirestore() {
+  // get current authenticated user's location
+  FirebaseAuth auth = FirebaseAuth.instance;
+  User? user = auth.currentUser;
+  if (user != null) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get()
+        .then((value) {
+      return getAddressFromGeopoint(value['location']);
+    });
+  }
+  return Future.value('');
 }

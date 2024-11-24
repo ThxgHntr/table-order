@@ -8,37 +8,40 @@ import 'dart:io';
 import '../../utils/location_helper.dart';
 
 class RestaurantItemListView extends StatefulWidget {
-  const RestaurantItemListView({super.key});
-
   static const routeName = '/';
+
+  const RestaurantItemListView({super.key});
 
   @override
   State<StatefulWidget> createState() => RestaurantItemListViewState();
 }
 
 class RestaurantItemListViewState extends State<RestaurantItemListView> {
-  Position? currentPosition;
+  GeoPoint? currentLocation;
   int _nearbyLimit = 6;
   int _allLimit = 6;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  // Lấy vị trí hiện tại của người dùng
-  Future<void> getUserLocation() async {
-    currentPosition = await getCurrentLocation();
+  late Query<Map<String, dynamic>> restaurantRef;
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
   }
 
-  Future<void> reloadData() async {
-    setState(() {
+  Future<void> loadData() async {
+    setState(() async {
+      restaurantRef =
+          firestore.collection('restaurants').where('state', isEqualTo: 1);
       _nearbyLimit = 6;
       _allLimit = 6;
+      currentLocation = await getGeopointFromCurrentLocation();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final Query restaurantRef = FirebaseFirestore.instance
-        .collection('restaurants')
-        .where('state', isEqualTo: 1);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -64,8 +67,9 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
           final restaurants = snapshot.data!.docs;
 
           return FutureBuilder(
-            future:
-                getUserLocation(), // Lấy vị trí người dùng trước khi tính khoảng cách
+            future: currentLocation != null
+                ? getAddressFromGeopoint(currentLocation!)
+                : Future.value(null),
             builder: (context, userLocationSnapshot) {
               if (userLocationSnapshot.connectionState ==
                   ConnectionState.waiting) {
@@ -81,10 +85,10 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                 final restaurantLocation = restaurant.location;
                 double distance = 0.0;
 
-                if (currentPosition != null) {
+                if (currentLocation != null) {
                   distance = Geolocator.distanceBetween(
-                        currentPosition!.latitude,
-                        currentPosition!.longitude,
+                        currentLocation!.latitude,
+                        currentLocation!.longitude,
                         restaurantLocation.latitude,
                         restaurantLocation.longitude,
                       ) /

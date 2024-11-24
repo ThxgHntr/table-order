@@ -34,16 +34,29 @@ const _navBarItems = [
 
 class _NavigationRailPageState extends State<NavigationRailPage> {
   int _selectedIndex = 0;
+  late Key _restaurantItemListViewKey;
 
-  final List<Widget> _pages = [
-    const RestaurantItemListView(), // Trang Home
-    const NotifyPageView(), // Trang Bookmarks
-    const ProfilePageView(), // Trang Profile
-  ];
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _restaurantItemListViewKey = UniqueKey();
+    _pages = [
+      RestaurantItemListView(key: _restaurantItemListViewKey), // Trang Home
+      const NotifyPageView(), // Trang Bookmarks
+      const ProfilePageView(), // Trang Profile
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (index == 0) {
+        // Change the key to force rebuild and reinitialize the state
+        _restaurantItemListViewKey = UniqueKey();
+        _pages[0] = RestaurantItemListView(key: _restaurantItemListViewKey);
+      }
     });
   }
 
