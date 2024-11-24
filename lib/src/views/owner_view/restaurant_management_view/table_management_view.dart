@@ -33,7 +33,7 @@ class _TableManagementViewState extends State<TableManagementView> {
         floors.clear();
         for (var doc in floorsSnapshot.docs) {
           floors.add(FloorModel.fromFirestore(
-              doc.data() as DocumentSnapshot<Map<String, dynamic>>));
+              doc as DocumentSnapshot<Map<String, dynamic>>));
         }
       });
     } catch (e) {
@@ -46,9 +46,9 @@ class _TableManagementViewState extends State<TableManagementView> {
       final newFloorRef = _firestore
           .collection('restaurants')
           .doc(widget.restaurantId)
-          .collection('floors')
-          .doc();
-      await newFloorRef.set({
+          .collection('floors');
+
+      await newFloorRef.add({
         'name': floorName,
         'tables': [],
       });
@@ -67,9 +67,9 @@ class _TableManagementViewState extends State<TableManagementView> {
           .doc(widget.restaurantId)
           .collection('floors')
           .doc(floorId)
-          .collection('tables')
-          .doc();
-      await newTableRef.set({
+          .collection('tables');
+
+      await newTableRef.add({
         'number': tableNumber,
         'seats': chairCount,
         'state': 0, // Trạng thái mặc định
@@ -198,7 +198,7 @@ class _TableManagementViewState extends State<TableManagementView> {
             children: [
               TextField(
                 controller: tableNumberController,
-                decoration: InputDecoration(labelText: 'Số bàn'),
+                decoration: InputDecoration(labelText: 'Mã bàn'),
                 keyboardType: TextInputType.number,
               ),
               TextField(

@@ -48,7 +48,7 @@ class _RestaurantOwnerManagementViewState
       margin: const EdgeInsets.all(8.0),
       child: InkWell(
         onTap: () {
-          if (title == 'Quản lý bàn') {
+          if (title == 'Quản lý tầng') {
             Navigator.push(
               context,
               MaterialPageRoute(

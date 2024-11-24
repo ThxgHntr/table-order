@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_order/src/model/employee_model.dart';
 import 'package:table_order/src/model/floor_model.dart';
@@ -15,7 +13,6 @@ class RestaurantModel {
   final Map<String, String> openTime;
   final List<String> openDates;
   final double rating;
-  List<File> photosToSave;
   List<String> photos;
   final String ownerId;
   final GeoPoint location;
@@ -38,16 +35,15 @@ class RestaurantModel {
     required this.openDates,
     required this.openTime,
     required this.rating,
-    this.photosToSave = const [],
     required this.photos,
     required this.ownerId,
     required this.location,
     required this.state,
     required this.createdAt,
     required this.updatedAt,
-    required this.floors,
-    required this.employees,
-    required this.reviews,
+    this.floors = const [],
+    this.employees = const [],
+    this.reviews = const [],
   });
 
   factory RestaurantModel.fromFirestore(
@@ -100,9 +96,6 @@ class RestaurantModel {
       'state': state,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
-      'floors': floors.map((e) => e.toFirestore()).toList(),
-      'employees': employees.map((e) => e.toFirestore()).toList(),
-      'reviews': reviews.map((e) => e.toFirestore()).toList(),
     };
   }
 }
