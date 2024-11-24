@@ -20,7 +20,7 @@ class FirebaseRestaurantsServices {
         return null;
       }
 
-      final fileName = getFileName(restaurantId, image);
+      final fileName = getFileNameToSave(restaurantId, image);
       final ref = _storage.ref().child(fileName);
       final uploadTask = ref.putFile(image);
       final snapshot = await uploadTask.whenComplete(() => {});

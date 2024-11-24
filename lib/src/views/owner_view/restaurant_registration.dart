@@ -268,7 +268,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       photosToSave: selectedImages,
       photos: selectedImages.isNotEmpty
           ? selectedImages
-              .map((image) => getFileName(restaurantId, image))
+              .map((image) => getFileNameToSaveToFirestore(restaurantId, image))
               .toList()
           : [],
       ownerId: ownerId,
