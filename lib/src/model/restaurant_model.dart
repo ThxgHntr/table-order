@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_order/src/model/employee_model.dart';
 import 'package:table_order/src/model/floor_model.dart';
@@ -13,6 +15,7 @@ class RestaurantModel {
   final Map<String, String> openTime;
   final List<String> openDates;
   final double rating;
+  List<File> photosToUpload;
   List<String> photos;
   final String ownerId;
   final GeoPoint location;
@@ -35,7 +38,8 @@ class RestaurantModel {
     required this.openDates,
     required this.openTime,
     required this.rating,
-    required this.photos,
+    this.photosToUpload = const [],
+    this.photos = const [],
     required this.ownerId,
     required this.location,
     required this.state,
