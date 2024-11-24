@@ -51,12 +51,12 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
-      if (index == 0) {
+      if (_selectedIndex == 0 && index == 0) {
         // Change the key to force rebuild and reinitialize the state
         _restaurantItemListViewKey = UniqueKey();
         _pages[0] = RestaurantItemListView(key: _restaurantItemListViewKey);
       }
+      _selectedIndex = index;
     });
   }
 
