@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -244,7 +243,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
   }
 
   Widget _buildImageCarousel(RestaurantModel restaurantData) {
-    final List<String> photos = List<String>.from(restaurantData.photos ?? []);
+    final List<String> photos = List<String>.from(restaurantData.photos);
 
     return CarouselSlider(
       items: photos
