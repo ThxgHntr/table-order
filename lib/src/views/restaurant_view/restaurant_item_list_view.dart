@@ -18,19 +18,143 @@ class RestaurantItemListView extends StatefulWidget {
 
 class RestaurantItemListViewState extends State<RestaurantItemListView> {
   GeoPoint? currentLocation;
-  int _nearbyLimit = 6;
-  int _allLimit = 6;
+  final int _pageSize = 6;
+  DocumentSnapshot? _lastNearbyDocument;
+  DocumentSnapshot? _lastAllDocument;
+  bool _isLoadingMoreNearby = false;
+  bool _isLoadingMoreAll = false;
+  bool _hasMoreNearbyData = true;
+  bool _hasMoreAllData = true;
+  bool _isLoadingLocation = true;
+  final List<Map<String, dynamic>> _restaurantList = [];
+  final List<Map<String, dynamic>> _nearbyRestaurants = [];
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await _getCurrentLocation();
+    _loadNearbyRestaurants();
+    _loadAllRestaurants();
   }
 
   Future<void> _getCurrentLocation() async {
     final location = await getGeopointFromCurrentLocation();
     setState(() {
       currentLocation = location;
+      _isLoadingLocation = false;
+    });
+  }
+
+  Future<void> _loadNearbyRestaurants() async {
+    if (_isLoadingMoreNearby || !_hasMoreNearbyData || _isLoadingLocation)
+      return;
+    setState(() {
+      _isLoadingMoreNearby = true;
+    });
+
+    Query query = FirebaseFirestore.instance
+        .collection('restaurants')
+        .where('state', isEqualTo: 1)
+        .limit(_pageSize);
+
+    if (_lastNearbyDocument != null) {
+      query = query.startAfterDocument(_lastNearbyDocument!);
+    }
+
+    final snapshot = await query.get();
+    if (snapshot.docs.isNotEmpty) {
+      _lastNearbyDocument = snapshot.docs.last;
+      _hasMoreNearbyData = snapshot.docs.length == _pageSize;
+
+      for (var restaurantData in snapshot.docs) {
+        final restaurant = RestaurantModel.fromFirestore(
+            restaurantData as DocumentSnapshot<Map<String, dynamic>>);
+        final restaurantLocation = restaurant.location;
+        double distance = 0.0;
+
+        if (currentLocation != null) {
+          distance = Geolocator.distanceBetween(
+                currentLocation!.latitude,
+                currentLocation!.longitude,
+                restaurantLocation.latitude,
+                restaurantLocation.longitude,
+              ) /
+              1000; // Convert to kilometers
+        }
+
+        if (distance <= 50) {
+          _nearbyRestaurants.add({
+            'restaurant': restaurant,
+            'distance': distance,
+          });
+        }
+      }
+
+      // Sort nearby restaurants by distance
+      _nearbyRestaurants.sort((a, b) => a['distance'].compareTo(b['distance']));
+    } else {
+      _hasMoreNearbyData = false;
+    }
+
+    setState(() {
+      _isLoadingMoreNearby = false;
+    });
+  }
+
+  Future<void> _loadAllRestaurants() async {
+    if (_isLoadingMoreAll || !_hasMoreAllData || _isLoadingLocation) return;
+    setState(() {
+      _isLoadingMoreAll = true;
+    });
+
+    Query query = FirebaseFirestore.instance
+        .collection('restaurants')
+        .where('state', isEqualTo: 1)
+        .limit(_pageSize);
+
+    if (_lastAllDocument != null) {
+      query = query.startAfterDocument(_lastAllDocument!);
+    }
+
+    final snapshot = await query.get();
+    if (snapshot.docs.isNotEmpty) {
+      _lastAllDocument = snapshot.docs.last;
+      _hasMoreAllData = snapshot.docs.length == _pageSize;
+
+      for (var restaurantData in snapshot.docs) {
+        final restaurant = RestaurantModel.fromFirestore(
+            restaurantData as DocumentSnapshot<Map<String, dynamic>>);
+        final restaurantLocation = restaurant.location;
+        double distance = 0.0;
+
+        if (currentLocation != null) {
+          distance = Geolocator.distanceBetween(
+                currentLocation!.latitude,
+                currentLocation!.longitude,
+                restaurantLocation.latitude,
+                restaurantLocation.longitude,
+              ) /
+              1000; // Convert to kilometers
+        }
+
+        _restaurantList.add({
+          'restaurant': restaurant,
+          'distance': distance,
+        });
+      }
+
+      // Sort all restaurants by distance
+      _restaurantList.sort((a, b) => a['distance'].compareTo(b['distance']));
+    } else {
+      _hasMoreAllData = false;
+    }
+
+    setState(() {
+      _isLoadingMoreAll = false;
     });
   }
 
@@ -39,154 +163,103 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Nhà hàng gần bạn',
+          'Danh sách nhà hàng',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         automaticallyImplyLeading: false,
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('restaurants')
-            .where('state', isEqualTo: 1)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return const Center(child: Text("Đã xảy ra lỗi!"));
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text("Không có nhà hàng nào."));
-          }
-
-          final restaurantDocs = snapshot.data!.docs;
-          List<Map<String, dynamic>> restaurantList = [];
-          List<Map<String, dynamic>> nearbyRestaurants = [];
-
-          for (var restaurantData in restaurantDocs) {
-            final restaurant = RestaurantModel.fromFirestore(
-                restaurantData as DocumentSnapshot<Map<String, dynamic>>);
-            final restaurantLocation = restaurant.location;
-            double distance = 0.0;
-
-            if (currentLocation != null) {
-              distance = Geolocator.distanceBetween(
-                currentLocation!.latitude,
-                currentLocation!.longitude,
-                restaurantLocation.latitude,
-                restaurantLocation.longitude,
-              ) /
-                  1000; // Convert to kilometers
-            }
-
-            restaurantList.add({
-              'restaurant': restaurant,
-              'distance': distance,
-            });
-
-            if (distance <= 50) {
-              nearbyRestaurants.add({
-                'restaurant': restaurant,
-                'distance': distance,
-              });
-            }
-          }
-
-          // Sắp xếp nhà hàng theo khoảng cách
-          restaurantList.sort((a, b) => a['distance'].compareTo(b['distance']));
-
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                if (nearbyRestaurants.isEmpty)
-                  const Center(child: Text("Không có nhà hàng nào gần bạn.")),
-                if (nearbyRestaurants.isNotEmpty)
-                  Column(
-                    children: [
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(10),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          childAspectRatio: 3 / 4,
+      body: _isLoadingLocation
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  Text(
+                    'Nhà hàng gần bạn',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
-                        itemCount: _nearbyLimit < nearbyRestaurants.length
-                            ? _nearbyLimit
-                            : nearbyRestaurants.length,
-                        itemBuilder: (context, index) {
-                          final restaurantData = nearbyRestaurants[index];
-                          final restaurant =
-                          restaurantData['restaurant'] as RestaurantModel;
-                          final distance = restaurantData['distance'] as double;
-                          final imageUrl =
-                          Future.value(restaurant.photos.first);
+                  ),
+                  if (_nearbyRestaurants.isEmpty)
+                    const Center(child: Text("Không có nhà hàng nào gần bạn.")),
+                  if (_nearbyRestaurants.isNotEmpty)
+                    Column(
+                      children: [
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          padding: const EdgeInsets.all(10),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 3 / 4,
+                          ),
+                          itemCount: _nearbyRestaurants.length,
+                          itemBuilder: (context, index) {
+                            final restaurantData = _nearbyRestaurants[index];
+                            final restaurant =
+                                restaurantData['restaurant'] as RestaurantModel;
+                            final distance =
+                                restaurantData['distance'] as double;
+                            final imageUrl =
+                                Future.value(restaurant.photos.first);
 
-                          return _buildRestaurantCard(
-                              restaurant, distance, imageUrl);
-                        },
-                      ),
-                      if (_nearbyLimit < nearbyRestaurants.length)
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _nearbyLimit += 6;
-                            });
+                            return _buildRestaurantCard(
+                                restaurant, distance, imageUrl);
                           },
-                          child: Text('Xem thêm'),
                         ),
-                    ],
+                        if (_hasMoreNearbyData)
+                          TextButton(
+                            onPressed: _loadNearbyRestaurants,
+                            child: _isLoadingMoreNearby
+                                ? const CircularProgressIndicator()
+                                : const Text('Xem thêm'),
+                          ),
+                      ],
+                    ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Tất cả nhà hàng',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-                const SizedBox(height: 20),
-                Text(
-                  'Tất cả nhà hàng',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(10),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 3 / 4,
-                  ),
-                  itemCount: _allLimit < restaurantList.length
-                      ? _allLimit
-                      : restaurantList.length,
-                  itemBuilder: (context, index) {
-                    final restaurantData = restaurantList[index];
-                    final restaurant =
-                    restaurantData['restaurant'] as RestaurantModel;
-                    final distance = restaurantData['distance'] as double;
-                    final imageUrl = Future.value(restaurant.photos.first);
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(10),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 3 / 4,
+                    ),
+                    itemCount: _restaurantList.length,
+                    itemBuilder: (context, index) {
+                      final restaurantData = _restaurantList[index];
+                      final restaurant =
+                          restaurantData['restaurant'] as RestaurantModel;
+                      final distance = restaurantData['distance'] as double;
+                      final imageUrl = Future.value(restaurant.photos.first);
 
-                    return _buildRestaurantCard(restaurant, distance, imageUrl);
-                  },
-                ),
-                if (_allLimit < restaurantList.length)
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _allLimit += 6;
-                      });
+                      return _buildRestaurantCard(
+                          restaurant, distance, imageUrl);
                     },
-                    child: Text('Xem thêm'),
                   ),
-              ],
+                  if (_hasMoreAllData)
+                    TextButton(
+                      onPressed: _loadAllRestaurants,
+                      child: _isLoadingMoreAll
+                          ? const CircularProgressIndicator()
+                          : const Text('Xem thêm'),
+                    ),
+                ],
+              ),
             ),
-          );
-        },
-      ),
     );
   }
 
@@ -225,23 +298,23 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
 
                   final image = snapshot.data!;
                   return ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(8.0)),
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(8.0)),
                     child: image.startsWith('http')
                         ? Image.network(
-                      image,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.broken_image),
-                    )
+                            image,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.broken_image),
+                          )
                         : Image.file(
-                      File(image),
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.broken_image),
-                    ),
+                            File(image),
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.broken_image),
+                          ),
                   );
                 },
               ),
@@ -260,7 +333,7 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
             ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -275,8 +348,7 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                   ),
                   Row(
                     children: [
-                      const Icon(Icons.star,
-                          size: 16, color: Colors.yellow),
+                      const Icon(Icons.star, size: 16, color: Colors.yellow),
                       Text(restaurant.rating.toString()),
                     ],
                   ),
