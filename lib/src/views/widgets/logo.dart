@@ -19,9 +19,9 @@ class Logo extends StatelessWidget {
             style: isSmallScreen
                 ? Theme.of(context).textTheme.headlineSmall
                 : Theme.of(context)
-                .textTheme
-                .headlineMedium
-                ?.copyWith(color: Colors.black),
+                    .textTheme
+                    .headlineSmall
+                    ?.copyWith(color: Colors.black),
           ),
         )
       ],

@@ -58,7 +58,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
                           CircleAvatar(
                             radius: 20,
                             backgroundImage:
-                            AssetImage('assets/images/default_avatar.png'),
+                                AssetImage('assets/images/default_avatar.png'),
                           ),
                           const SizedBox(width: 16),
                           Text(
@@ -78,7 +78,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
                 title: "Tổng quan",
                 children: [
                   _CustomListTile(
-                    title: "Quán của bạn",
+                    title: "Danh sách nhà hàng",
                     icon: Icons.store,
                     onTap: () {
                       if (user == null) {
@@ -89,8 +89,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
                     },
                   ),
                   const _CustomListTile(
-                      title: "Trợ giúp",
-                      icon: Icons.help_outline_rounded),
+                      title: "Trợ giúp", icon: Icons.help_outline_rounded),
                   const _CustomListTile(
                       title: "Về chúng tôi", icon: Icons.info_outline_rounded),
                 ],
@@ -99,31 +98,31 @@ class _ProfilePageViewState extends State<ProfilePageView> {
               _SingleSection(
                 children: user != null
                     ? [
-                  _CustomListTile(
-                    title: "Đăng xuất",
-                    icon: Icons.exit_to_app_rounded,
-                    onTap: () async {
-                      await _auth.signOut();
-                      setState(() {});
-                    },
-                  ),
-                ]
+                        _CustomListTile(
+                          title: "Đăng xuất",
+                          icon: Icons.exit_to_app_rounded,
+                          onTap: () async {
+                            await _auth.signOut();
+                            setState(() {});
+                          },
+                        ),
+                      ]
                     : [
-                  _CustomListTile(
-                    title: "Đăng nhập",
-                    icon: Icons.login_rounded,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                  ),
-                  _CustomListTile(
-                    title: "Đăng ký",
-                    icon: Icons.app_registration_rounded,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/signup');
-                    },
-                  ),
-                ],
+                        _CustomListTile(
+                          title: "Đăng nhập",
+                          icon: Icons.login_rounded,
+                          onTap: () {
+                            Navigator.pushNamed(context, '/login');
+                          },
+                        ),
+                        _CustomListTile(
+                          title: "Đăng ký",
+                          icon: Icons.app_registration_rounded,
+                          onTap: () {
+                            Navigator.pushNamed(context, '/signup');
+                          },
+                        ),
+                      ],
               ),
             ],
           ),
