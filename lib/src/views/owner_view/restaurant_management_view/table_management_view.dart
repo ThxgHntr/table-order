@@ -41,8 +41,12 @@ class _TableManagementViewState extends State<TableManagementView> {
             doc as DocumentSnapshot<Map<String, dynamic>>);
 
         // Load tables for each floor
-        final tablesSnapshot =
-        await restaurantRef.doc(widget.restaurantId).collection('floors').doc(floor.id).collection('tables').get();
+        final tablesSnapshot = await restaurantRef
+            .doc(widget.restaurantId)
+            .collection('floors')
+            .doc(floor.id)
+            .collection('tables')
+            .get();
 
         final tables = tablesSnapshot.docs.map((tableDoc) {
           return TableModel.fromFirestore(
@@ -67,7 +71,7 @@ class _TableManagementViewState extends State<TableManagementView> {
   Future<void> _addFloor(String floorName) async {
     try {
       final newFloorRef =
-      restaurantRef.doc(widget.restaurantId).collection('floors').doc();
+          restaurantRef.doc(widget.restaurantId).collection('floors').doc();
 
       await newFloorRef.set({
         'name': floorName,
@@ -78,7 +82,8 @@ class _TableManagementViewState extends State<TableManagementView> {
     }
   }
 
-  Future<void> _addTable(int floorIndex, String tableNumber, int chairCount) async {
+  Future<void> _addTable(
+      int floorIndex, String tableNumber, int chairCount) async {
     try {
       final floorId = floors[floorIndex].id;
       final newTableRef = restaurantRef
@@ -282,7 +287,7 @@ class _TableManagementViewState extends State<TableManagementView> {
                           itemBuilder: (context) => [
                             PopupMenuItem(
                                 value: 0, child: Text('Chưa có ai đặt')),
-                            PopupMenuItem(value: 1, child: Text('Đã đặt')),
+                            PopupMenuItem(value: 1, child: Text('Đang chọn')),
                             PopupMenuItem(
                                 value: 2, child: Text('Đang sử dụng')),
                           ],
