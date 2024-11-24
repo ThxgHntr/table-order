@@ -22,7 +22,7 @@ class FloorModel {
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
     final data = snapshot.data();
     return FloorModel(
-      id: data?['id'] ?? '',
+      id: snapshot.id,
       name: data?['name'] ?? '',
       description: data?['description'] ?? '',
       photos: List<String>.from(data?['photos'] ?? []),
@@ -34,7 +34,6 @@ class FloorModel {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'id': id,
       'name': name,
       'description': description,
       'photos': photos,

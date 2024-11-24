@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_order/src/model/floor_model.dart';
+import 'package:table_order/src/model/table_model.dart';
 
 class TableManagementView extends StatefulWidget {
   final String restaurantId;
+  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-  const TableManagementView({super.key, required this.restaurantId});
+  TableManagementView({super.key, required this.restaurantId});
 
   @override
   State<StatefulWidget> createState() => _TableManagementViewState();
@@ -14,28 +16,49 @@ class TableManagementView extends StatefulWidget {
 class _TableManagementViewState extends State<TableManagementView> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final List<FloorModel> floors = [];
+  late CollectionReference<Map<String, dynamic>> restaurantRef;
 
   @override
   void initState() {
     super.initState();
+    restaurantRef = _firestore.collection('restaurants');
     _loadFloorsFromDatabase();
   }
 
   void _loadFloorsFromDatabase() async {
     try {
-      final floorsSnapshot = await _firestore
-          .collection('restaurants')
+      final floorsSnapshot = await restaurantRef
           .doc(widget.restaurantId)
           .collection('floors')
           .get();
 
       setState(() {
         floors.clear();
-        for (var doc in floorsSnapshot.docs) {
-          floors.add(FloorModel.fromFirestore(
-              doc.data() as DocumentSnapshot<Map<String, dynamic>>));
-        }
       });
+
+      for (var doc in floorsSnapshot.docs) {
+        final floor = FloorModel.fromFirestore(
+            doc as DocumentSnapshot<Map<String, dynamic>>);
+
+        // Load tables for each floor
+        final tablesSnapshot =
+            await restaurantRef.doc(floor.id).collection('tables').get();
+
+        final tables = tablesSnapshot.docs.map((tableDoc) {
+          return TableModel.fromFirestore(
+              tableDoc as DocumentSnapshot<Map<String, dynamic>>);
+        }).toList();
+
+        setState(() {
+          floors.add(FloorModel(
+            id: floor.id,
+            name: floor.name,
+            description: floor.description,
+            photos: floor.photos,
+            tables: tables,
+          ));
+        });
+      }
     } catch (e) {
       debugPrint("Lỗi tải dữ liệu tầng: $e");
     }
@@ -43,14 +66,11 @@ class _TableManagementViewState extends State<TableManagementView> {
 
   Future<void> _addFloor(String floorName) async {
     try {
-      final newFloorRef = _firestore
-          .collection('restaurants')
-          .doc(widget.restaurantId)
-          .collection('floors')
-          .doc();
+      final newFloorRef =
+          restaurantRef.doc(widget.restaurantId).collection('floors').doc();
+
       await newFloorRef.set({
         'name': floorName,
-        'tables': [],
       });
       _loadFloorsFromDatabase();
     } catch (e) {
@@ -62,13 +82,13 @@ class _TableManagementViewState extends State<TableManagementView> {
       int floorIndex, String tableNumber, int chairCount) async {
     try {
       final floorId = floors[floorIndex].id;
-      final newTableRef = _firestore
-          .collection('restaurants')
+      final newTableRef = restaurantRef
           .doc(widget.restaurantId)
           .collection('floors')
           .doc(floorId)
           .collection('tables')
           .doc();
+
       await newTableRef.set({
         'number': tableNumber,
         'seats': chairCount,
@@ -198,7 +218,7 @@ class _TableManagementViewState extends State<TableManagementView> {
             children: [
               TextField(
                 controller: tableNumberController,
-                decoration: InputDecoration(labelText: 'Số bàn'),
+                decoration: InputDecoration(labelText: 'Mã bàn'),
                 keyboardType: TextInputType.number,
               ),
               TextField(

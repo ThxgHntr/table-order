@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EmployeeModel {
+  final String id;
   final String name;
   final String email;
   final String phone;
@@ -13,6 +14,7 @@ class EmployeeModel {
   final Timestamp createdAt;
 
   EmployeeModel({
+    this.id = '',
     required this.name,
     required this.email,
     required this.phone,
@@ -25,18 +27,21 @@ class EmployeeModel {
     required this.createdAt,
   });
 
-  factory EmployeeModel.fromFirestore(DocumentSnapshot data) {
+  factory EmployeeModel.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    final data = snapshot.data();
     return EmployeeModel(
-      name: data['name'] ?? '',
-      email: data['email'] ?? '',
-      phone: data['phone'] ?? '',
-      role: data['role'] ?? '',
-      permissions: List<String>.from(data['permissions'] ?? []),
-      hireDate: data['hireDate'] ?? Timestamp.now(),
-      status: data['status'] ?? 'active',
-      salary: data['salary']?.toDouble() ?? 0.0,
-      profilePicture: data['profilePicture'] ?? '',
-      createdAt: data['created_at'] ?? Timestamp.now(),
+      id: snapshot.id,
+      name: data?['name'] ?? '',
+      email: data?['email'] ?? '',
+      phone: data?['phone'] ?? '',
+      role: data?['role'] ?? '',
+      permissions: List<String>.from(data?['permissions'] ?? []),
+      hireDate: data?['hireDate'] ?? Timestamp.now(),
+      status: data?['status'] ?? 'active',
+      salary: data?['salary']?.toDouble() ?? 0.0,
+      profilePicture: data?['profilePicture'] ?? '',
+      createdAt: data?['created_at'] ?? Timestamp.now(),
     );
   }
 

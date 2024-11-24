@@ -20,7 +20,7 @@ class TableModel {
   factory TableModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot) {
     final data = snapshot.data() ?? {};
     return TableModel(
-      id: data['id'] ?? '',
+      id: snapshot.id,
       tableNumber: data['tableNumber'] ?? '',
       seats: data['seats'] ?? 0,
       state: data['state'] ?? false,
@@ -31,7 +31,6 @@ class TableModel {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'id': id,
       'tableNumber': tableNumber,
       'seats': seats,
       'state': state,
