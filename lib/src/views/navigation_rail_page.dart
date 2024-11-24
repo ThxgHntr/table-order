@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:table_order/src/utils/location_helper.dart';
 import 'package:table_order/src/views/restaurant_view/restaurant_item_list_view.dart';
@@ -6,6 +7,7 @@ import 'package:table_order/src/views/user_view/profile_page_view.dart';
 import '../settings/settings_view.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NavigationRailPage extends StatefulWidget {
   const NavigationRailPage({super.key});
@@ -35,7 +37,7 @@ const _navBarItems = [
 class _NavigationRailPageState extends State<NavigationRailPage> {
   int _selectedIndex = 0;
   late Key _restaurantItemListViewKey;
-
+  FirebaseAuth auth = FirebaseAuth.instance;
   late List<Widget> _pages;
 
   @override
@@ -47,6 +49,24 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
       const NotifyPageView(), // Trang Bookmarks
       const ProfilePageView(), // Trang Profile
     ];
+    _initializeLocation();
+  }
+
+  Future<void> _initializeLocation() async {
+    Position? currentPosition = await getCurrentLocation();
+    if (currentPosition != null) {
+      Placemark? place = await getAddressFromCoordinates(currentPosition);
+      setState(() {
+        locationText = '${place?.street}, ${place?.administrativeArea}';
+      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .update({
+        'location':
+            GeoPoint(currentPosition.latitude, currentPosition.longitude),
+      });
+    }
   }
 
   void _onItemTapped(int index) {
@@ -84,20 +104,7 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
           IconButton(
             icon: const Icon(Icons.location_pin),
             onPressed: () async {
-              Position? currentPosition = await getCurrentLocation();
-              if (currentPosition != null) {
-                List<Placemark> placemarks = await placemarkFromCoordinates(
-                  currentPosition.latitude,
-                  currentPosition.longitude,
-                );
-                if (placemarks.isNotEmpty) {
-                  Placemark place = placemarks.first;
-                  setState(() {
-                    locationText =
-                        '${place.street}, ${place.administrativeArea}';
-                  });
-                }
-              }
+              await _initializeLocation();
             },
           ),
           IconButton(

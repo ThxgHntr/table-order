@@ -48,17 +48,37 @@ Future<Position?> getCurrentLocation() async {
   return null;
 }
 
+/// Converts geographical coordinates into a human-readable address.
+///
+/// This function takes a latitude and longitude and attempts to convert it
+/// into a human-readable address using reverse geocoding. If the coordinates
+/// can be successfully geocoded, it returns a `Placemark` representing the
+/// address. If an error occurs or no result is found, it returns `null`.
+///
+/// - Parameter latitude: The latitude of the geographical coordinates.
+/// - Parameter longitude: The longitude of the geographical coordinates.
+/// - Returns: A `Future` that resolves to a `Placemark` representing the
+///   address of the coordinates, or `null` if the operation fails.
+Future<Placemark?> getAddressFromCoordinates(Position position) async {
+  List<Placemark> placemarks =
+      await placemarkFromCoordinates(position.latitude, position.longitude);
+  if (placemarks.isNotEmpty) {
+    return placemarks.first;
+  }
+  return null;
+}
+
 /// Retrieves the geographical coordinates of the current device location.
-/// 
+///
 /// This function first calls the `getCurrentLocation` function to obtain the
 /// current location of the device. If the location is successfully obtained,
 /// it returns a `GeoPoint` object containing the latitude and longitude of
 /// the location. If the location is null, it returns a `GeoPoint` object with
 /// default coordinates (0, 0).
-/// 
+///
 /// - Returns: A `Future` that resolves to a `GeoPoint` object representing the
 ///  current location coordinates, or (0, 0) if the operation fails.
-/// 
+///
 Future<GeoPoint> getGeopointFromCurrentLocation() async {
   Position? position = await getCurrentLocation();
   if (position != null) {
