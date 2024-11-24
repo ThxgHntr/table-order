@@ -79,7 +79,10 @@ class FirebaseRestaurantsServices {
         }
         return false; // Return early if image upload fails
       }
-      
+
+      // Update the restaurant document with the image URLs
+      await restaurantRef.update({'photos': imageUrls});
+
       if (kDebugMode) {
         print('Restaurant info saved successfully.');
       }

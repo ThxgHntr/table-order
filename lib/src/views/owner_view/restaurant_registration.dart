@@ -267,10 +267,9 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       rating: 0.0,
       photosToSave: selectedImages,
       photos: selectedImages.isNotEmpty
-          ? await Future.wait(selectedImages.map((image) async {
-              final url = await getDownloadUrl(getFileNameToSave(restaurantId, image));
-              return url ?? '';
-            }))
+          ? selectedImages
+              .map((image) => getFileNameToSave(restaurantId, image))
+              .toList()
           : [],
       ownerId: ownerId,
       location: location,
