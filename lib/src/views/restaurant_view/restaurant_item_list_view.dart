@@ -20,60 +20,17 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
   GeoPoint? currentLocation;
   int _nearbyLimit = 6;
   int _allLimit = 6;
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  late Future<void> _loadDataFuture;
-  List<Map<String, dynamic>> restaurantList = [];
-  List<Map<String, dynamic>> nearbyRestaurants = [];
 
   @override
   void initState() {
     super.initState();
-    _loadDataFuture = loadData();
+    _getCurrentLocation();
   }
 
-  Future<void> loadData() async {
+  Future<void> _getCurrentLocation() async {
     final location = await getGeopointFromCurrentLocation();
-    final querySnapshot = await firestore
-        .collection('restaurants')
-        .where('state', isEqualTo: 1)
-        .get();
-
     setState(() {
       currentLocation = location;
-      restaurantList = [];
-      nearbyRestaurants = [];
-
-      for (var restaurantData in querySnapshot.docs) {
-        final restaurant = RestaurantModel.fromFirestore(
-            restaurantData as DocumentSnapshot<Map<String, dynamic>>);
-        final restaurantLocation = restaurant.location;
-        double distance = 0.0;
-
-        if (currentLocation != null) {
-          distance = Geolocator.distanceBetween(
-                currentLocation!.latitude,
-                currentLocation!.longitude,
-                restaurantLocation.latitude,
-                restaurantLocation.longitude,
-              ) /
-              1000; // Convert to kilometers
-        }
-
-        restaurantList.add({
-          'restaurant': restaurant,
-          'distance': distance,
-        });
-
-        if (distance <= 50) {
-          nearbyRestaurants.add({
-            'restaurant': restaurant,
-            'distance': distance,
-          });
-        }
-      }
-
-      // Sort all restaurants by distance
-      restaurantList.sort((a, b) => a['distance'].compareTo(b['distance']));
     });
   }
 
@@ -84,12 +41,16 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
         title: Text(
           'Nhà hàng gần bạn',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        automaticallyImplyLeading: false,
       ),
-      body: FutureBuilder<void>(
-        future: _loadDataFuture,
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('restaurants')
+            .where('state', isEqualTo: 1)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -97,6 +58,46 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
           if (snapshot.hasError) {
             return const Center(child: Text("Đã xảy ra lỗi!"));
           }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text("Không có nhà hàng nào."));
+          }
+
+          final restaurantDocs = snapshot.data!.docs;
+          List<Map<String, dynamic>> restaurantList = [];
+          List<Map<String, dynamic>> nearbyRestaurants = [];
+
+          for (var restaurantData in restaurantDocs) {
+            final restaurant = RestaurantModel.fromFirestore(
+                restaurantData as DocumentSnapshot<Map<String, dynamic>>);
+            final restaurantLocation = restaurant.location;
+            double distance = 0.0;
+
+            if (currentLocation != null) {
+              distance = Geolocator.distanceBetween(
+                currentLocation!.latitude,
+                currentLocation!.longitude,
+                restaurantLocation.latitude,
+                restaurantLocation.longitude,
+              ) /
+                  1000; // Convert to kilometers
+            }
+
+            restaurantList.add({
+              'restaurant': restaurant,
+              'distance': distance,
+            });
+
+            if (distance <= 50) {
+              nearbyRestaurants.add({
+                'restaurant': restaurant,
+                'distance': distance,
+              });
+            }
+          }
+
+          // Sắp xếp nhà hàng theo khoảng cách
+          restaurantList.sort((a, b) => a['distance'].compareTo(b['distance']));
 
           return SingleChildScrollView(
             child: Column(
@@ -122,118 +123,13 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                         itemBuilder: (context, index) {
                           final restaurantData = nearbyRestaurants[index];
                           final restaurant =
-                              restaurantData['restaurant'] as RestaurantModel;
+                          restaurantData['restaurant'] as RestaurantModel;
                           final distance = restaurantData['distance'] as double;
                           final imageUrl =
-                              Future.value(restaurant.photos.first);
+                          Future.value(restaurant.photos.first);
 
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            elevation: 5,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        RestaurantItemDetailsView(
-                                      restaurantId: restaurant.restaurantId,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: FutureBuilder<String>(
-                                      future: imageUrl,
-                                      builder: (context, snapshot) {
-                                        if (snapshot.connectionState ==
-                                            ConnectionState.waiting) {
-                                          return const Center(
-                                              child:
-                                                  CircularProgressIndicator());
-                                        }
-
-                                        if (snapshot.hasError ||
-                                            !snapshot.hasData) {
-                                          return const Icon(Icons.broken_image);
-                                        }
-
-                                        final image = snapshot.data!;
-                                        return ClipRRect(
-                                          borderRadius:
-                                              const BorderRadius.vertical(
-                                                  top: Radius.circular(8.0)),
-                                          child: image.startsWith('http')
-                                              ? Image.network(
-                                                  image,
-                                                  fit: BoxFit.cover,
-                                                  width: double.infinity,
-                                                  errorBuilder: (context, error,
-                                                          stackTrace) =>
-                                                      const Icon(
-                                                          Icons.broken_image),
-                                                )
-                                              : Image.file(
-                                                  File(image),
-                                                  fit: BoxFit.cover,
-                                                  width: double.infinity,
-                                                  errorBuilder: (context, error,
-                                                          stackTrace) =>
-                                                      const Icon(
-                                                          Icons.broken_image),
-                                                ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      restaurant.name,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0, vertical: 4.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.location_on,
-                                                size: 16),
-                                            SizedBox(width: 4),
-                                            Text((distance < 1
-                                                ? '${(distance * 1000).toStringAsFixed(0)}m'
-                                                : '${distance.toStringAsFixed(1)} km')),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.star,
-                                                size: 16, color: Colors.yellow),
-                                            Text(restaurant.rating.toString()),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
+                          return _buildRestaurantCard(
+                              restaurant, distance, imageUrl);
                         },
                       ),
                       if (_nearbyLimit < nearbyRestaurants.length)
@@ -251,8 +147,8 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                 Text(
                   'Tất cả nhà hàng',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 GridView.builder(
                   shrinkWrap: true,
@@ -270,110 +166,11 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                   itemBuilder: (context, index) {
                     final restaurantData = restaurantList[index];
                     final restaurant =
-                        restaurantData['restaurant'] as RestaurantModel;
+                    restaurantData['restaurant'] as RestaurantModel;
                     final distance = restaurantData['distance'] as double;
                     final imageUrl = Future.value(restaurant.photos.first);
 
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      elevation: 5,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => RestaurantItemDetailsView(
-                                restaurantId: restaurant.restaurantId,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: FutureBuilder<String>(
-                                future: imageUrl,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const Center(
-                                        child: CircularProgressIndicator());
-                                  }
-
-                                  if (snapshot.hasError || !snapshot.hasData) {
-                                    return const Icon(Icons.broken_image);
-                                  }
-
-                                  final image = snapshot.data!;
-                                  return ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(8.0)),
-                                    child: image.startsWith('http')
-                                        ? Image.network(
-                                            image,
-                                            fit: BoxFit.cover,
-                                            width: double.infinity,
-                                            errorBuilder: (context, error,
-                                                    stackTrace) =>
-                                                const Icon(Icons.broken_image),
-                                          )
-                                        : Image.file(
-                                            File(image),
-                                            fit: BoxFit.cover,
-                                            width: double.infinity,
-                                            errorBuilder: (context, error,
-                                                    stackTrace) =>
-                                                const Icon(Icons.broken_image),
-                                          ),
-                                  );
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                restaurant.name,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0, vertical: 4.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.location_on, size: 16),
-                                      SizedBox(width: 4),
-                                      Text((distance < 1
-                                          ? '${(distance * 1000).toStringAsFixed(0)}m'
-                                          : '${distance.toStringAsFixed(1)} km')),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.star,
-                                          size: 16, color: Colors.yellow),
-                                      Text(restaurant.rating.toString()),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                    return _buildRestaurantCard(restaurant, distance, imageUrl);
                   },
                 ),
                 if (_allLimit < restaurantList.length)
@@ -389,6 +186,105 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildRestaurantCard(
+      RestaurantModel restaurant, double distance, Future<String> imageUrl) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      elevation: 5,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RestaurantItemDetailsView(
+                restaurantId: restaurant.restaurantId,
+              ),
+            ),
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: FutureBuilder<String>(
+                future: imageUrl,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError || !snapshot.hasData) {
+                    return const Icon(Icons.broken_image);
+                  }
+
+                  final image = snapshot.data!;
+                  return ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(8.0)),
+                    child: image.startsWith('http')
+                        ? Image.network(
+                      image,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.broken_image),
+                    )
+                        : Image.file(
+                      File(image),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.broken_image),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                restaurant.name,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Padding(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on, size: 16),
+                      SizedBox(width: 4),
+                      Text((distance < 1
+                          ? '${(distance * 1000).toStringAsFixed(0)}m'
+                          : '${distance.toStringAsFixed(1)} km')),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(Icons.star,
+                          size: 16, color: Colors.yellow),
+                      Text(restaurant.rating.toString()),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
