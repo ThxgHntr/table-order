@@ -5,43 +5,57 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:table_order/src/utils/toast_utils.dart';
 
-/// Lấy vị trí hiện tại, nếu người dùng chưa cấp quyền truy cập
-/// vị trí, sẽ yêu cầu cấp quyền. Nếu người dùng từ chối quyền,
-/// sẽ hiển thị thông báo và trả về null.
+/// Retrieves the current geographical position of the device.
 ///
-/// Nếu người dùng đã cấp quyền, sẽ kiểm tra dịch vụ định
-/// vị và trả về vị trí hiện tại. Nếu dịch vụ định vị chưa
-/// được bật, sẽ hiển thị thông báo và trả về null.
+/// This function first requests permission to access the device's location.
+/// If the permission is denied or permanently denied, a toast message is
+/// shown and the function returns `null`. If permission is granted, it then
+/// checks whether the location service is enabled. If not enabled, a toast
+/// message is shown and the function returns `null`.
 ///
-/// Trả về `null` nếu có lỗi xảy ra.
+/// In the case where permission is granted and the location service is enabled,
+/// it attempts to get the current position using the `Geolocator` package. If
+/// successful, it returns the `Position` object representing the current
+/// location. If an error occurs during this process, it catches the error,
+/// displays a toast message with the error, and returns `null`.
+///
+/// - Returns: A `Future` that resolves to a `Position` object representing the
+///   current location, or `null` if the operation fails.
 Future<Position?> getCurrentLocation() async {
   PermissionStatus permission = await Permission.location.request();
   if (permission.isDenied || permission.isPermanentlyDenied) {
-    // Quyền bị từ chối
-    showToast('Người dùng từ chối quyền truy cập vị trí');
+    showToast('Users refuse to access positions');
     return null;
   }
 
   if (permission.isGranted) {
-    // Quyền được cấp, kiểm tra dịch vụ định vị
     bool isServiceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!isServiceEnabled) {
-      showToast('Dịch vụ định vị chưa được bật');
+      showToast('Navigation service has not been enabled');
       return null;
     }
 
     try {
-      // Lấy vị trí hiện tại
       Position position = await Geolocator.getCurrentPosition();
       return position;
     } catch (e) {
-      showToast('Lỗi khi lấy vị trí: $e');
+      showToast('Error when taking position: $e');
       return null;
     }
   }
   return null;
 }
 
+/// Converts a given address into geographical coordinates (latitude and longitude).
+///
+/// This function utilizes geocoding to transform an address into a
+/// `GeoPoint`, which contains the latitude and longitude of the first
+/// location result. If the address cannot be geocoded, or an error
+/// occurs, it returns a `GeoPoint` with default coordinates (0, 0).
+///
+/// - Parameter address: The address to be converted into coordinates.
+/// - Returns: A `Future` that resolves to a `GeoPoint` representing the
+///   coordinates of the address, or (0, 0) if the operation fails.
 Future<GeoPoint> getGeopointFromAddress(String address) async {
   try {
     // Convert address to coordinates using geocoding
@@ -57,6 +71,18 @@ Future<GeoPoint> getGeopointFromAddress(String address) async {
   return GeoPoint(0, 0);
 }
 
+/// Converts geographical coordinates into a human-readable address.
+///
+/// This function performs reverse geocoding to transform a `GeoPoint`,
+/// which contains latitude and longitude, into a string representing
+/// the address. If the coordinates can be successfully geocoded, it
+/// returns a formatted address string including street, administrative
+/// area, and country. If an error occurs or no result is found, it
+/// returns "Unknown Address".
+///
+/// - Parameter geopoint: The geographical point with latitude and longitude.
+/// - Returns: A `Future` that resolves to a `String` representing the
+///   address of the coordinates, or "Unknown Address" if the operation fails.
 Future<String> getAddressFromGeopoint(GeoPoint geopoint) async {
   try {
     // Convert coordinates to address using reverse geocoding
