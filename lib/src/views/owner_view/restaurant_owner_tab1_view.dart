@@ -74,7 +74,7 @@ class _RestaurantOwnerTab1ViewState extends State<RestaurantOwnerTab1View> {
               final restaurantData = restaurants[index];
               final restaurant = RestaurantModel.fromFirestore(
                   restaurantData as DocumentSnapshot<Map<String, dynamic>>);
-
+              final restaurantId = restaurantData.id;
               final restaurantName =
                   restaurant.name.isNotEmpty ? restaurant.name : "Chưa có tên";
 
@@ -82,7 +82,7 @@ class _RestaurantOwnerTab1ViewState extends State<RestaurantOwnerTab1View> {
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: ListTile(
                   onTap: () => navigateToManageRestaurantPage(
-                      restaurant.restaurantId, restaurantName),
+                      restaurantId, restaurantName),
                   title: Text(
                     restaurantName,
                     style: const TextStyle(fontWeight: FontWeight.bold),
