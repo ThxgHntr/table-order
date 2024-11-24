@@ -27,10 +27,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
 
   // Controllers for basic info
   final restaurantName = TextEditingController();
-  final restaurantCity = TextEditingController();
-  final restaurantDistrict = TextEditingController();
-  final restaurantWard = TextEditingController();
-  final restaurantStreet = TextEditingController();
+  final restaurantAddress = TextEditingController();
 
   // Controllers for representative info
   final restaurantPhone = TextEditingController();
@@ -171,10 +168,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
             children: <Widget>[
               BasicRestaurantInformationFormContent(
                 restaurantName: restaurantName,
-                restaurantCity: restaurantCity,
-                restaurantDistrict: restaurantDistrict,
-                restaurantWard: restaurantWard,
-                restaurantStreet: restaurantStreet,
+                restaurantAddress: restaurantAddress,
               ),
             ],
           ),
@@ -247,9 +241,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
 
     final ownerId = user.uid;
 
-    final address =
-        '${restaurantStreet.text}, ${restaurantWard.text}, ${restaurantDistrict.text}, ${restaurantCity.text}';
-    final location = await getGeopointFromAddress(address);
+    final location = await getGeopointFromAddress(restaurantAddress.text);
 
     final restaurantInfo = RestaurantModel(
       restaurantId: restaurantId,
