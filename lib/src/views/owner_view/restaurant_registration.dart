@@ -264,9 +264,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       openDates: selectedDays,
       openTime: openCloseTimes,
       rating: 0.0,
-      photos: selectedImages.isNotEmpty
-          ? selectedImages.map((image) => image.path).toList()
-          : [],
+      photosToUpload: selectedImages,
       ownerId: ownerId,
       location: location,
       state: 0, // 0: Chờ duyệt, 1: Đã duyệt, 2: Từ chối

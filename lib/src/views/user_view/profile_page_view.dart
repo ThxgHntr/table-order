@@ -138,7 +138,6 @@ class _CustomListTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   const _CustomListTile({
-    super.key,
     required this.title,
     required this.icon,
     this.onTap,
@@ -159,7 +158,6 @@ class _SingleSection extends StatelessWidget {
   final List<Widget> children;
 
   const _SingleSection({
-    super.key,
     this.title,
     required this.children,
   });
