@@ -60,29 +60,32 @@ class FirebaseRestaurantsServices {
   // Save restaurant info to Firestore, including uploaded image URLs
   Future<bool> saveRestaurantInfo(RestaurantModel restaurant) async {
     try {
-      if (restaurant.photos.isEmpty) {
+      if (restaurant.photosToUpload.isEmpty) {
         if (kDebugMode) {
           print('No images selected. Cannot save restaurant info.');
         }
         return false; // Return early if no images are selected
       }
 
-      final imageUrls = await uploadImages(restaurant.restaurantId,
-          restaurant.photos.map((path) => File(path)).toList());
+      // Save the restaurant info to Firestore
+      final restaurantRef =
+          _firestore.collection('restaurants').doc(restaurant.restaurantId);
+      await restaurantRef.set(restaurant.toFirestore());
+      restaurantRef.collection('floors').doc();
+      restaurantRef.collection('employees').doc();
+      restaurantRef.collection('reviews').doc();
+
+      final imageUrls = await uploadImages(
+          restaurant.restaurantId, restaurant.photosToUpload);
+      restaurant.photos = imageUrls;
+      await restaurantRef.update({'photos': imageUrls});
+
       if (imageUrls.isEmpty) {
         if (kDebugMode) {
           print('No images uploaded. Cannot save restaurant info.');
         }
         return false; // Return early if image upload fails
       }
-
-      // Save the restaurant info to Firestore
-      final restaurantRef =
-          _firestore.collection('restaurants').doc(restaurant.restaurantId);
-      await restaurantRef.set(restaurant.toFirestore());
-      restaurantRef.collection('floors').doc().set({});
-      restaurantRef.collection('employees').doc().set({});
-      restaurantRef.collection('reviews').doc().set({});
 
       if (kDebugMode) {
         print('Restaurant info saved successfully.');
