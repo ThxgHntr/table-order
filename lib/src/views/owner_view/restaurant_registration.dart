@@ -267,9 +267,10 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       rating: 0.0,
       photosToSave: selectedImages,
       photos: selectedImages.isNotEmpty
-          ? selectedImages
-              .map((image) => getFileNameToSaveToFirestore(restaurantId, image))
-              .toList()
+          ? await Future.wait(selectedImages.map((image) async {
+              final url = await getDownloadUrl(getFileNameToSave(restaurantId, image));
+              return url ?? '';
+            }))
           : [],
       ownerId: ownerId,
       location: location,

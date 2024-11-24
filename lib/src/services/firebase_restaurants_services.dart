@@ -79,8 +79,7 @@ class FirebaseRestaurantsServices {
         }
         return false; // Return early if image upload fails
       }
-      restaurant.photos = imageUrls;
-
+      
       if (kDebugMode) {
         print('Restaurant info saved successfully.');
       }
