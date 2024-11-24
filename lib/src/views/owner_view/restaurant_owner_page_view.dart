@@ -43,7 +43,7 @@ class _RestaurantOwnerPageViewState extends State<RestaurantOwnerPageView> {
                         borderRadius: BorderRadius.circular(4)),
                   ),
                   onPressed: () {
-                    Navigator.of(context).pushNamed('/search-restaurant');
+                    Navigator.of(context).pushNamed('/restaurant-registration');
                   },
                   icon: Icon(Icons.add),
                   label: const Padding(

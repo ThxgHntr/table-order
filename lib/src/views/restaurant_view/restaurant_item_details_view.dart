@@ -1,8 +1,11 @@
+import 'dart:ffi';
+import 'dart:io';
+
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_order/src/views/restaurant_view/restaurant_review_view.dart';
+import 'package:table_order/src/model/restaurant_model.dart';
 
 class RestaurantItemDetailsView extends StatefulWidget {
   final String restaurantId;
@@ -12,74 +15,74 @@ class RestaurantItemDetailsView extends StatefulWidget {
   static const routeName = '/sample_item';
 
   @override
-  State<RestaurantItemDetailsView> createState() => _RestaurantItemDetailsViewState();
+  State<RestaurantItemDetailsView> createState() =>
+      _RestaurantItemDetailsViewState();
 }
 
 class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
-  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
-  Map<String, dynamic> restaurantData = {};
-  int _current = 0;
+  late Future<RestaurantModel> restaurantData;
 
   @override
   void initState() {
     super.initState();
-    _fetchRestaurantData();
+    restaurantData = _fetchRestaurantData();
   }
 
-  Future<void> _fetchRestaurantData() async {
+  Future<RestaurantModel> _fetchRestaurantData() async {
     try {
-      if (kDebugMode) {
-        print('restaurantId: ${widget.restaurantId}');
-      }
-      final snapshot = await _dbRef.child('restaurants/${widget.restaurantId}').once();
-      if (snapshot.snapshot.value != null) {
-        final data = Map<String, dynamic>.from(snapshot.snapshot.value as Map);
-        setState(() {
-          restaurantData = {
-            ...data,
-            'address': '${data['restaurantStreet']}, ${data['restaurantDistrict']}, ${data['restaurantCity']}',
-          };
-        });
+      final snapshot = await FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(widget.restaurantId)
+          .get();
+
+      if (snapshot.exists) {
+        final restaurant = RestaurantModel.fromFirestore(snapshot);
+        // Print all restaurant details
+        print('Restaurant Data:');
+        print('Name: ${restaurant.name}');
+        print('Description: ${restaurant.description}');
+        print('Location: ${restaurant.location}');
+        print('Price Range: ${restaurant.priceRange}');
+        print('Rating: ${restaurant.rating}');
+        print('Open Dates: ${restaurant.openDates}');
+        print('Open Times: ${restaurant.openTime}');
+        print('Dishes Style: ${restaurant.dishesStyle}');
+        print('Floors: ${restaurant.floors}');
+        print('Photos: ${restaurant.photos}');
+        print('Rating: ${restaurant.rating}');
+        print('Price Range: ${restaurant.priceRange.toString()}');
+        return restaurant;
+      } else {
+        throw Exception("Restaurant not found");
       }
     } catch (e) {
-      debugPrint("Error fetching restaurant data: $e");
+      throw Exception("Error fetching restaurant data: $e");
     }
   }
 
-  // Get open/close times for today
-  String getTodayOpenCloseTimes() {
+  String getTodayOpenCloseTimes(
+      List<String> openDates, Map<String, dynamic> openTime) {
     final today = DateTime.now().weekday;
-    final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    final todayKey = days[today - 1];  // Get the name of the current day (e.g., "Monday")
+    final days = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
+    final todayKey = days[today - 1];
 
-    final openCloseTimes = restaurantData['openCloseTimes'] ?? {};
-    if (openCloseTimes.containsKey(todayKey)) {
-      return '${openCloseTimes[todayKey]?['open'] ?? 'N/A'} - ${openCloseTimes[todayKey]?['close'] ?? 'N/A'}';
+    if (openDates.contains(todayKey)) {
+      return '${openTime['open'] ?? 'N/A'} - ${openTime['close'] ?? 'N/A'}';
     } else {
       return 'Closed';
     }
   }
 
-  // Get the number of floors in the restaurant
-  int getFloorCount() {
-    final floors = restaurantData['floors'] ?? {};
-    return floors.length;
-  }
-
-  // Get the total number of tables in the restaurant
-  int getTotalTables() {
-    final floors = restaurantData['floors'] ?? {}; // Ensure 'floors' is a Map
-    int totalTables = 0;
-
-    // Iterate over each floor
-    floors.forEach((key, value) {
-      // Check if 'tables' is a Map and safely count the number of tables
-      if (value['tables'] is Map) {
-        totalTables += (value['tables'] as Map).length;  // Safely cast 'tables' as a Map and get its length
-      }
-    });
-
-    return totalTables;
+  String getPriceRangeString(PriceRange priceRange) {
+    return '${priceRange.lowest} - ${priceRange.highest} VND';
   }
 
   @override
@@ -87,79 +90,83 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thông tin nhà hàng'),
-        shape: const Border(
-          bottom: BorderSide(
-            color: Colors.deepOrange,
-            width: 1,
-          ),
-        ),
       ),
-      body: restaurantData.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : _buildRestaurantDetails(),
+      body: FutureBuilder<RestaurantModel>(
+        future: restaurantData,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final restaurant = snapshot.data!;
+            return _buildRestaurantDetails(restaurant);
+          } else {
+            return const Center(child: Text('No data available'));
+          }
+        },
+      ),
     );
   }
 
-  Widget _buildRestaurantDetails() {
+  Widget _buildRestaurantDetails(RestaurantModel restaurantData) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // Section 1: Image Carousel (Rectangular)
+          // Image Carousel
           const SizedBox(height: 10),
           Container(
-            height: 200,  // Adjust height as needed
+            height: 200,
             decoration: BoxDecoration(
-              color: Colors.white, // Background color for the image carousel section
+              color: Colors.white,
               borderRadius: BorderRadius.circular(0),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.3),
                   spreadRadius: 2,
                   blurRadius: 5,
-                  offset: Offset(0, 3), // Shadow position
+                  offset: Offset(0, 3),
                 ),
               ],
             ),
-            child: _buildImageCarousel(),
+            child: _buildImageCarousel(restaurantData),
           ),
           const SizedBox(height: 15),
 
-          // Section 2: Restaurant Name | Heart Button | Share Button (Rectangular)
+          // Restaurant Name | Heart Button | Share Button
           Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            margin: const EdgeInsets.symmetric(vertical: 0),  // Added margin for spacing
+            margin: const EdgeInsets.symmetric(vertical: 0),
             decoration: BoxDecoration(
-              color: Colors.white, // Light background color for this section
+              color: Colors.white,
               borderRadius: BorderRadius.circular(0),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.3),
                   spreadRadius: 2,
                   blurRadius: 5,
-                  offset: Offset(0, 3), // Shadow position
+                  offset: Offset(0, 3),
                 ),
               ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Restaurant Name
                 Text(
-                  restaurantData['restaurantName'] ?? 'Restaurant Name',
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  restaurantData.name,
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Row(
                   children: [
-                    // Heart Icon for Favorite
                     IconButton(
                       icon: const Icon(Icons.favorite_border),
                       onPressed: () {
                         // Add your favorite button functionality
                       },
                     ),
-                    // Share Icon
                     IconButton(
                       icon: const Icon(Icons.share),
                       onPressed: () {
@@ -173,54 +180,10 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
           ),
           const SizedBox(height: 15),
 
-          // Section 3: Combined Info Card for Restaurant Details
+          // Restaurant Details Card
           Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            margin: const EdgeInsets.symmetric(vertical: 0),  // Added margin for spacing
-            decoration: BoxDecoration(
-              color: Colors.white,  // White background for the info card
-              borderRadius: BorderRadius.circular(0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 4,
-                  offset: Offset(0, 2), // Shadow position
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Description Section
-                _buildInfoRow(Icons.description, 'Mô tả', restaurantData['restaurantDescription'] ?? 'N/A'),
-                const SizedBox(height: 10),
-                // Address
-                _buildInfoRow(Icons.location_on, 'Địa chỉ', restaurantData['address'] ?? 'N/A'),
-                const SizedBox(height: 10),
-                // Hours
-                _buildInfoRow(Icons.access_time, 'Giờ mở cửa', getTodayOpenCloseTimes()),
-                const SizedBox(height: 10),
-                // Price Range
-                _buildInfoRow(Icons.attach_money, 'Giá cả', restaurantData['priceRange'] ?? 'N/A'),
-                const SizedBox(height: 10),
-                // Dishes
-                _buildInfoRow(Icons.restaurant_menu, 'Loại món ăn', restaurantData['selectedKeywords']?.join(' | ') ?? 'N/A'),
-                const SizedBox(height: 10),
-                // Floors
-                _buildInfoRow(Icons.business, 'Số tầng', getFloorCount().toString()),
-                const SizedBox(height: 10),
-                // Tables
-                _buildInfoRow(Icons.table_bar, 'Số bàn', getTotalTables().toString()),
-              ],
-            ),
-          ),
-
-          // Section 4: Reviews Section (Star Rating + View All Reviews)
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            margin: const EdgeInsets.symmetric(vertical: 0),  // Added margin for spacing
+            margin: const EdgeInsets.symmetric(vertical: 0),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(0),
@@ -236,23 +199,71 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Star Rating (Fake data, replace with actual rating)
+                _buildInfoRow(
+                    Icons.description, 'Mô tả', restaurantData.description),
+                const SizedBox(height: 10),
+                _buildInfoRow(Icons.location_on, 'Địa chỉ',
+                    restaurantData.location.toString()),
+                const SizedBox(height: 10),
+                _buildInfoRow(
+                    Icons.access_time,
+                    'Giờ mở cửa',
+                    getTodayOpenCloseTimes(
+                        restaurantData.openDates, restaurantData.openTime)),
+                const SizedBox(height: 10),
+              _buildInfoRow(Icons.attach_money, 'Giá cả',
+                  getPriceRangeString(restaurantData.priceRange)),
+              const SizedBox(height: 10),
+                _buildInfoRow(Icons.restaurant_menu, 'Loại món ăn',
+                    restaurantData.dishesStyle.join(' | ')),
+                const SizedBox(height: 10),
+                _buildInfoRow(Icons.business, 'Số tầng',
+                    restaurantData.floors.length.toString()),
+                const SizedBox(height: 10),
+                _buildInfoRow(
+                    Icons.table_bar,
+                    'Số bàn',
+                    restaurantData.floors
+                        .fold<int>(
+                        0, (prev, floor) => prev + floor.tables.length)
+                        .toString()),
+              ],
+            ),
+          ),
+
+          // Reviews Section
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            margin: const EdgeInsets.symmetric(vertical: 0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Row(
-                  children: [
-                    Icon(Icons.star, color: Colors.yellow, size: 20),
-                    Icon(Icons.star, color: Colors.yellow, size: 20),
-                    Icon(Icons.star, color: Colors.yellow, size: 20),
-                    Icon(Icons.star, color: Colors.yellow, size: 20),
-                    Icon(Icons.star_border, color: Colors.yellow, size: 20),
-                    const SizedBox(width: 10),
-                    Text(
-                      '4.0 / 5.0 (120 đánh giá)',
-                      style: TextStyle(fontSize: 16, color: Colors.black87),
+                  children: List.generate(
+                    5,
+                        (index) => Icon(
+                      index < restaurantData.rating.round()
+                          ? Icons.star
+                          : Icons.star_border,
+                      color: Colors.yellow,
+                      size: 20,
                     ),
-                  ],
+                  ),
                 ),
                 const SizedBox(height: 5),
-                // View All Reviews Button
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -273,7 +284,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
             ),
           ),
 
-          // Section 5: Reservation Button (at the bottom)
+          // Reservation Button
           const SizedBox(height: 30),
           ElevatedButton(
             onPressed: () {
@@ -284,7 +295,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
-              backgroundColor: Colors.green,  // Button color
+              backgroundColor: Colors.green,
             ),
             child: const Text(
               'Đặt chỗ ngay',
@@ -300,81 +311,45 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Icon(icon, size: 25, color: Colors.blueGrey), // Icon
+        Icon(icon, size: 25, color: Colors.blueGrey),
         const SizedBox(width: 15),
         Expanded(
-          child: Row(  // Use Row instead of Column to align label and content horizontally
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,  // Space between label and content
-            children: [
-              Text(
-                label,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              Text(
-                content,
-                style: const TextStyle(fontSize: 16, color: Colors.black87),
-              ),
-            ],
+          child: Text(
+            '$label: $content',
+            style: const TextStyle(
+              fontSize: 16,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildImageCarousel() {
-    final List<String> imgList = List<String>.from(restaurantData['selectedImage'] ?? []);
-    return Column(
-      children: [
-        CarouselSlider(
-          items: imgList
-              .map(
-                (item) => Center(
-              child: Image.network(
-                item,
-                fit: BoxFit.cover,
-                width: 1000,
-              ),
-            ),
-          )
-              .toList(),
-          options: CarouselOptions(
-            height: 170,
-            aspectRatio: 16 / 9,
-            viewportFraction: 0.8,
-            initialPage: 0,
-            enableInfiniteScroll: true,
-            reverse: false,
-            autoPlay: true,
-            autoPlayInterval: const Duration(seconds: 3),
-            autoPlayAnimationDuration: const Duration(milliseconds: 800),
-            autoPlayCurve: Curves.fastOutSlowIn,
-            enlargeCenterPage: true,
-            scrollDirection: Axis.horizontal,
-            onPageChanged: (index, reason) {
-              setState(() {
-                _current = index;
-              });
-            },
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: imgList.map((url) {
-            int index = imgList.indexOf(url);
-            return Container(
-              width: 8.0,
-              height: 8.0,
-              margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _current == index
-                    ? const Color.fromRGBO(0, 0, 0, 0.9)
-                    : const Color.fromRGBO(0, 0, 0, 0.4),
-              ),
+  Widget _buildImageCarousel(RestaurantModel restaurantData) {
+    return CarouselSlider(
+      items: restaurantData.photos.map((photoPath) {
+        return Builder(
+          builder: (BuildContext context) {
+            // Convert the local file path string to a File object
+            File imageFile = File(photoPath);
+            return Image.file(
+              imageFile,
+              fit: BoxFit.cover,
+              width: double.infinity,
             );
-          }).toList(),
-        ),
-      ],
+          },
+        );
+      }).toList(),
+      options: CarouselOptions(
+        height: 200.0,
+        enlargeCenterPage: true,
+        viewportFraction: 1.0,
+        autoPlay: true, // Enable auto play
+        autoPlayInterval: Duration(seconds: 3), // Set the interval to 3 seconds
+        onPageChanged: (index, reason) {
+          setState(() {});
+        },
+      ),
     );
   }
 }

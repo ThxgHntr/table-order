@@ -5,10 +5,7 @@ import 'package:table_order/src/views/auth_view/login_page_view.dart';
 import 'package:table_order/src/views/navigation_rail_page.dart';
 import 'package:table_order/src/views/owner_view/restaurant_owner_page_view.dart';
 import 'package:table_order/src/views/owner_view/restaurant_registration.dart';
-import 'package:table_order/src/views/owner_view/search_restaurant.dart';
-import 'package:table_order/src/views/restaurant_view/restaurant_item_details_view.dart';
 import 'package:table_order/src/views/restaurant_view/restaurant_item_list_view.dart';
-import 'package:table_order/src/views/restaurant_view/restaurant_review_view.dart';
 import 'views/auth_view/sign_up_page_view.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
@@ -85,8 +82,6 @@ class MyApp extends StatelessWidget {
                   //restaurant
                   case RestaurantOwnerPageView.routeName:
                     return const RestaurantOwnerPageView();
-                  case SearchRestaurant.routeName:
-                    return const SearchRestaurant();
                   case RestaurantRegistration.routeName:
                     return const RestaurantRegistration();
                   case RestaurantItemListView.routeName:

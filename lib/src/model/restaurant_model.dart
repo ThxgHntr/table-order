@@ -55,7 +55,7 @@ class RestaurantModel {
       phone: data['phone'] ?? '',
       description: data['description'] ?? '',
       dishesStyle: List<String>.from(data['dishesStyle'] ?? []),
-      priceRange: data['priceRange'] is Iterable
+      priceRange: data['priceRange'] is Map<String, dynamic>
           ? PriceRange.fromFirestore(data['priceRange'])
           : PriceRange(lowest: 0, highest: 0),
       openDates: List<String>.from(data['openDates'] ?? []),
@@ -105,9 +105,8 @@ class PriceRange {
 
   const PriceRange({required this.lowest, required this.highest});
 
-  factory PriceRange.fromFirestore(
-      DocumentSnapshot<Map<String, dynamic>> snapshot) {
-    final data = snapshot.data() ?? {};
+  // Sửa phương thức này để làm việc với Map thay vì DocumentSnapshot
+  factory PriceRange.fromFirestore(Map<String, dynamic> data) {
     return PriceRange(
       lowest: data['lowest'] as int,
       highest: data['highest'] as int,
@@ -121,3 +120,4 @@ class PriceRange {
     };
   }
 }
+
