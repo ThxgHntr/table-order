@@ -42,7 +42,7 @@ class _TableManagementViewState extends State<TableManagementView> {
 
         // Load tables for each floor
         final tablesSnapshot =
-            await restaurantRef.doc(floor.id).collection('tables').get();
+        await restaurantRef.doc(widget.restaurantId).collection('floors').doc(floor.id).collection('tables').get();
 
         final tables = tablesSnapshot.docs.map((tableDoc) {
           return TableModel.fromFirestore(
@@ -67,7 +67,7 @@ class _TableManagementViewState extends State<TableManagementView> {
   Future<void> _addFloor(String floorName) async {
     try {
       final newFloorRef =
-          restaurantRef.doc(widget.restaurantId).collection('floors').doc();
+      restaurantRef.doc(widget.restaurantId).collection('floors').doc();
 
       await newFloorRef.set({
         'name': floorName,
@@ -78,8 +78,7 @@ class _TableManagementViewState extends State<TableManagementView> {
     }
   }
 
-  Future<void> _addTable(
-      int floorIndex, String tableNumber, int chairCount) async {
+  Future<void> _addTable(int floorIndex, String tableNumber, int chairCount) async {
     try {
       final floorId = floors[floorIndex].id;
       final newTableRef = restaurantRef
@@ -90,7 +89,7 @@ class _TableManagementViewState extends State<TableManagementView> {
           .doc();
 
       await newTableRef.set({
-        'number': tableNumber,
+        'tableNumber': tableNumber,
         'seats': chairCount,
         'state': 0, // Trạng thái mặc định
       });
@@ -154,7 +153,7 @@ class _TableManagementViewState extends State<TableManagementView> {
           .doc(floorId)
           .collection('tables')
           .doc(tableId)
-          .update({'status': newStatus});
+          .update({'state': newStatus});
       _loadFloorsFromDatabase();
     } catch (e) {
       debugPrint("Lỗi cập nhật trạng thái bàn: $e");
@@ -168,7 +167,7 @@ class _TableManagementViewState extends State<TableManagementView> {
       case 1:
         return 'Đã đặt';
       case 2:
-        return 'Đang chọn';
+        return 'Đang sử dụng';
       default:
         return 'Không xác định';
     }
