@@ -167,8 +167,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow(
-              Icons.description, 'Mô tả', restaurantData.description),
+          _buildInfoRow(Icons.description, 'Mô tả', restaurantData.description),
           const SizedBox(height: 10),
           FutureBuilder<String>(
             future: getAddressFromGeopoint(restaurantData.location),
@@ -214,7 +213,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
           Row(
             children: List.generate(
               5,
-                  (index) => Icon(
+              (index) => Icon(
                 index < restaurantData.rating.round()
                     ? Icons.star
                     : Icons.star_border,
@@ -245,14 +244,20 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
   }
 
   Widget _buildImageCarousel(RestaurantModel restaurantData) {
+    final List<String> photos = List<String>.from(restaurantData.photos ?? []);
+
     return CarouselSlider(
-      items: restaurantData.photos.map((photoPath) {
-        return Image.file(
-          File(photoPath),
-          fit: BoxFit.cover,
-          width: double.infinity,
-        );
-      }).toList(),
+      items: photos
+          .map(
+            (item) => Center(
+              child: Image.network(
+                item,
+                fit: BoxFit.cover,
+                width: 1000,
+              ),
+            ),
+          )
+          .toList(),
       options: CarouselOptions(
         height: 200.0,
         viewportFraction: 1.0,
