@@ -1,3 +1,5 @@
+// lib/src/model/review_model.dart
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReviewModel {
@@ -6,8 +8,9 @@ class ReviewModel {
   final String restaurantID;
   final int rating;
   final String comment;
-  final List<String> photos;
+  final List<String> photos; // Ensure this is a list
   final Timestamp createdAt;
+  final String reply;
 
   ReviewModel({
     this.reviewId = '',
@@ -17,6 +20,7 @@ class ReviewModel {
     required this.comment,
     required this.photos,
     required this.createdAt,
+    this.reply = '',
   });
 
   factory ReviewModel.fromFirestore(
@@ -28,8 +32,9 @@ class ReviewModel {
       restaurantID: data['restaurantID'] ?? '',
       rating: data['rating'] ?? 0,
       comment: data['comment'] ?? '',
-      photos: List<String>.from(data['photos'] ?? []),
+      photos: data['photos'] is Iterable ? List<String>.from(data['photos']) : [], // Convert to list
       createdAt: data['created_at'] ?? Timestamp.now(),
+      reply: data['reply'] ?? '',
     );
   }
 
@@ -41,6 +46,7 @@ class ReviewModel {
       'comment': comment,
       'photos': photos,
       'created_at': createdAt,
+      'reply': reply,
     };
   }
 }
