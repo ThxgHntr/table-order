@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_order/src/utils/location_helper.dart';
 import '../../model/restaurant_model.dart';
+import '../../utils/file_handler.dart';
 
 class RestaurantOwnerTab2View extends StatefulWidget {
   const RestaurantOwnerTab2View({super.key});
@@ -65,20 +67,28 @@ class _RestaurantOwnerTab2ViewState extends State<RestaurantOwnerTab2View> {
     );
   }
 
-  void _removeRestaurant(String id) async {
+  void _removeRestaurant(String restaurantId) async {
     try {
-      // Delete restaurant document from Firestore by its id
+      // Xoá tất cả tệp trong thư mục `restaurant_pictures/$restaurantId/`
+      final folderPath = 'restaurant_pictures/$restaurantId/';
+      await deleteAllFilesInFolder(folderPath);
+
+      // Xoá tài liệu nhà hàng trong Firestore
       await FirebaseFirestore.instance
           .collection('restaurants')
-          .doc(id)
+          .doc(restaurantId)
           .delete();
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đã xoá nhà hàng')),
+        const SnackBar(content: Text('Đã xoá nhà hàng và tất cả ảnh liên quan')),
       );
     } catch (e) {
       if (kDebugMode) {
         print("Error deleting restaurant: $e");
       }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Có lỗi xảy ra khi xoá nhà hàng: $e')),
+      );
     }
   }
 
