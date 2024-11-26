@@ -1,98 +1,110 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:table_order/src/services/firebase_restaurants_services.dart';
+import 'package:table_order/src/services/firebase_review_services.dart';
+import '../widgets/add_review_form.dart';
+import '../../model/review_model.dart';
 
 class RestaurantReviewView extends StatelessWidget {
   final String restaurantId;
+
   const RestaurantReviewView({super.key, required this.restaurantId});
 
   static const routeName = '/restaurant_review';
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final FirebaseReviewServices service = FirebaseReviewServices();
+    final FirebaseRestaurantsServices restaurantService =
+        FirebaseRestaurantsServices();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đánh giá nhà hàng'),
+        title: const Text('Đánh giá & Bình luận'),
+        backgroundColor: Colors.deepOrange,
       ),
       body: Center(
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: ListView.separated(
-            itemCount: _feedItems.length,
-            separatorBuilder: (BuildContext context, int index) {
-              return const Divider();
-            },
-            itemBuilder: (BuildContext context, int index) {
-              final item = _feedItems[index];
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _AvatarImage(item.user.imageUrl),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                  child: RichText(
-                                    overflow: TextOverflow.ellipsis,
-                                    text: TextSpan(children: [
-                                      TextSpan(
-                                        text: item.user.fullName,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            color: Colors.black),
-                                      ),
-                                      TextSpan(
-                                        text: " @${item.user.userName}",
-                                        style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                      ),
-                                    ]),
-                                  )),
-                              Text('· 5m',
-                                  style: Theme.of(context).textTheme.titleMedium),
-                              const Padding(
-                                padding: EdgeInsets.only(left: 8.0),
-                                child: Icon(Icons.more_horiz),
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: List.generate(5, (index) {
-                              return const Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                                size: 16,
-                              );
-                            }),
-                          ),
-                          if (item.content != null) Text(item.content!),
-                          if (item.imageUrl != null)
-                            Container(
-                              height: 200,
-                              margin: const EdgeInsets.only(top: 8.0),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(item.imageUrl!),
-                                  )),
-                            ),
-                          _ActionsRow(item: item)
-                        ],
-                      ),
-                    ),
-                  ],
+          constraints: const BoxConstraints(maxWidth: 600),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('restaurants')
+                      .doc(restaurantId)
+                      .collection('reviews')
+                      .orderBy('created_at', descending: true)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    if (snapshot.hasError) {
+                      debugPrint("Error: ${snapshot.error}");
+                      return const Text('Error loading reviews');
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      debugPrint("No reviews found");
+                      return const Text('No reviews yet');
+                    }
+                    final reviews = snapshot.data!.docs.map((doc) {
+                      return ReviewModel.fromFirestore(
+                          doc as DocumentSnapshot<Map<String, dynamic>>);
+                    }).toList();
+                    return ListView.separated(
+                      itemCount: reviews.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const Divider();
+                      },
+                      itemBuilder: (BuildContext context, int index) {
+                        final review = reviews[index];
+                        return _ReviewCard(
+                          review: review,
+                          user: user,
+                          userId: review.userID,
+                          onDelete: () => service.deleteReview(
+                              restaurantId, review.reviewId, review.photos),
+                          onUpdate: (newComment, newRating, newImages,
+                                  existingImages) =>
+                              service.updateReview(
+                                  restaurantId,
+                                  review.reviewId,
+                                  newComment,
+                                  newRating,
+                                  newImages,
+                                  existingImages),
+                        );
+                      },
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+              const SizedBox(height: 16),
+              //neu auth id cua user khong phai la owner thi hien thi form review
+              FutureBuilder<String?>(
+                future: restaurantService.getOwnerId(restaurantId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  if (snapshot.hasError || !snapshot.hasData) {
+                    return const SizedBox.shrink();
+                  }
+                  final ownerId = snapshot.data;
+                  if (user != null && user.uid != ownerId) {
+                    return AddReviewForm(restaurantId: restaurantId);
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
           ),
         ),
       ),
@@ -100,8 +112,348 @@ class RestaurantReviewView extends StatelessWidget {
   }
 }
 
+class _ReviewCard extends StatelessWidget {
+  final ReviewModel review;
+  final User? user;
+  final VoidCallback onDelete;
+  final String userId;
+  final Function(String, int, List<XFile>, List<String>) onUpdate;
+
+  const _ReviewCard({
+    required this.review,
+    this.user,
+    required this.userId,
+    required this.onDelete,
+    required this.onUpdate,
+  });
+
+  Future<String> _getUserAvatar(String userId) async {
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if (userDoc.exists) {
+      return userDoc.data()?['profilePicture'] ?? '';
+    }
+    return '';
+  }
+
+  Future<String> _getUserName(String userId) async {
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if (userDoc.exists) {
+      return userDoc.data()?['name'] ?? 'Anonymous';
+    }
+    return 'Anonymous';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<String>>(
+      future: Future.wait([_getUserAvatar(userId), _getUserName(userId)]),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const Text('Error loading user data');
+        }
+        final userAvatar = snapshot.data![0];
+        final userName = snapshot.data![1];
+
+        return Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    _AvatarImage(userAvatar),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            userName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            '${review.createdAt.toDate()}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (user?.uid == userId)
+                      PopupMenuButton<int>(
+                        icon: const Icon(Icons.more_horiz),
+                        onSelected: (value) {
+                          if (value == 0) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('Confirm Delete'),
+                                  content: const Text('Are you sure you want to delete this review?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        onDelete();
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else if (value == 1) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                final TextEditingController commentController = TextEditingController(text: review.comment);
+                                int rating = review.rating;
+                                List<XFile> newImages = [];
+                                List<String> existingImages = List.from(review.photos);
+
+                                return StatefulBuilder(
+                                  builder: (context, setState) {
+                                    return AlertDialog(
+                                      title: const Text('Update Review'),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextFormField(
+                                            controller: commentController,
+                                            decoration: const InputDecoration(labelText: 'Comment'),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Row(
+                                            children: List.generate(5, (index) {
+                                              return IconButton(
+                                                icon: Icon(
+                                                  index < rating ? Icons.star : Icons.star_border,
+                                                  color: Colors.amber,
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    rating = index + 1;
+                                                  });
+                                                },
+                                              );
+                                            }),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          if (existingImages.isNotEmpty)
+                                            Wrap(
+                                              spacing: 8.0,
+                                              runSpacing: 8.0,
+                                              children: existingImages.map((image) {
+                                                return Stack(
+                                                  children: [
+                                                    ClipRRect(
+                                                      borderRadius: BorderRadius.circular(8.0),
+                                                      child: Image.network(
+                                                        image,
+                                                        height: 100,
+                                                        width: 100,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                    Positioned(
+                                                      right: 0,
+                                                      child: IconButton(
+                                                        icon: const Icon(Icons.remove_circle, color: Colors.red),
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            existingImages.remove(image);
+                                                          });
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              }).toList(),
+                                            ),
+                                          const SizedBox(height: 8),
+                                          TextButton.icon(
+                                            onPressed: () async {
+                                              final ImagePicker picker = ImagePicker();
+                                              final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+                                              if (image != null) {
+                                                setState(() {
+                                                  newImages.add(image);
+                                                });
+                                              }
+                                            },
+                                            icon: const Icon(Icons.add_a_photo, color: Colors.deepOrange),
+                                            label: const Text('Pick Images'),
+                                            style: TextButton.styleFrom(
+                                              foregroundColor: Colors.deepOrange,
+                                              textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          if (newImages.isNotEmpty)
+                                            Wrap(
+                                              spacing: 8.0,
+                                              runSpacing: 8.0,
+                                              children: newImages.map((image) {
+                                                return ClipRRect(
+                                                  borderRadius: BorderRadius.circular(8.0),
+                                                  child: Image.file(
+                                                    File(image.path),
+                                                    height: 100,
+                                                    width: 100,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            ),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            onUpdate(commentController.text, rating, newImages, existingImages);
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Update'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            value: 0,
+                            child: Row(
+                              children: const [
+                                Icon(Icons.delete, color: Colors.red),
+                                SizedBox(width: 8),
+                                Text('Delete'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 1,
+                            child: Row(
+                              children: const [
+                                Icon(Icons.edit, color: Colors.blue),
+                                SizedBox(width: 8),
+                                Text('Update'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: List.generate(5, (index) {
+                    return Icon(
+                      index < review.rating ? Icons.star : Icons.star_border,
+                      color: Colors.amber,
+                      size: 16,
+                    );
+                  }),
+                ),
+                const SizedBox(height: 8),
+                if (review.comment.isNotEmpty) Text(review.comment),
+                if (review.photos.isNotEmpty)
+                  Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Dialog(
+                                child: Image.network(review.photos.first),
+                              );
+                            },
+                          );
+                        },
+                        child: Container(
+                          height: 200,
+                          margin: const EdgeInsets.only(top: 8.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(review.photos.first),
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (review.photos.length > 1)
+                        Row(
+                          children: review.photos.skip(1).take(2).map((photo) => Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return Dialog(
+                                      child: Image.network(photo),
+                                    );
+                                  },
+                                );
+                              },
+                              child: Container(
+                                height: 100,
+                                margin: const EdgeInsets.only(top: 8.0),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(photo),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )).toList(),
+                        ),
+                    ],
+                  ),
+                const SizedBox(height: 8),
+                if (review.reply.isNotEmpty)
+                  Text(
+                    'Reply from restaurant: ${review.reply}',
+                    style: const TextStyle(fontStyle: FontStyle.italic),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
 class _AvatarImage extends StatelessWidget {
   final String url;
+
   const _AvatarImage(this.url);
 
   @override
@@ -110,137 +462,17 @@ class _AvatarImage extends StatelessWidget {
       width: 60,
       height: 60,
       decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          image: DecorationImage(image: NetworkImage(url))),
-    );
-  }
-}
-
-class _ActionsRow extends StatelessWidget {
-  final FeedItem item;
-  const _ActionsRow({required this.item});
-
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-          iconTheme: const IconThemeData(color: Colors.grey, size: 18),
-          textButtonTheme: TextButtonThemeData(
-              style: ButtonStyle(
-                foregroundColor: WidgetStateProperty.all(Colors.grey),
-              ))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          TextButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.mode_comment_outlined),
-            label: Text(
-                item.commentsCount == 0 ? '' : item.commentsCount.toString()),
-          ),
-          TextButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.favorite_border),
-            label: Text(item.likesCount == 0 ? '' : item.likesCount.toString()),
-          ),
-        ],
+        shape: BoxShape.circle,
+      ),
+      child: ClipOval(
+        child: Image.network(
+          url,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Image.asset('assets/images/placeholder.png', fit: BoxFit.cover);
+          },
+        ),
       ),
     );
   }
 }
-
-class FeedItem {
-  final String? content;
-  final String? imageUrl;
-  final User user;
-  final int commentsCount;
-  final int likesCount;
-
-  FeedItem(
-      {this.content,
-        this.imageUrl,
-        required this.user,
-        this.commentsCount = 0,
-        this.likesCount = 0,});
-}
-
-class User {
-  final String fullName;
-  final String imageUrl;
-  final String userName;
-
-  User(
-      this.fullName,
-      this.userName,
-      this.imageUrl,
-      );
-}
-
-final List<User> _users = [
-  User(
-    "John Doe",
-    "john_doe",
-    "https://picsum.photos/id/1062/80/80",
-  ),
-  User(
-    "Jane Doe",
-    "jane_doe",
-    "https://picsum.photos/id/1066/80/80",
-  ),
-  User(
-    "Jack Doe",
-    "jack_doe",
-    "https://picsum.photos/id/1072/80/80",
-  ),
-  User(
-    "Jill Doe",
-    "jill_doe",
-    "https://picsum.photos/id/133/80/80",
-  )
-];
-
-final List<FeedItem> _feedItems = [
-  FeedItem(
-    content:
-    "A son asked his father (a programmer) why the sun rises in the east, and sets in the west. His response? It works, don’t touch!",
-    user: _users[0],
-    imageUrl: "https://picsum.photos/id/1000/960/540",
-    likesCount: 100,
-    commentsCount: 10,
-  ),
-  FeedItem(
-      user: _users[1],
-      imageUrl: "https://picsum.photos/id/1001/960/540",
-      likesCount: 10,
-      commentsCount: 2),
-  FeedItem(
-      user: _users[0],
-      content:
-      "How many programmers does it take to change a light bulb? None, that’s a hardware problem.",
-      likesCount: 50,
-      commentsCount: 22),
-  FeedItem(
-      user: _users[1],
-      content:
-      "Programming today is a race between software engineers striving to build bigger and better idiot-proof programs, and the Universe trying to produce bigger and better idiots. So far, the Universe is winning.",
-      imageUrl: "https://picsum.photos/id/1002/960/540",
-      likesCount: 500,
-      commentsCount: 202),
-  FeedItem(
-    user: _users[2],
-    content: "Good morning!",
-    imageUrl: "https://picsum.photos/id/1003/960/540",
-  ),
-  FeedItem(
-    user: _users[1],
-    imageUrl: "https://picsum.photos/id/1004/960/540",
-  ),
-  FeedItem(
-    user: _users[3],
-    imageUrl: "https://picsum.photos/id/1005/960/540",
-  ),
-  FeedItem(
-    user: _users[0],
-    imageUrl: "https://picsum.photos/id/1006/960/540",
-  ),
-];

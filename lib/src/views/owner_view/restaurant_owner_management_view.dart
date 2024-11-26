@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:table_order/src/views/owner_view/restaurant_management_view/review_management_view.dart';
 import 'package:table_order/src/views/owner_view/restaurant_management_view/table_management_view.dart';
 
 class RestaurantOwnerManagementView extends StatefulWidget {
@@ -62,6 +63,17 @@ class _RestaurantOwnerManagementViewState
               TableManagementView.routeName,
               arguments: {'restaurantId': widget.restaurantId},
             );*/
+          } else if (title == 'Đánh giá') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ReviewManagementView(
+                  restaurantId: widget.restaurantId,
+                ),
+              ),
+            );
+          } else if (title == 'Quản lý nhân viên') {
+            // Handle navigation to employee management view
           }
           // Handle other navigation cases if needed
         },
