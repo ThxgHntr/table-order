@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_order/src/model/reservation_model.dart';
-import 'package:table_order/src/model/restaurant_model.dart';
 
 class UserModel {
   final String userId;
@@ -10,7 +9,6 @@ class UserModel {
   final String profilePicture;
   final GeoPoint location;
   final String role;
-  final List<RestaurantModel> ownedRestaurants;
   final Timestamp createdAt;
 
   // Subcollection
@@ -25,7 +23,6 @@ class UserModel {
     required this.role,
     this.location = const GeoPoint(0, 0),
     required this.createdAt,
-    this.ownedRestaurants = const [],
     this.reservations = const [],
   });
 
@@ -41,9 +38,6 @@ class UserModel {
       role: data?['role'] ?? '',
       createdAt: data?['created_at'] ?? Timestamp.now(),
       location: data?['location'] ?? GeoPoint(0, 0),
-      ownedRestaurants: data?['ownedRestaurants'] is Iterable
-          ? List<RestaurantModel>.from(data?['ownedRestaurants'])
-          : [],
       reservations: data?['reservations'] is Iterable
           ? List<ReservationModel>.from(data?['reservations'])
           : [],
@@ -58,7 +52,6 @@ class UserModel {
       'profilePicture': profilePicture,
       'location': location,
       'role': role,
-      'ownedRestaurants': ownedRestaurants,
       'created_at': createdAt,
       'reservations': reservations.map((e) => e.toFirestore()).toList(),
     };

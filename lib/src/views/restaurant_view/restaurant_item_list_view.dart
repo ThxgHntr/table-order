@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:table_order/src/views/restaurant_view/restaurant_item_details_view.dart';
+import 'package:table_order/src/views/widgets/restaurant_card.dart';
 import '../../model/restaurant_model.dart';
-import 'dart:io';
 
 import '../../utils/location_helper.dart';
 
 class RestaurantItemListView extends StatefulWidget {
   static const routeName = '/';
+  final int itemsPerPage;
 
-  const RestaurantItemListView({super.key});
+  const RestaurantItemListView({super.key, this.itemsPerPage = 10});
 
   @override
   State<StatefulWidget> createState() => RestaurantItemListViewState();
@@ -18,9 +18,9 @@ class RestaurantItemListView extends StatefulWidget {
 
 class RestaurantItemListViewState extends State<RestaurantItemListView> {
   GeoPoint? currentLocationGeoPoint;
-  final int _pageSize = 6;
-  DocumentSnapshot? _lastNearbyDocument;
+  late int _pageSize;
   DocumentSnapshot? _lastAllDocument;
+  DocumentSnapshot? _lastNearbyDocument;
   bool _isLoadingMoreNearby = false;
   bool _isLoadingMoreAll = false;
   bool _hasMoreNearbyData = true;
@@ -28,17 +28,35 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
   bool _isLoadingLocation = true;
   final List<Map<String, dynamic>> _restaurantList = [];
   final List<Map<String, dynamic>> _nearbyRestaurants = [];
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _initialize();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _initialize() async {
     await _getCurrentGeopoint();
+    _updatePageSize();
     _loadRestaurants(isNearby: true);
     _loadRestaurants(isNearby: false);
+  }
+
+  void _updatePageSize() {
+    final width = MediaQuery.of(context).size.width;
+    final bool isLargeScreen = width > 800;
+    setState(() {
+      _pageSize = isLargeScreen ? 20 : widget.itemsPerPage;
+    });
   }
 
   Future<void> _getCurrentGeopoint() async {
@@ -135,8 +153,30 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
     });
   }
 
+  void _onScroll() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      if (_hasMoreNearbyData) {
+        _loadRestaurants(isNearby: true);
+      } else if (_hasMoreAllData) {
+        _loadRestaurants(isNearby: false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final bool isSmallScreen = width < 600;
+    final bool isLargeScreen = width > 800;
+    final int crossAxisCount = isSmallScreen
+        ? 2
+        : isLargeScreen
+            ? 3
+            : 3;
+    final double childAspectRatio = isSmallScreen ? 3 / 4 : 4 / 3;
+    final double sidePadding = isLargeScreen ? 20.0 : 10.0;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -150,6 +190,8 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
       body: _isLoadingLocation
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
+              controller: _scrollController,
+              padding: EdgeInsets.symmetric(horizontal: sidePadding),
               child: Column(
                 children: [
                   const SizedBox(height: 10),
@@ -170,10 +212,10 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                           padding: const EdgeInsets.all(10),
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
+                            crossAxisCount: crossAxisCount,
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 10,
-                            childAspectRatio: 3 / 4,
+                            childAspectRatio: childAspectRatio,
                           ),
                           itemCount: _nearbyRestaurants.length,
                           itemBuilder: (context, index) {
@@ -182,14 +224,12 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                                 restaurantData['restaurant'] as RestaurantModel;
                             final distance =
                                 restaurantData['distance'] as double;
-                            final imageUrl =
-                                Future.value(restaurant.photos.first);
 
-                            return _buildRestaurantCard(
-                                restaurant, distance, imageUrl);
+                            return restaurantCard(
+                                context, restaurant, distance);
                           },
                         ),
-                        if (_hasMoreNearbyData)
+                        if (_hasMoreNearbyData && !isLargeScreen)
                           TextButton(
                             onPressed: () => _loadRestaurants(isNearby: true),
                             child: _isLoadingMoreNearby
@@ -210,10 +250,10 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                     physics: NeverScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(10),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
+                      crossAxisCount: crossAxisCount,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 3 / 4,
+                      childAspectRatio: childAspectRatio,
                     ),
                     itemCount: _restaurantList.length,
                     itemBuilder: (context, index) {
@@ -221,13 +261,11 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                       final restaurant =
                           restaurantData['restaurant'] as RestaurantModel;
                       final distance = restaurantData['distance'] as double;
-                      final imageUrl = Future.value(restaurant.photos.first);
 
-                      return _buildRestaurantCard(
-                          restaurant, distance, imageUrl);
+                      return restaurantCard(context, restaurant, distance);
                     },
                   ),
-                  if (_hasMoreAllData)
+                  if (_hasMoreAllData && !isLargeScreen)
                     TextButton(
                       onPressed: () => _loadRestaurants(isNearby: false),
                       child: _isLoadingMoreAll
@@ -237,104 +275,6 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                 ],
               ),
             ),
-    );
-  }
-
-  Widget _buildRestaurantCard(
-      RestaurantModel restaurant, double distance, Future<String> imageUrl) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      elevation: 5,
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RestaurantItemDetailsView(
-                restaurantId: restaurant.restaurantId,
-              ),
-            ),
-          );
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: FutureBuilder<String>(
-                future: imageUrl,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (snapshot.hasError || !snapshot.hasData) {
-                    return const Icon(Icons.broken_image);
-                  }
-
-                  final image = snapshot.data!;
-                  return ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(8.0)),
-                    child: image.startsWith('http')
-                        ? Image.network(
-                            image,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.broken_image),
-                          )
-                        : Image.file(
-                            File(image),
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.broken_image),
-                          ),
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                restaurant.name,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on, size: 16),
-                      SizedBox(width: 4),
-                      Text((distance < 1
-                          ? '${(distance * 1000).toStringAsFixed(0)}m'
-                          : '${distance.toStringAsFixed(1)} km')),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Icon(Icons.star, size: 16, color: Colors.yellow),
-                      Text(restaurant.rating.toString()),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
