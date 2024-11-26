@@ -8,7 +8,7 @@ Widget restaurantCard(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(8.0),
     ),
-    elevation: 5,
+    elevation: 3,
     child: InkWell(
       borderRadius: BorderRadius.circular(8.0),
       onTap: () {
