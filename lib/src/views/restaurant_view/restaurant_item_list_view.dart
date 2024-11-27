@@ -178,15 +178,6 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
     final double sidePadding = isLargeScreen ? 20.0 : 10.0;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Danh sách nhà hàng',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        automaticallyImplyLeading: false,
-      ),
       body: _isLoadingLocation
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -195,11 +186,15 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
               child: Column(
                 children: [
                   const SizedBox(height: 10),
-                  Text(
-                    'Nhà hàng gần bạn',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Nhà hàng gần bạn',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                      textAlign: TextAlign.left, // Align text to the left
+                    ),
                   ),
                   if (_nearbyRestaurants.isEmpty)
                     const Center(child: Text("Không có nhà hàng nào gần bạn.")),
@@ -239,11 +234,15 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                       ],
                     ),
                   const SizedBox(height: 10),
-                  Text(
-                    'Tất cả nhà hàng',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Tất cả nhà hàng',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                      textAlign: TextAlign.left, // Align text to the left
+                    ),
                   ),
                   GridView.builder(
                     shrinkWrap: true,

@@ -130,7 +130,11 @@ Future<String> getAddressFromGeopoint(GeoPoint geopoint) async {
     List<Placemark> placemarks =
         await placemarkFromCoordinates(geopoint.latitude, geopoint.longitude);
     if (placemarks.isNotEmpty) {
-      return "${placemarks.first.street}, ${placemarks.first.administrativeArea}, ${placemarks.first.country}";
+      Placemark place = placemarks.first;
+      String street = place.street ?? 'Unknown Street';
+      String administrativeArea = place.administrativeArea ?? 'Unknown Area';
+      String country = place.country ?? 'Unknown Country';
+      return "$street, $administrativeArea, $country";
     }
   } catch (e) {
     if (kDebugMode) {
