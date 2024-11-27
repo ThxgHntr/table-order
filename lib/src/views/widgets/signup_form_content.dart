@@ -44,13 +44,13 @@ class SignupFormContentState extends State<SignupFormContent> {
               controller: _nameController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Vui lòng nhập tên';
                 }
                 return null;
               },
               decoration: const InputDecoration(
-                labelText: 'Name',
-                hintText: 'Enter your name',
+                labelText: 'Tên',
+                hintText: 'Nhập tên của bạn',
                 prefixIcon: Icon(Icons.person_outline),
                 border: OutlineInputBorder(),
               ),
@@ -60,21 +60,21 @@ class SignupFormContentState extends State<SignupFormContent> {
               controller: _emailController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Vui lòng nhập email';
                 }
 
                 bool emailValid = RegExp(
                     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                     .hasMatch(value);
                 if (!emailValid) {
-                  return 'Please enter a valid email';
+                  return 'Email không hợp lệ';
                 }
 
                 return null;
               },
               decoration: const InputDecoration(
                 labelText: 'Email',
-                hintText: 'Enter your email',
+                hintText: 'Nhập email của bạn',
                 prefixIcon: Icon(Icons.email_outlined),
                 border: OutlineInputBorder(),
               ),
@@ -84,18 +84,18 @@ class SignupFormContentState extends State<SignupFormContent> {
               controller: _passwordController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Vui lòng nhập mật khẩu';
                 }
 
                 if (value.length < 6) {
-                  return 'Password must be at least 6 characters';
+                  return 'Mật khẩu phải có ít nhất 6 ký tự';
                 }
                 return null;
               },
               obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
-                  labelText: 'Password',
-                  hintText: 'Enter your password',
+                  labelText: 'Mật khẩu',
+                  hintText: 'Nhập mật khẩu của bạn',
                   prefixIcon: const Icon(Icons.lock_outline_rounded),
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
@@ -115,18 +115,18 @@ class SignupFormContentState extends State<SignupFormContent> {
               controller: _confirmPasswordController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Vui lòng nhập mật khẩu';
                 }
 
                 if (value != _passwordController.text) {
-                  return 'Password does not match';
+                  return 'Mật khẩu không khớp';
                 }
                 return null;
               },
               obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
-                  labelText: 'Confirm Password',
-                  hintText: 'Re-enter your password',
+                  labelText: 'Nhập lại mật khẩu',
+                  hintText: 'Nhập lại mật khẩu của bạn',
                   prefixIcon: const Icon(Icons.lock_outline_rounded),
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
@@ -152,7 +152,7 @@ class SignupFormContentState extends State<SignupFormContent> {
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: _isSigning ? CircularProgressIndicator(color: Colors.white,): Text(
-                    'Sign up',
+                    'Đăng ký',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -162,12 +162,12 @@ class SignupFormContentState extends State<SignupFormContent> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Already have an account?"),
+                Text("Đã có tài khoản? "),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pushNamed('/login');
                   },
-                  child: Text("Login"),
+                  child: Text("Đăng nhập"),
                 )
               ],
             ),
@@ -190,13 +190,13 @@ class SignupFormContentState extends State<SignupFormContent> {
       try {
         User? user = await _auth.signUpWithEmailAndPassword(email, password, username: username);
         if (user != null && mounted) {
-          showToast("Sign up success");
+          showToast("Đăng ký thành công");
           Navigator.of(context).pushNamed("/login");
         } else {
-          showToast("Sign up failed");
+          showToast("Đăng ký thất bại");
         }
       } catch (e) {
-        showToast("Sign up failed");
+        showToast("Đăng ký thất bại");
       } finally {
         setState(() {
           _isSigning = false;
