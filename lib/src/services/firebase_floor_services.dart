@@ -31,13 +31,22 @@ class FirebaseFloorServices {
     return floors;
   }
 
-  Future<void> addFloor(String restaurantId, String floorName) async {
+  Future<void> addFloor(String restaurantId, String floorName, List<Map<String, dynamic>> tables) async {
     final restaurantRef = _firestore.collection('restaurants');
     final newFloorRef = restaurantRef.doc(restaurantId).collection('floors').doc();
 
     await newFloorRef.set({
       'name': floorName,
     });
+
+    for (var table in tables) {
+      final newTableRef = newFloorRef.collection('tables').doc();
+      await newTableRef.set({
+        'tableNumber': table['tableNumber'],
+        'seats': table['seats'],
+        'state': 0, // Default state
+      });
+    }
   }
 
   Future<void> addTable(String restaurantId, String floorId, String tableNumber, int chairCount) async {
@@ -47,7 +56,7 @@ class FirebaseFloorServices {
     await newTableRef.set({
       'tableNumber': tableNumber,
       'seats': chairCount,
-      'state': 0, // Trạng thái mặc định
+      'state': 0, // Default state
     });
   }
 
