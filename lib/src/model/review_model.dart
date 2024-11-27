@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ReviewModel {
   final String reviewId;
   final String userID;
-  final String restaurantID;
   final int rating;
   final String comment;
   final List<String> photos; // Ensure this is a list
@@ -15,7 +14,6 @@ class ReviewModel {
   ReviewModel({
     this.reviewId = '',
     required this.userID,
-    required this.restaurantID,
     required this.rating,
     required this.comment,
     required this.photos,
@@ -29,7 +27,6 @@ class ReviewModel {
     return ReviewModel(
       reviewId: snapshot.id,
       userID: data['userID'] ?? '',
-      restaurantID: data['restaurantID'] ?? '',
       rating: data['rating'] ?? 0,
       comment: data['comment'] ?? '',
       photos: data['photos'] is Iterable ? List<String>.from(data['photos']) : [], // Convert to list
@@ -41,7 +38,6 @@ class ReviewModel {
   Map<String, dynamic> toFirestore() {
     return {
       'userID': userID,
-      'restaurantID': restaurantID,
       'rating': rating,
       'comment': comment,
       'photos': photos,

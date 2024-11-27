@@ -33,7 +33,6 @@ class FirebaseReviewServices {
 
     final review = {
       'userID': user.uid,
-      'restaurantId': restaurantId,
       'rating': rating,
       'comment': comment,
       'created_at': FieldValue.serverTimestamp(),
