@@ -1,68 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_order/src/model/floor_model.dart';
-import 'package:table_order/src/model/table_model.dart';
+import 'package:table_order/src/services/firebase_floor_services.dart';
 
 class TableManagementView extends StatefulWidget {
   final String restaurantId;
-  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-  TableManagementView({super.key, required this.restaurantId});
+  const TableManagementView({super.key, required this.restaurantId});
 
   @override
   State<StatefulWidget> createState() => _TableManagementViewState();
 }
 
 class _TableManagementViewState extends State<TableManagementView> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFloorServices _floorServices = FirebaseFloorServices();
   final List<FloorModel> floors = [];
-  late CollectionReference<Map<String, dynamic>> restaurantRef;
 
   @override
   void initState() {
     super.initState();
-    restaurantRef = _firestore.collection('restaurants');
     _loadFloorsFromDatabase();
   }
 
   void _loadFloorsFromDatabase() async {
     try {
-      final floorsSnapshot = await restaurantRef
-          .doc(widget.restaurantId)
-          .collection('floors')
-          .get();
-
+      final loadedFloors = await _floorServices.loadFloors(widget.restaurantId);
       setState(() {
         floors.clear();
+        floors.addAll(loadedFloors);
       });
-
-      for (var doc in floorsSnapshot.docs) {
-        final floor = FloorModel.fromFirestore(
-            doc as DocumentSnapshot<Map<String, dynamic>>);
-
-        // Load tables for each floor
-        final tablesSnapshot = await restaurantRef
-            .doc(widget.restaurantId)
-            .collection('floors')
-            .doc(floor.id)
-            .collection('tables')
-            .get();
-
-        final tables = tablesSnapshot.docs.map((tableDoc) {
-          return TableModel.fromFirestore(
-              tableDoc as DocumentSnapshot<Map<String, dynamic>>);
-        }).toList();
-
-        setState(() {
-          floors.add(FloorModel(
-            id: floor.id,
-            name: floor.name,
-            description: floor.description,
-            photos: floor.photos,
-            tables: tables,
-          ));
-        });
-      }
     } catch (e) {
       debugPrint("Lỗi tải dữ liệu tầng: $e");
     }
@@ -70,34 +35,16 @@ class _TableManagementViewState extends State<TableManagementView> {
 
   Future<void> _addFloor(String floorName) async {
     try {
-      final newFloorRef =
-          restaurantRef.doc(widget.restaurantId).collection('floors').doc();
-
-      await newFloorRef.set({
-        'name': floorName,
-      });
+      await _floorServices.addFloor(widget.restaurantId, floorName);
       _loadFloorsFromDatabase();
     } catch (e) {
       debugPrint("Lỗi thêm tầng: $e");
     }
   }
 
-  Future<void> _addTable(
-      int floorIndex, String tableNumber, int chairCount) async {
+  Future<void> _addTable(int floorIndex, String tableNumber, int chairCount) async {
     try {
-      final floorId = floors[floorIndex].id;
-      final newTableRef = restaurantRef
-          .doc(widget.restaurantId)
-          .collection('floors')
-          .doc(floorId)
-          .collection('tables')
-          .doc();
-
-      await newTableRef.set({
-        'tableNumber': tableNumber,
-        'seats': chairCount,
-        'state': 0, // Trạng thái mặc định
-      });
+      await _floorServices.addTable(widget.restaurantId, floors[floorIndex].id, tableNumber, chairCount);
       _loadFloorsFromDatabase();
     } catch (e) {
       debugPrint("Lỗi thêm bàn: $e");
@@ -115,13 +62,7 @@ class _TableManagementViewState extends State<TableManagementView> {
       return;
     }
     try {
-      final floorId = floors[floorIndex].id;
-      await _firestore
-          .collection('restaurants')
-          .doc(widget.restaurantId)
-          .collection('floors')
-          .doc(floorId)
-          .delete();
+      await _floorServices.deleteFloor(widget.restaurantId, floors[floorIndex].id);
       _loadFloorsFromDatabase();
     } catch (e) {
       debugPrint("Lỗi xóa tầng: $e");
@@ -130,35 +71,16 @@ class _TableManagementViewState extends State<TableManagementView> {
 
   Future<void> _deleteTable(int floorIndex, int tableIndex) async {
     try {
-      final floorId = floors[floorIndex].id;
-      final tableId = floors[floorIndex].tables[tableIndex].id;
-      await _firestore
-          .collection('restaurants')
-          .doc(widget.restaurantId)
-          .collection('floors')
-          .doc(floorId)
-          .collection('tables')
-          .doc(tableId)
-          .delete();
+      await _floorServices.deleteTable(widget.restaurantId, floors[floorIndex].id, floors[floorIndex].tables[tableIndex].id);
       _loadFloorsFromDatabase();
     } catch (e) {
       debugPrint("Lỗi xóa bàn: $e");
     }
   }
 
-  Future<void> _updateTableStatus(
-      int floorIndex, int tableIndex, int newStatus) async {
+  Future<void> _updateTableStatus(int floorIndex, int tableIndex, int newStatus) async {
     try {
-      final floorId = floors[floorIndex].id;
-      final tableId = floors[floorIndex].tables[tableIndex].id;
-      await _firestore
-          .collection('restaurants')
-          .doc(widget.restaurantId)
-          .collection('floors')
-          .doc(floorId)
-          .collection('tables')
-          .doc(tableId)
-          .update({'state': newStatus});
+      await _floorServices.updateTableStatus(widget.restaurantId, floors[floorIndex].id, floors[floorIndex].tables[tableIndex].id, newStatus);
       _loadFloorsFromDatabase();
     } catch (e) {
       debugPrint("Lỗi cập nhật trạng thái bàn: $e");
@@ -239,11 +161,7 @@ class _TableManagementViewState extends State<TableManagementView> {
             ),
             TextButton(
               onPressed: () async {
-                await _addTable(
-                  floorIndex,
-                  tableNumberController.text,
-                  int.tryParse(chairCountController.text) ?? 0,
-                );
+                await _addTable(floorIndex, tableNumberController.text, int.tryParse(chairCountController.text) ?? 0);
                 Navigator.pop(context);
               },
               child: Text('Thêm'),
@@ -275,21 +193,17 @@ class _TableManagementViewState extends State<TableManagementView> {
                   final table = floor.tables[tableIndex];
                   return ListTile(
                     title: Text('Bàn số: ${table.tableNumber}'),
-                    subtitle: Text(
-                        'Số ghế: ${table.seats} - Trạng thái: ${_getStatusLabel(table.state)}'),
+                    subtitle: Text('Số ghế: ${table.seats} - Trạng thái: ${_getStatusLabel(table.state)}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         PopupMenuButton<int>(
                           icon: Icon(Icons.more_vert),
-                          onSelected: (newStatus) => _updateTableStatus(
-                              floorIndex, tableIndex, newStatus),
+                          onSelected: (newStatus) => _updateTableStatus(floorIndex, tableIndex, newStatus),
                           itemBuilder: (context) => [
-                            PopupMenuItem(
-                                value: 0, child: Text('Chưa có ai đặt')),
+                            PopupMenuItem(value: 0, child: Text('Chưa có ai đặt')),
                             PopupMenuItem(value: 1, child: Text('Đang chọn')),
-                            PopupMenuItem(
-                                value: 2, child: Text('Đang sử dụng')),
+                            PopupMenuItem(value: 2, child: Text('Đang sử dụng')),
                           ],
                         ),
                         IconButton(
