@@ -10,7 +10,10 @@ class Logo extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        FlutterLogo(size: isSmallScreen ? 100 : 200),
+        Image.asset(
+          'assets/logos/logo.png',
+          width: isSmallScreen ? 100 : 200,
+        ),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
