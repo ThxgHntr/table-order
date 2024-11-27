@@ -33,9 +33,9 @@ class _TableManagementViewState extends State<TableManagementView> {
     }
   }
 
-  Future<void> _addFloor(String floorName) async {
+  Future<void> _addFloor(String floorName, List<Map<String, dynamic>> tables) async {
     try {
-      await _floorServices.addFloor(widget.restaurantId, floorName);
+      await _floorServices.addFloor(widget.restaurantId, floorName, tables);
       _loadFloorsFromDatabase();
     } catch (e) {
       debugPrint("Lỗi thêm tầng: $e");
@@ -44,7 +44,12 @@ class _TableManagementViewState extends State<TableManagementView> {
 
   Future<void> _addTable(int floorIndex, String tableNumber, int chairCount) async {
     try {
-      await _floorServices.addTable(widget.restaurantId, floors[floorIndex].id, tableNumber, chairCount);
+      await _floorServices.addTable(
+        widget.restaurantId,
+        floors[floorIndex].id,
+        tableNumber,
+        chairCount,
+      );
       _loadFloorsFromDatabase();
     } catch (e) {
       debugPrint("Lỗi thêm bàn: $e");
@@ -71,7 +76,11 @@ class _TableManagementViewState extends State<TableManagementView> {
 
   Future<void> _deleteTable(int floorIndex, int tableIndex) async {
     try {
-      await _floorServices.deleteTable(widget.restaurantId, floors[floorIndex].id, floors[floorIndex].tables[tableIndex].id);
+      await _floorServices.deleteTable(
+        widget.restaurantId,
+        floors[floorIndex].id,
+        floors[floorIndex].tables[tableIndex].id,
+      );
       _loadFloorsFromDatabase();
     } catch (e) {
       debugPrint("Lỗi xóa bàn: $e");
@@ -80,51 +89,73 @@ class _TableManagementViewState extends State<TableManagementView> {
 
   Future<void> _updateTableStatus(int floorIndex, int tableIndex, int newStatus) async {
     try {
-      await _floorServices.updateTableStatus(widget.restaurantId, floors[floorIndex].id, floors[floorIndex].tables[tableIndex].id, newStatus);
+      await _floorServices.updateTableStatus(
+        widget.restaurantId,
+        floors[floorIndex].id,
+        floors[floorIndex].tables[tableIndex].id,
+        newStatus,
+      );
       _loadFloorsFromDatabase();
     } catch (e) {
       debugPrint("Lỗi cập nhật trạng thái bàn: $e");
     }
   }
 
-  String _getStatusLabel(int status) {
-    switch (status) {
-      case 0:
-        return 'Chưa có ai đặt';
-      case 1:
-        return 'Đã đặt';
-      case 2:
-        return 'Đang sử dụng';
-      default:
-        return 'Không xác định';
-    }
-  }
-
   void _showAddFloorDialog() {
     final floorNameController = TextEditingController();
+    final chairCountController = TextEditingController();
+    final List<Map<String, dynamic>> tables = [];
+    int tableCounter = 1;
 
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text('Thêm tầng mới'),
-          content: TextField(
-            controller: floorNameController,
-            decoration: InputDecoration(labelText: 'Tên tầng'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Hủy'),
-            ),
-            TextButton(
-              onPressed: () async {
-                await _addFloor(floorNameController.text);
-                Navigator.pop(context);
-              },
-              child: Text('Thêm'),
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Thêm tầng mới'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: floorNameController,
+                    decoration: InputDecoration(labelText: 'Tên tầng'),
+                  ),
+                  TextField(
+                    controller: chairCountController,
+                    decoration: InputDecoration(labelText: 'Số ghế'),
+                    keyboardType: TextInputType.number,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      final chairCount = int.tryParse(chairCountController.text) ?? 0;
+                      setState(() {
+                        tables.add({'tableNumber': '$tableCounter', 'seats': chairCount});
+                        tableCounter++;
+                        chairCountController.clear();
+                      });
+                    },
+                    child: Text('Thêm bàn'),
+                  ),
+                  SizedBox(height: 10),
+                  ...tables.map((table) => Text('${table['tableNumber']}: ${table['seats']} ghế')),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Hủy'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    await _addFloor(floorNameController.text, tables);
+                    Navigator.pop(context);
+                  },
+                  child: Text('Thêm'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -161,7 +192,11 @@ class _TableManagementViewState extends State<TableManagementView> {
             ),
             TextButton(
               onPressed: () async {
-                await _addTable(floorIndex, tableNumberController.text, int.tryParse(chairCountController.text) ?? 0);
+                await _addTable(
+                  floorIndex,
+                  tableNumberController.text,
+                  int.tryParse(chairCountController.text) ?? 0,
+                );
                 Navigator.pop(context);
               },
               child: Text('Thêm'),
@@ -234,5 +269,18 @@ class _TableManagementViewState extends State<TableManagementView> {
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  String _getStatusLabel(int status) {
+    switch (status) {
+      case 0:
+        return 'Chưa có ai đặt';
+      case 1:
+        return 'Đã đặt';
+      case 2:
+        return 'Đang sử dụng';
+      default:
+        return 'Không xác định';
+    }
   }
 }
