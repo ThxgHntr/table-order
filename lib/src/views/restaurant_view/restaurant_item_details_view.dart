@@ -82,7 +82,12 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            return _buildRestaurantDetails(snapshot.data!);
+            return Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 800),
+                child: _buildRestaurantDetails(snapshot.data!),
+              ),
+            );
           } else {
             return const Center(child: Text('No data available'));
           }
@@ -130,29 +135,35 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
   Widget _buildHeader(RestaurantModel restaurantData) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      decoration: _cardDecoration(),
+      decoration: _cardDecoration(context),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            restaurantData.name,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Flexible(
+            child: Text(
+              restaurantData.name,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              softWrap: true,
+            ),
           ),
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.favorite_border),
-                onPressed: () {
-                  // Favorite button functionality
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.share),
-                onPressed: () {
-                  // Share functionality
-                },
-              ),
-            ],
+          Flexible(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.favorite_border, color: Theme.of(context).iconTheme.color),
+                  onPressed: () {
+                    // Favorite button functionality
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.share, color: Theme.of(context).iconTheme.color),
+                  onPressed: () {
+                    // Share functionality
+                  },
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -162,7 +173,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
   Widget _buildDetailsCard(RestaurantModel restaurantData) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      decoration: _cardDecoration(),
+      decoration: _cardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -205,7 +216,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
   Widget _buildReviewsSection(RestaurantModel restaurantData) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      decoration: _cardDecoration(),
+      decoration: _cardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -217,7 +228,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
                     ? Icons.star
                     : Icons.star_border,
                 color: Colors.yellow,
-                size: 20,
+                size: 25, // Increased size
               ),
             ),
           ),
@@ -268,27 +279,38 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
 
   Widget _buildInfoRow(IconData icon, String label, String content) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 25, color: Colors.blueGrey),
+        Icon(icon, size: 25, color: Theme.of(context).iconTheme.color),
         const SizedBox(width: 15),
         Expanded(
-          child: Text(
-            '$label: $content',
-            style: const TextStyle(fontSize: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '$label:',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                content,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  BoxDecoration _cardDecoration() {
+  BoxDecoration _cardDecoration(BuildContext context) {
     return BoxDecoration(
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
+      borderRadius: BorderRadius.circular(8), // Add rounded corners
       boxShadow: [
         BoxShadow(
-          color: Colors.grey.withOpacity(0.3),
-          blurRadius: 5,
-          offset: const Offset(0, 3),
+          color: Colors.grey.withOpacity(0.2), // Reduce shadow opacity
+          blurRadius: 3, // Reduce blur radius
+          offset: const Offset(0, 2), // Reduce offset
         ),
       ],
     );
