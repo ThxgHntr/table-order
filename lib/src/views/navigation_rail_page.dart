@@ -101,7 +101,10 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Logo here'),
+        title: Image(
+          image: AssetImage('assets/logos/logo.png'),
+          width: isSmallScreen ? 50 : 100,
+        ),
         automaticallyImplyLeading: false,
         actions: [
           Text(

@@ -43,21 +43,21 @@ class LoginFormContentState extends State<LoginFormContent> {
               controller: _emailController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Vui lòng nhập email';
                 }
 
                 bool emailValid = RegExp(
                     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                     .hasMatch(value);
                 if (!emailValid) {
-                  return 'Please enter a valid email';
+                  return 'Email không hợp lệ';
                 }
 
                 return null;
               },
               decoration: const InputDecoration(
                 labelText: 'Email',
-                hintText: 'Enter your email',
+                hintText: 'Nhập email',
                 prefixIcon: Icon(Icons.email_outlined),
                 border: OutlineInputBorder(),
               ),
@@ -67,18 +67,18 @@ class LoginFormContentState extends State<LoginFormContent> {
               controller: _passwordController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Vui lòng nhập mật khẩu';
                 }
 
                 if (value.length < 6) {
-                  return 'Password must be at least 6 characters';
+                  return 'Mật khẩu phải chứa ít nhất 6 ký tự';
                 }
                 return null;
               },
               obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
-                  labelText: 'Password',
-                  hintText: 'Enter your password',
+                  labelText: 'Mật khẩu',
+                  hintText: 'Nhập mật khẩu',
                   prefixIcon: const Icon(Icons.lock_outline_rounded),
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
@@ -104,7 +104,7 @@ class LoginFormContentState extends State<LoginFormContent> {
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: _isSigning ? CircularProgressIndicator(color: Colors.white,): Text(
-                    'Sign in',
+                    'Đăng nhập',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -125,7 +125,7 @@ class LoginFormContentState extends State<LoginFormContent> {
                 label: const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    'Sign in with Google',
+                    'Đăng nhập với Google',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -135,12 +135,12 @@ class LoginFormContentState extends State<LoginFormContent> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Don't have an account?"),
+                Text("Không có tài khoản? "),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pushNamed('/signup');
                   },
-                  child: Text("Sign up"),
+                  child: Text("Đăng ký ngay"),
                 )
               ],
             ),
@@ -169,14 +169,14 @@ class LoginFormContentState extends State<LoginFormContent> {
 
           // Kiểm tra vai trò và điều hướng tương ứng
           if (role == "admin" && mounted) {
-            showToast("Login successful as admin");
+            showToast("Đăng nhập thành công với vai trò admin");
             Navigator.of(context).pushNamed("/admin");
           } else if (mounted) {
-            showToast("Login successful${role != null ? " as $role" : ""}");
+            showToast("Đăng nhập thành công");
             Navigator.of(context).pushNamed("/");
           }
         } else {
-          showToast("Login failed: user is null");
+          showToast("Đăng nhập thất bại");
         }
       } catch (e) {
         showToast("Login failed: $e");

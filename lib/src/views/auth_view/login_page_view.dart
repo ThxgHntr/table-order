@@ -20,7 +20,7 @@ class _LoginPageViewState extends State<LoginPageView> {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Login'),
+          title: const Text('Đăng nhập'),
         ),
         body: Center(
             child: isSmallScreen
