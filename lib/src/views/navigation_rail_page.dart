@@ -39,6 +39,8 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
   late Key _restaurantItemListViewKey;
   FirebaseAuth auth = FirebaseAuth.instance;
   late List<Widget> _pages;
+  String? locationText;
+  Position? currentPosition;
 
   @override
   void initState() {
@@ -57,7 +59,11 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
     if (currentPosition != null) {
       Placemark? place = await getAddressFromCoordinates(currentPosition);
       setState(() {
-        locationText = '${place?.street}, ${place?.administrativeArea}';
+        final width = MediaQuery.of(context).size.width;
+        final bool isSmallScreen = width < 600;
+        locationText = isSmallScreen
+            ? '${place?.street}'
+            : '${place?.street}, ${place?.administrativeArea}';
       });
       await FirebaseFirestore.instance
           .collection('users')
@@ -67,6 +73,13 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
             GeoPoint(currentPosition.latitude, currentPosition.longitude),
       });
     }
+  }
+
+  Future<void> _refreshPage() async {
+    setState(() {
+      _restaurantItemListViewKey = UniqueKey();
+      _pages[0] = RestaurantItemListView(key: _restaurantItemListViewKey);
+    });
   }
 
   void _onItemTapped(int index) {
@@ -79,9 +92,6 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
       _selectedIndex = index;
     });
   }
-
-  String? locationText;
-  Position? currentPosition;
 
   @override
   Widget build(BuildContext context) {
@@ -140,12 +150,14 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                       label: Text(item.label!)))
                   .toList(),
             ),
-          const VerticalDivider(thickness: 1, width: 1),
           // Hiển thị trang tương ứng dựa trên lựa chọn
           Expanded(
-            child: IndexedStack(
-              index: _selectedIndex,
-              children: _pages,
+            child: RefreshIndicator(
+              onRefresh: _refreshPage,
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: _pages,
+              ),
             ),
           ),
         ],

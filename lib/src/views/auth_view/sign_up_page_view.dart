@@ -21,26 +21,32 @@ class _SignUpPageViewState extends State<SignUpPageView> {
         title: const Text('Sign Up'),
       ),
       body: Center(
-          child: isSmallScreen
-              ? Column(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Logo(),
-              SignupFormContent(),
-            ],
-          )
-              : Container(
-            padding: const EdgeInsets.all(32.0),
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: Row(
-              children: const [
-                Expanded(child: Logo()),
-                Expanded(
-                  child: Center(child: SignupFormContent()),
+        child: isSmallScreen
+          ? SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Logo(),
+                    SignupFormContent(),
+                  ],
                 ),
-              ],
+              ),
+            )
+          : Container(
+              padding: const EdgeInsets.all(32.0),
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Row(
+                children: const [
+                  Expanded(child: Logo()),
+                  Expanded(
+                    child: Center(child: SignupFormContent()),
+                  ),
+                ],
+              ),
             ),
-          )),
+      ),
     );
   }
 }
