@@ -111,20 +111,25 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
           const SizedBox(height: 10),
           _buildReviewsSection(restaurantData),
           const SizedBox(height: 30),
-          ElevatedButton(
-            onPressed: () {
-              // Add reservation functionality
-            },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+          Center(
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Add reservation functionality
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
+                child: const Text(
+                  'Đặt chỗ ngay',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
-              backgroundColor: Colors.green,
-            ),
-            child: const Text(
-              'Đặt chỗ ngay',
-              style: TextStyle(fontSize: 18, color: Colors.white),
             ),
           ),
         ],
