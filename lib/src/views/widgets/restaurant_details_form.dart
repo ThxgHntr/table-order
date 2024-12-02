@@ -269,7 +269,8 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                   return ListTile(
                     title: Text(
                       keyword,
-                      style: TextStyle(color: Colors.grey),
+                      // style based on theme
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                     onTap: () {
                       setState(() {
@@ -290,9 +291,11 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
               children: widget.selectedKeywords.map((keyword) {
                 return Chip(
                   label: Text(keyword),
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  side: BorderSide(color: Colors.grey),
-                  deleteIconColor: Colors.grey,
+                  // style and side based on theme
+                  labelStyle: Theme.of(context).textTheme.titleMedium,
+                  // make border color based on theme
+                  side: BorderSide(color: Theme.of(context).dividerColor),
+                  iconTheme: Theme.of(context).iconTheme,
                   onDeleted: () {
                     setState(() {
                       widget.selectedKeywords.remove(keyword);

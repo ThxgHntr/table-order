@@ -10,7 +10,7 @@ class RestaurantItemDetailsView extends StatefulWidget {
 
   const RestaurantItemDetailsView({super.key, required this.restaurantId});
 
-  static const routeName = '/sample_item';
+  static const routeName = '/item-details';
 
   @override
   State<RestaurantItemDetailsView> createState() =>
@@ -44,7 +44,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
   }
 
   String getTodayOpenCloseTimes(
-      List<String> openDates, Map<String, dynamic> openTime) {
+      List<String> openDates, String? openTime, String? closeTime) {
     final today = DateTime.now().weekday;
     final days = [
       'Monday',
@@ -58,14 +58,14 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
     final todayKey = days[today - 1];
 
     if (openDates.contains(todayKey)) {
-      return '${openTime['open'] ?? 'N/A'} - ${openTime['close'] ?? 'N/A'}';
+      return '$openTime - $closeTime';
     } else {
       return 'Closed';
     }
   }
 
-  String getPriceRangeString(PriceRange priceRange) {
-    return '${priceRange.lowest} - ${priceRange.highest} VND';
+  String getPriceRangeString(int lowestPrice, int highestPrice) {
+    return '$lowestPrice - $highestPrice VND';
   }
 
   @override
@@ -151,13 +151,15 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 IconButton(
-                  icon: Icon(Icons.favorite_border, color: Theme.of(context).iconTheme.color),
+                  icon: Icon(Icons.favorite_border,
+                      color: Theme.of(context).iconTheme.color),
                   onPressed: () {
                     // Favorite button functionality
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.share, color: Theme.of(context).iconTheme.color),
+                  icon: Icon(Icons.share,
+                      color: Theme.of(context).iconTheme.color),
                   onPressed: () {
                     // Share functionality
                   },
@@ -193,14 +195,15 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
           _buildInfoRow(
             Icons.access_time,
             'Giờ mở cửa',
-            getTodayOpenCloseTimes(
-                restaurantData.openDates, restaurantData.openTime),
+            getTodayOpenCloseTimes(restaurantData.openDates,
+                restaurantData.openTime, restaurantData.closeTime),
           ),
           const SizedBox(height: 10),
           _buildInfoRow(
             Icons.attach_money,
             'Giá cả',
-            getPriceRangeString(restaurantData.priceRange),
+            getPriceRangeString(
+                restaurantData.lowestPrice, restaurantData.highestPrice),
           ),
           const SizedBox(height: 10),
           _buildInfoRow(
@@ -289,7 +292,8 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
             children: [
               Text(
                 '$label:',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Text(
                 content,

@@ -11,9 +11,11 @@ class RestaurantModel {
   final String phone;
   final String description;
   final List<String> dishesStyle;
-  final PriceRange priceRange;
-  final Map<String, String> openTime;
+  final int lowestPrice;
+  final int highestPrice;
   final List<String> openDates;
+  final String? openTime;
+  final String? closeTime;
   final double rating;
   List<File> photosToUpload;
   List<String> photos;
@@ -34,9 +36,11 @@ class RestaurantModel {
     required this.phone,
     required this.description,
     required this.dishesStyle,
-    required this.priceRange,
+    required this.lowestPrice,
+    required this.highestPrice,
     required this.openDates,
     required this.openTime,
+    required this.closeTime,
     required this.rating,
     this.photosToUpload = const [],
     this.photos = const [],
@@ -59,11 +63,11 @@ class RestaurantModel {
       phone: data['phone'] ?? '',
       description: data['description'] ?? '',
       dishesStyle: List<String>.from(data['dishesStyle'] ?? []),
-      priceRange: data['priceRange'] is Map<String, dynamic>
-          ? PriceRange.fromFirestore(data['priceRange'])
-          : PriceRange(lowest: 0, highest: 0),
+      lowestPrice: data['lowestPrice'] ?? 0,
+      highestPrice: data['highestPrice'] ?? 0,
       openDates: List<String>.from(data['openDates'] ?? []),
-      openTime: Map<String, String>.from(data['openTime'] ?? {}),
+      openTime: data['openTime'] ?? '',
+      closeTime: data['closeTime'] ?? '',
       rating: data['rating']?.toDouble() ?? 0.0,
       photos: List<String>.from(data['photos'] ?? []),
       ownerId: data['ownerId'] ?? '',
@@ -89,8 +93,10 @@ class RestaurantModel {
       'phone': phone,
       'description': description,
       'dishesStyle': dishesStyle,
-      'priceRange': priceRange.toFirestore(),
+      'lowestPrice': lowestPrice,
+      'highestPrice': highestPrice,
       'openTime': openTime,
+      'closeTime': closeTime,
       'openDates': openDates,
       'rating': rating,
       'photos': photos,
@@ -99,28 +105,6 @@ class RestaurantModel {
       'state': state,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
-    };
-  }
-}
-
-class PriceRange {
-  final int lowest;
-  final int highest;
-
-  const PriceRange({required this.lowest, required this.highest});
-
-  // Sửa phương thức này để làm việc với Map thay vì DocumentSnapshot
-  factory PriceRange.fromFirestore(Map<String, dynamic> data) {
-    return PriceRange(
-      lowest: data['lowest'] as int,
-      highest: data['highest'] as int,
-    );
-  }
-
-  Map<String, dynamic> toFirestore() {
-    return {
-      'lowest': lowest,
-      'highest': highest,
     };
   }
 }

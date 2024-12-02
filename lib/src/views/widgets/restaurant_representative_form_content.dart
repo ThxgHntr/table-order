@@ -31,9 +31,14 @@ class RestaurantRepresentativeFormContentState
             _gap(),
             TextFormField(
               controller: widget.restaurantPhone,
+              keyboardType: TextInputType.phone,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Làm ơn nhập số điện thoại';
+                }
+                final numericRegex = RegExp(r'^[0-9]+$');
+                if (!numericRegex.hasMatch(value)) {
+                  return 'Số điện thoại chỉ được chứa số';
                 }
                 return null;
               },
