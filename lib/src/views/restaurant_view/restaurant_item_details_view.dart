@@ -1,8 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:table_order/src/utils/custom_colors.dart';
 import 'package:table_order/src/views/restaurant_view/restaurant_review_view.dart';
 import 'package:table_order/src/model/restaurant_model.dart';
+import 'package:table_order/src/views/table_reservation_view/choose_table_view.dart';
 import '../../utils/location_helper.dart';
 
 class RestaurantItemDetailsView extends StatefulWidget {
@@ -116,7 +118,14 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // Add reservation functionality
+                  // open the choose table view
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ChooseTableView(restaurant: restaurantData),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -124,10 +133,10 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   // this color C64027
-                  backgroundColor: Color(0xFFC64027),
+                  backgroundColor: primaryColor,
                 ),
                 child: const Text(
-                  'Đặt chỗ ngay',
+                  'Đặt bàn',
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
