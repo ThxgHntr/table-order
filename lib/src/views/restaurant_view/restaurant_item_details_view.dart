@@ -123,7 +123,8 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  backgroundColor: Theme.of(context).primaryColor,
+                  // this color C64027
+                  backgroundColor: Color(0xFFC64027),
                 ),
                 child: const Text(
                   'Đặt chỗ ngay',
