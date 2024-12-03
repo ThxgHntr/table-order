@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_order/src/model/restaurant_model.dart';
+import 'package:table_order/src/views/table_reservation_view/choose_table_widget.dart';
 
 class ChooseTableView extends StatefulWidget {
   final RestaurantModel restaurant;
@@ -13,6 +14,13 @@ class ChooseTableView extends StatefulWidget {
 }
 
 class ChooseTableViewState extends State<ChooseTableView> {
+  final dateController = TextEditingController();
+  final startTimeController = TextEditingController();
+  final endTimeController = TextEditingController();
+  final floorController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -20,6 +28,9 @@ class ChooseTableViewState extends State<ChooseTableView> {
 
   @override
   void dispose() {
+    dateController.dispose();
+    startTimeController.dispose();
+    endTimeController.dispose();
     super.dispose();
   }
 
@@ -28,6 +39,19 @@ class ChooseTableViewState extends State<ChooseTableView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Đặt bàn'),
+      ),
+      body: Center(
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: <Widget>[
+            ChooseTableWidget(
+                restaurant: widget.restaurant,
+                dateController: dateController,
+                startTimeController: startTimeController,
+                endTimeController: endTimeController,
+                floorController: floorController),
+          ],
+        ),
       ),
     );
   }

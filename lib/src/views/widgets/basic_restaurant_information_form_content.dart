@@ -22,18 +22,7 @@ class BasicRestaurantInformationFormContent extends StatefulWidget {
 
 class BasicRestaurantInformationFormContentState
     extends State<BasicRestaurantInformationFormContent> {
-  String? selectedCity;
-  String? selectedDistrict;
-  String? selectedWard;
   bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    selectedCity = null;
-    selectedDistrict = null;
-    selectedWard = null;
-  }
 
   Future<void> _getCurrentAddress() async {
     setState(() {

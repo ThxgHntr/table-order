@@ -1,9 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:table_order/src/model/employee_model.dart';
-import 'package:table_order/src/model/floor_model.dart';
-import 'package:table_order/src/model/review_model.dart';
 
 class RestaurantModel {
   final String restaurantId;
@@ -25,11 +22,6 @@ class RestaurantModel {
   final Timestamp createdAt;
   final Timestamp updatedAt;
 
-  // Subcollections
-  final List<FloorModel> floors;
-  final List<ReviewModel> reviews;
-  final List<EmployeeModel> employees;
-
   RestaurantModel({
     required this.restaurantId,
     required this.name,
@@ -49,9 +41,6 @@ class RestaurantModel {
     required this.state,
     required this.createdAt,
     required this.updatedAt,
-    this.floors = const [],
-    this.employees = const [],
-    this.reviews = const [],
   });
 
   factory RestaurantModel.fromFirestore(
@@ -75,15 +64,6 @@ class RestaurantModel {
       state: data['state'] ?? 0,
       createdAt: data['createdAt'] ?? Timestamp.now(),
       updatedAt: data['updatedAt'] ?? Timestamp.now(),
-      floors: data['floors'] is Iterable
-          ? List<FloorModel>.from(data['floors'])
-          : [],
-      employees: data['employees'] is Iterable
-          ? List<EmployeeModel>.from(data['employees'])
-          : [],
-      reviews: data['reviews'] is Iterable
-          ? List<ReviewModel>.from(data['reviews'])
-          : [],
     );
   }
 
