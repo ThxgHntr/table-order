@@ -209,10 +209,10 @@ class LoginFormContentState extends State<LoginFormContent> {
 
           // Kiểm tra vai trò và điều hướng tương ứng
           if (role == "admin" && mounted) {
-            showToast("Login successful as admin");
+            showToast("Đăng nhập thành công với vai trò admin");
             Navigator.of(context).pushNamed("/admin");
           } else if (mounted) {
-            showToast("Login successful${role != null ? " as $role" : ""}");
+            showToast("Đăng nhập thành công");
             Navigator.of(context).pushNamed("/");
           }
         }

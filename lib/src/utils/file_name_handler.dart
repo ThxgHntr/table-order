@@ -9,3 +9,7 @@ String getFileNameToSave(String restaurantId, File image) {
 String getReviewsStoragePath(String restaurantId, String reviewId, String image) {
   return 'restaurant_pictures/$restaurantId/review_images/$reviewId/$image';
 }
+
+String getUserProfilePictureStoragePath(String userId) {
+  return 'profile_Images/$userId/profile_picture.jpg';
+}

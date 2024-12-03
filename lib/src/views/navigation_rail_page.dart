@@ -102,17 +102,18 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Image(
-          image: AssetImage('assets/logos/logo.png'),
-          width: isSmallScreen ? 50 : 100,
+          image: const AssetImage('assets/logos/logo.png'),
+          width: MediaQuery.of(context).size.width > 800 ? 60 : 50,  // Nếu màn hình rộng hơn 800px, logo sẽ có chiều rộng 60, còn lại là 50
+          fit: BoxFit.contain,
         ),
         automaticallyImplyLeading: false,
         actions: [
           Text(
             locationText ?? '',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w300,
-                  fontSize: 16,
-                ),
+              fontWeight: FontWeight.w300,
+              fontSize: 16,
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.location_pin),
@@ -128,6 +129,7 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
           ),
         ],
       ),
+
       bottomNavigationBar: isSmallScreen
           ? BottomNavigationBar(
               items: _navBarItems,
