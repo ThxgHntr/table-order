@@ -57,7 +57,10 @@ class _RestaurantOwnerTab1ViewState extends State<RestaurantOwnerTab1View> {
         stream: ref.snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: SizedBox(
+              child: CircularProgressIndicator(),
+            ));
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Center(child: Text("Không có nhà hàng nào."));
@@ -91,7 +94,11 @@ class _RestaurantOwnerTab1ViewState extends State<RestaurantOwnerTab1View> {
                     future: getAddressFromGeopoint(restaurant.location),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
+                        return const Center(
+                          child: SizedBox(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else {
