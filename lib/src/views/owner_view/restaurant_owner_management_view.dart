@@ -26,20 +26,40 @@ class _RestaurantOwnerManagementViewState
           IconButton(
             icon: Icon(Icons.edit),
             onPressed: () {
-              //hien thi popup chinh sua thong tin nha hang
+              // Display popup to edit restaurant information
             },
           ),
         ],
       ),
-      body: GridView.count(
-        crossAxisCount: 2,
-        children: <Widget>[
-          _buildDashboardItem(Icons.table_bar, 'Bàn đã được đặt'),
-          _buildDashboardItem(Icons.star, 'Đánh giá'),
-          _buildDashboardItem(
-              Icons.pivot_table_chart_rounded, 'Quản lý tầng'),
-          _buildDashboardItem(Icons.group, 'Quản lý nhân viên'),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Determine how many columns to show based on screen width
+            int crossAxisCount = 2;
+            if (constraints.maxWidth >= 1000) {
+              crossAxisCount = 4; // Show 4 columns on larger screens
+            } else if (constraints.maxWidth >= 600) {
+              crossAxisCount = 3; // Show 3 columns on medium screens
+            }
+
+            return ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 1000),
+              child: GridView.count(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 16.0, // Space between columns
+                mainAxisSpacing: 16.0,  // Space between rows
+                children: <Widget>[
+                  _buildDashboardItem(Icons.table_bar, 'Bàn đã được đặt'),
+                  _buildDashboardItem(Icons.star, 'Đánh giá'),
+                  _buildDashboardItem(
+                      Icons.pivot_table_chart_rounded, 'Quản lý tầng'),
+                  _buildDashboardItem(Icons.group, 'Quản lý nhân viên'),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -58,11 +78,6 @@ class _RestaurantOwnerManagementViewState
                 ),
               ),
             );
-            /*Navigator.pushNamed(
-              context,
-              TableManagementView.routeName,
-              arguments: {'restaurantId': widget.restaurantId},
-            );*/
           } else if (title == 'Đánh giá') {
             Navigator.push(
               context,
@@ -75,13 +90,17 @@ class _RestaurantOwnerManagementViewState
           } else if (title == 'Quản lý nhân viên') {
             // Handle navigation to employee management view
           }
-          // Handle other navigation cases if needed
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(icon, size: 50.0),
-            Text(title, style: const TextStyle(fontSize: 16.0)),
+            Icon(icon, size: 60.0), // Adjust icon size
+            const SizedBox(height: 8.0), // Space between icon and text
+            Text(
+              title,
+              style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),

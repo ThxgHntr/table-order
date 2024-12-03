@@ -55,14 +55,15 @@ class BasicRestaurantInformationFormContentState
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(20.0),
       constraints: const BoxConstraints(maxWidth: 600),
       child: Form(
         key: BasicRestaurantInformationFormContent.formKey,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Tên nhà hàng
             TextFormField(
               controller: widget.restaurantName,
               validator: (value) {
@@ -71,17 +72,26 @@ class BasicRestaurantInformationFormContentState
                 }
                 return null;
               },
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Tên nhà hàng',
-                labelStyle: TextStyle(color: Colors.grey),
-                floatingLabelStyle: TextStyle(color: Colors.blue),
+                labelStyle: const TextStyle(color: Colors.grey),
+                floatingLabelStyle: const TextStyle(color: Colors.blue),
                 hintText: 'Nhập tên nhà hàng',
-                hintStyle: TextStyle(color: Colors.grey),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                hintStyle: const TextStyle(color: Colors.grey),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey),
                 ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.blue),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
               ),
             ),
+            const SizedBox(height: 20),
+
+            // Địa chỉ nhà hàng
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -97,30 +107,41 @@ class BasicRestaurantInformationFormContentState
                           }
                           return null;
                         },
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Địa chỉ',
-                          labelStyle: TextStyle(color: Colors.grey),
-                          floatingLabelStyle: TextStyle(color: Colors.blue),
+                          labelStyle: const TextStyle(color: Colors.grey),
+                          floatingLabelStyle: const TextStyle(color: Colors.blue),
                           hintText: 'Nhập địa chỉ',
-                          hintStyle: TextStyle(color: Colors.grey),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey),
+                          hintStyle: const TextStyle(color: Colors.grey),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Colors.grey),
                           ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Colors.blue),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
                         ),
                         enabled: !_isLoading,
                       ),
                       if (_isLoading)
-                        const SizedBox(
-                          width: 16,
-                          height: 16,
+                        const Positioned(
                           child: CircularProgressIndicator(strokeWidth: 2.0),
                         ),
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.location_pin),
+                const SizedBox(width: 10),
+                ElevatedButton(
                   onPressed: _getCurrentAddress,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(12), backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Icon(Icons.location_pin, size: 30, color: Colors.white),
                 ),
               ],
             ),

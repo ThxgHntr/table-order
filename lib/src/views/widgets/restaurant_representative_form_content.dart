@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class RestaurantRepresentativeFormContent extends StatefulWidget {
   const RestaurantRepresentativeFormContent(
       {super.key,
-      required this.restaurantPhone,
-      required this.restaurantEmail});
+        required this.restaurantPhone,
+        required this.restaurantEmail});
 
   final TextEditingController restaurantPhone;
   final TextEditingController restaurantEmail;
@@ -21,14 +21,16 @@ class RestaurantRepresentativeFormContentState
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: 300),
+      padding: const EdgeInsets.all(20.0),
+      constraints: const BoxConstraints(maxWidth: 400),
       child: Form(
         key: RestaurantRepresentativeFormContent.formKey,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _gap(),
+            // Số điện thoại
             TextFormField(
               controller: widget.restaurantPhone,
               keyboardType: TextInputType.phone,
@@ -42,18 +44,25 @@ class RestaurantRepresentativeFormContentState
                 }
                 return null;
               },
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Số điện thoại',
-                labelStyle: TextStyle(color: Colors.grey),
-                floatingLabelStyle: TextStyle(color: Colors.blue),
+                labelStyle: const TextStyle(color: Colors.grey),
+                floatingLabelStyle: const TextStyle(color: Colors.blue),
                 hintText: 'Nhập số điện thoại',
-                hintStyle: TextStyle(color: Colors.grey),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                hintStyle: const TextStyle(color: Colors.grey),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey),
                 ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.blue),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
               ),
             ),
             _gap(),
+            // Email
             TextFormField(
               controller: widget.restaurantEmail,
               validator: (value) {
@@ -62,15 +71,21 @@ class RestaurantRepresentativeFormContentState
                 }
                 return null;
               },
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Email',
-                labelStyle: TextStyle(color: Colors.grey),
-                floatingLabelStyle: TextStyle(color: Colors.blue),
+                labelStyle: const TextStyle(color: Colors.grey),
+                floatingLabelStyle: const TextStyle(color: Colors.blue),
                 hintText: 'Nhập email',
-                hintStyle: TextStyle(color: Colors.grey),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                )
+                hintStyle: const TextStyle(color: Colors.grey),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.blue),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
               ),
             ),
           ],
@@ -80,6 +95,6 @@ class RestaurantRepresentativeFormContentState
   }
 
   Widget _gap() {
-    return const SizedBox(height: 10);
+    return const SizedBox(height: 20);
   }
 }
