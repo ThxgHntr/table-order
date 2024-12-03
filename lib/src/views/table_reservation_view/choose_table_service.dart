@@ -1,3 +1,0 @@
-class ChooseTableService {
-  // ...existing code...
-}
