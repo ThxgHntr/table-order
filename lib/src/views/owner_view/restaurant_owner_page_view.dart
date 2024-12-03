@@ -21,57 +21,61 @@ class _RestaurantOwnerPageViewState extends State<RestaurantOwnerPageView> {
           title: Text('Danh sách nhà hàng',
               style: Theme.of(context).textTheme.headlineSmall),
         ),
-        body: Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Đăng ký nhà hàng',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Center(
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4)),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pushNamed('/restaurant-registration');
-                  },
-                  icon: Icon(Icons.add),
-                  label: const Padding(
-                    padding: EdgeInsets.all(10.0),
+        body: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 1200), // Set max width here
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
                     child: Text(
-                      'Tạo nhà hàng mới',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      'Đăng ký nhà hàng',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              const TabBar(
-                tabs: [
-                  Tab(text: 'Nhà hàng của tôi'),
-                  Tab(text: 'Nhà hàng đã đăng ký'),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4)),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed('/restaurant-registration');
+                      },
+                      icon: Icon(Icons.add),
+                      label: const Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'Tạo nhà hàng mới',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const TabBar(
+                    tabs: [
+                      Tab(text: 'Nhà hàng của tôi'),
+                      Tab(text: 'Nhà hàng đã đăng ký'),
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        RestaurantOwnerTab1View(),
+                        RestaurantOwnerTab2View(),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    RestaurantOwnerTab1View(),
-                    RestaurantOwnerTab2View(),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

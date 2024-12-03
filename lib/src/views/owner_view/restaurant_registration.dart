@@ -61,20 +61,20 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       body: isCompleted
           ? buildCompleted()
           : Theme(
-              data: Theme.of(context).copyWith(
-                colorScheme: ColorScheme.light(primary: Colors.blue),
-              ),
-              child: ResponsiveBuilder(
-                builder: (context, sizingInformation) {
-                  return buildStepper(
-                    sizingInformation.deviceScreenType ==
-                            DeviceScreenType.mobile
-                        ? StepperType.vertical
-                        : StepperType.horizontal,
-                  );
-                },
-              ),
-            ),
+        data: Theme.of(context).copyWith(
+          colorScheme: ColorScheme.light(primary: Colors.blue),
+        ),
+        child: ResponsiveBuilder(
+          builder: (context, sizingInformation) {
+            return buildStepper(
+              sizingInformation.deviceScreenType ==
+                  DeviceScreenType.mobile
+                  ? StepperType.vertical
+                  : StepperType.horizontal,
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -86,14 +86,14 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       onStepContinue: () {
         if (currentStep == 0) {
           final isValid = BasicRestaurantInformationFormContent
-                  .formKey.currentState
-                  ?.validate() ??
+              .formKey.currentState
+              ?.validate() ??
               false;
           if (!isValid) return;
         } else if (currentStep == 1) {
           final isValid = RestaurantRepresentativeFormContent
-                  .formKey.currentState
-                  ?.validate() ??
+              .formKey.currentState
+              ?.validate() ??
               false;
           if (!isValid) return;
         }
@@ -111,14 +111,14 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       onStepTapped: (step) {
         if (currentStep == 0) {
           final isValid = BasicRestaurantInformationFormContent
-                  .formKey.currentState
-                  ?.validate() ??
+              .formKey.currentState
+              ?.validate() ??
               false;
           if (!isValid) return;
         } else if (currentStep == 1) {
           final isValid = RestaurantRepresentativeFormContent
-                  .formKey.currentState
-                  ?.validate() ??
+              .formKey.currentState
+              ?.validate() ??
               false;
           if (!isValid) return;
         }
@@ -140,6 +140,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
         return Padding(
           padding: const EdgeInsets.only(top: 10),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center, // Center the buttons
             children: <Widget>[
               ElevatedButton(
                 onPressed: details.onStepContinue,
@@ -159,63 +160,63 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
   }
 
   List<Step> getSteps() => [
-        Step(
-          state: currentStep >= 0 ? StepState.complete : StepState.indexed,
-          isActive: currentStep >= 0,
-          title: Text('Thông tin cơ bản',
-              style: Theme.of(context).textTheme.titleLarge),
-          content: Column(
-            children: <Widget>[
-              BasicRestaurantInformationFormContent(
-                restaurantName: restaurantName,
-                restaurantAddress: restaurantAddress,
-              ),
-            ],
+    Step(
+      state: currentStep >= 0 ? StepState.complete : StepState.indexed,
+      isActive: currentStep >= 0,
+      title: Text('Thông tin cơ bản',
+          style: Theme.of(context).textTheme.titleLarge),
+      content: Column(
+        children: <Widget>[
+          BasicRestaurantInformationFormContent(
+            restaurantName: restaurantName,
+            restaurantAddress: restaurantAddress,
           ),
-        ),
-        Step(
-          state: currentStep >= 1 ? StepState.complete : StepState.indexed,
-          isActive: currentStep >= 1,
-          title: Text('Thông tin người đại diện',
-              style: Theme.of(context).textTheme.titleLarge),
-          content: Column(
-            children: <Widget>[
-              RestaurantRepresentativeFormContent(
-                  restaurantPhone: restaurantPhone,
-                  restaurantEmail: restaurantEmail),
-            ],
+        ],
+      ),
+    ),
+    Step(
+      state: currentStep >= 1 ? StepState.complete : StepState.indexed,
+      isActive: currentStep >= 1,
+      title: Text('Thông tin người đại diện',
+          style: Theme.of(context).textTheme.titleLarge),
+      content: Column(
+        children: <Widget>[
+          RestaurantRepresentativeFormContent(
+              restaurantPhone: restaurantPhone,
+              restaurantEmail: restaurantEmail),
+        ],
+      ),
+    ),
+    Step(
+      state: currentStep >= 2 ? StepState.complete : StepState.indexed,
+      isActive: currentStep >= 2,
+      title: Text('Thông tin chi tiết',
+          style: Theme.of(context).textTheme.titleLarge),
+      content: Column(
+        children: <Widget>[
+          RestaurantDetailsForm(
+            openTimeController: openTimeController,
+            closeTimeController: closeTimeController,
+            minPriceController: minPriceController,
+            maxPriceController: maxPriceController,
+            isOpened: isOpened,
+            restaurantDescription: restaurantDescription,
+            selectedKeywords: selectedKeywords,
+            selectedImages: selectedImages,
+            onImagesSelected: (images) {
+              setState(() {
+                selectedImages.clear();
+                selectedImages.addAll(images);
+              });
+              if (kDebugMode) {
+                print('Selected images: $selectedImages');
+              }
+            },
           ),
-        ),
-        Step(
-          state: currentStep >= 2 ? StepState.complete : StepState.indexed,
-          isActive: currentStep >= 2,
-          title: Text('Thông tin chi tiết',
-              style: Theme.of(context).textTheme.titleLarge),
-          content: Column(
-            children: <Widget>[
-              RestaurantDetailsForm(
-                openTimeController: openTimeController,
-                closeTimeController: closeTimeController,
-                minPriceController: minPriceController,
-                maxPriceController: maxPriceController,
-                isOpened: isOpened,
-                restaurantDescription: restaurantDescription,
-                selectedKeywords: selectedKeywords,
-                selectedImages: selectedImages,
-                onImagesSelected: (images) {
-                  setState(() {
-                    selectedImages.clear();
-                    selectedImages.addAll(images);
-                  });
-                  if (kDebugMode) {
-                    print('Selected images: $selectedImages');
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
-      ];
+        ],
+      ),
+    ),
+  ];
 
   Future<void> saveRestaurantInfoToDatabase() async {
     final selectedDays = <String>[];
@@ -264,7 +265,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
     );
 
     final result =
-        await FirebaseRestaurantsServices().saveRestaurantInfo(restaurantInfo);
+    await FirebaseRestaurantsServices().saveRestaurantInfo(restaurantInfo);
 
     if (result) {
       setState(() {
