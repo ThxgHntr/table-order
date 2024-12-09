@@ -40,6 +40,12 @@ class FirebaseReviewServices {
     };
 
     await reviewRef.set(review);
+
+    getAverageRating(restaurantId).then((averageRating) {
+      _firestore.collection('restaurants').doc(restaurantId).update({
+        'rating': averageRating,
+      });
+    });
   }
 
   Future<void> updateReview(
@@ -71,6 +77,12 @@ class FirebaseReviewServices {
         .collection('reviews')
         .doc(reviewId)
         .update(updatedReview);
+
+    getAverageRating(restaurantId).then((averageRating) {
+      _firestore.collection('restaurants').doc(restaurantId).update({
+        'rating': averageRating,
+      });
+    });
   }
 
   Future<void> deleteReview(
@@ -92,5 +104,46 @@ class FirebaseReviewServices {
         .collection('reviews')
         .doc(reviewId)
         .delete();
+
+    getAverageRating(restaurantId).then((averageRating) {
+      _firestore.collection('restaurants').doc(restaurantId).update({
+        'rating': averageRating,
+      });
+    });
+  }
+
+  //ham lay du lieu review rating cua restaurant sau do tinh trung binh roi tra ve gia tri
+  Future<double> getAverageRating(String restaurantId) async {
+    final snapshot = await _firestore
+        .collection('restaurants')
+        .doc(restaurantId)
+        .collection('reviews')
+        .get();
+    if (snapshot.docs.isEmpty) {
+      return 0;
+    }
+    double totalRating = 0;
+    for (DocumentSnapshot doc in snapshot.docs) {
+      totalRating += doc['rating'];
+    }
+    return totalRating / snapshot.docs.length;
+  }
+
+  Stream<double> getAverageRatingStream(String restaurantId) {
+    return _firestore
+        .collection('restaurants')
+        .doc(restaurantId)
+        .collection('reviews')
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.docs.isEmpty) {
+        return 0.0;
+      }
+      double totalRating = 0;
+      for (var doc in snapshot.docs) {
+        totalRating += doc['rating'];
+      }
+      return totalRating / snapshot.docs.length;
+    });
   }
 }
