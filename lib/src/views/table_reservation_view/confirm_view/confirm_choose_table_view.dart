@@ -3,6 +3,7 @@ import 'package:table_order/src/model/restaurant_model.dart';
 import 'package:table_order/src/model/floor_model.dart';
 import 'package:table_order/src/model/table_model.dart';
 import 'package:table_order/src/services/firebase_choose_table_service.dart';
+import 'package:table_order/src/utils/toast_utils.dart';
 import 'package:table_order/src/views/widgets/primary_button.dart';
 
 class ConfirmChooseTableView extends StatelessWidget {
@@ -36,47 +37,199 @@ class ConfirmChooseTableView extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Nhà hàng: ${restaurant.name}',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Tầng: ${floor.name}',
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Bàn: ${table.tableNumber}',
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Ngày: ${date.day}/${date.month}/${date.year}',
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Giờ bắt đầu: ${startTime.format(context)}',
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Giờ kết thúc: ${endTime.format(context)}',
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Yêu cầu bổ sung: $additionalRequest',
-              style: const TextStyle(fontSize: 18),
+            SizedBox(
+              width: double.infinity,
+              child: Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Text(
+                          restaurant.name,
+                          style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.layers),
+                          const SizedBox(width: 5),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Tầng: ',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text: floor.name,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.table_chart),
+                          const SizedBox(width: 5),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Mã bàn: ',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text: table.tableNumber,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.chair),
+                          const SizedBox(width: 5),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Số ghế: ',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text: table.seats.toString(),
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.calendar_today),
+                          const SizedBox(width: 5),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Ngày: ',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text: '${date.day}/${date.month}/${date.year}',
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.access_time),
+                          const SizedBox(width: 5),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Giờ bắt đầu: ',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text: startTime.format(context),
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.access_time),
+                          const SizedBox(width: 5),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Giờ kết thúc: ',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text: endTime.format(context),
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.note),
+                          const SizedBox(width: 5),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Yêu cầu bổ sung: ',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text: additionalRequest,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             PrimaryButton(
-              onPressed: () {
+              onPressed: () async {
                 // Handle confirm reservation
-                FirebaseChooseTableService().confirmChooseTable(
+                bool result = await FirebaseChooseTableService().confirmChooseTable(
                   restaurant.restaurantId,
                   floor.id,
                   table.id,
@@ -85,6 +238,11 @@ class ConfirmChooseTableView extends StatelessWidget {
                   endTime,
                   additionalRequest,
                 );
+                if (result) {
+                  
+                } else {
+                  showWarningToast('Không thể đặt bàn.');
+                }
               },
               buttonText: 'Xác nhận đặt bàn',
             ),

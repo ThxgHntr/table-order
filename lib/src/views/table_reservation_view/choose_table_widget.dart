@@ -7,11 +7,11 @@ import 'package:table_order/src/services/firebase_choose_table_service.dart';
 import 'package:table_order/src/services/firebase_floor_services.dart';
 import 'package:table_order/src/utils/custom_colors.dart';
 import 'package:table_order/src/utils/date_time_parser.dart';
+import 'package:table_order/src/utils/toast_utils.dart';
 import 'package:table_order/src/views/table_reservation_view/confirm_view/confirm_choose_table_view.dart';
 import 'package:table_order/src/views/widgets/annotate_box.dart';
 import 'package:table_order/src/views/widgets/primary_button.dart';
 import 'package:table_order/src/views/widgets/table_button.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class ChooseTableWidget extends StatefulWidget {
   const ChooseTableWidget({
@@ -92,7 +92,12 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
     });
   }
 
-  void _onTableTap(FloorModel floor, TableModel table) {
+  void _onTableTap(FloorModel floor, TableModel table) async {
+    if (table.state == 2) {
+      showWarningToast('Bàn này đã được đặt.');
+      return;
+    }
+
     if (selectedTable == table.id) {
       _cancelSelectedTable();
       table.state = 0;
@@ -102,7 +107,7 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
         final previousTable =
             floor.tables.firstWhere((t) => t.id == selectedTable);
         previousTable.state = 0;
-        FirebaseChooseTableService().cancelChooseTable(
+        await FirebaseChooseTableService().cancelChooseTable(
           widget.restaurant.restaurantId,
           selectedFloor!,
           previousTable.id,
@@ -110,12 +115,18 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
       }
       selectedTable = table.id;
       table.state = 1;
-      FirebaseChooseTableService().chooseTable(
+      bool success = await FirebaseChooseTableService().chooseTable(
         widget.restaurant.restaurantId,
         selectedFloor!,
         table.id,
       );
-      _startReloadTimer();
+      if (!success) {
+        showWarningToast('Không thể chọn bàn này.');
+        table.state = 0;
+        selectedTable = null;
+      } else {
+        _startReloadTimer();
+      }
     }
     setState(() {});
   }
@@ -150,7 +161,8 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
       alignment: Alignment.centerRight,
       child: IconButton(
         icon: Icon(Icons.help_outline),
-        tooltip: '- Chỉ được chọn một bàn tại một thời điểm.\n'
+        tooltip: '- Số trên bàn là số lượng ghế.\n'
+            '- Chỉ được chọn một bàn tại một thời điểm.\n'
             '- Chuyển tầng sẽ hủy bàn đã chọn.\n'
             '- Bàn đã chọn sẽ tự động hủy sau 5 phút nếu không xác nhận.\n'
             '- Bạn chỉ được đặt trước tối đa 30 ngày.',
@@ -160,6 +172,7 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
             builder: (context) => AlertDialog(
               title: Text('Chú thích'),
               content: Text(
+                '- Số trên bàn là số lượng ghế.\n'
                 '- Chỉ được chọn một bàn tại một thời điểm.\n'
                 '- Chuyển tầng sẽ hủy bàn đã chọn.\n'
                 '- Bàn đã chọn sẽ tự động hủy sau 5 phút nếu không xác nhận.\n'
@@ -274,7 +287,7 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Text('No floors available');
+          return Text('Không có tầng');
         } else {
           return DropdownButtonFormField<String>(
             value: selectedFloor,
@@ -357,21 +370,13 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
 
   Widget _buildConfirmButton() {
     return PrimaryButton(
-      onPressed: () {
+      onPressed: () async {
         if (widget.dateController.text.isEmpty ||
             widget.startTimeController.text.isEmpty ||
             widget.endTimeController.text.isEmpty ||
             selectedFloor == null ||
             selectedTable == null) {
-          Fluttertoast.showToast(
-            msg: "Vui lòng điền đầy đủ thông tin.",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
+          showWarningToast('Vui lòng chọn đầy đủ thông tin.');
           return;
         }
 

@@ -1,3 +1,0 @@
-class ChooseTableController {
-  // ...existing code...
-}
