@@ -1,10 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:table_order/src/utils/custom_colors.dart';
 import 'package:table_order/src/views/restaurant_view/restaurant_review_view.dart';
 import 'package:table_order/src/model/restaurant_model.dart';
 import 'package:table_order/src/views/table_reservation_view/choose_table_view.dart';
+import 'package:table_order/src/views/widgets/primary_button.dart';
 import '../../utils/location_helper.dart';
 
 class RestaurantItemDetailsView extends StatefulWidget {
@@ -113,34 +113,17 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
           const SizedBox(height: 10),
           _buildReviewsSection(restaurantData),
           const SizedBox(height: 30),
-          Center(
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // open the choose table view
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ChooseTableView(restaurant: restaurantData),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  // this color C64027
-                  backgroundColor: primaryColor,
+          PrimaryButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ChooseTableView(restaurant: restaurantData),
                 ),
-                child: const Text(
-                  'Đặt bàn',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
-            ),
+              );
+            },
+            buttonText: 'Đặt bàn',
           ),
         ],
       ),

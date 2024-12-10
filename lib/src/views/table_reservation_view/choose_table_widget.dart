@@ -1,7 +1,14 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:table_order/src/model/floor_model.dart';
 import 'package:table_order/src/model/restaurant_model.dart';
+import 'package:table_order/src/model/table_model.dart';
+import 'package:table_order/src/services/firebase_choose_table_service.dart';
 import 'package:table_order/src/services/firebase_floor_services.dart';
+import 'package:table_order/src/utils/custom_colors.dart';
+import 'package:table_order/src/views/widgets/annotate_box.dart';
+import 'package:table_order/src/views/widgets/primary_button.dart';
+import 'package:table_order/src/views/widgets/table_button.dart';
 
 class ChooseTableWidget extends StatefulWidget {
   const ChooseTableWidget({
@@ -11,6 +18,7 @@ class ChooseTableWidget extends StatefulWidget {
     required this.startTimeController,
     required this.endTimeController,
     required this.floorController,
+    required this.additionalRequestController,
   });
 
   final RestaurantModel restaurant;
@@ -18,6 +26,7 @@ class ChooseTableWidget extends StatefulWidget {
   final TextEditingController startTimeController;
   final TextEditingController endTimeController;
   final TextEditingController floorController;
+  final TextEditingController additionalRequestController;
 
   @override
   State<ChooseTableWidget> createState() => ChooseTableWidgetState();
@@ -28,10 +37,349 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
   DateTime? selectedDate;
   TimeOfDay? selectedStartTime;
   TimeOfDay? selectedEndTime;
+  String? selectedTable;
+  late Future<List<FloorModel>> floors;
+  Timer? _reloadTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    floors = loadFloors(widget.restaurant.restaurantId);
+  }
+
+  @override
+  void dispose() {
+    _reloadTimer?.cancel();
+    _cancelSelectedTable();
+    super.dispose();
+  }
+
+  void _cancelSelectedTable() {
+    if (selectedTable != null && selectedFloor != null) {
+      FirebaseChooseTableService().cancelChooseTable(
+        widget.restaurant.restaurantId,
+        selectedFloor!,
+        selectedTable!,
+      );
+      selectedTable = null;
+    }
+  }
 
   Future<List<FloorModel>> loadFloors(String restaurantId) async {
-    final FirebaseFloorServices floorServices = FirebaseFloorServices();
-    return await floorServices.loadFloors(restaurantId);
+    return FirebaseFloorServices().loadFloors(restaurantId);
+  }
+
+  void _startReloadTimer() {
+    _reloadTimer?.cancel();
+    _reloadTimer = Timer(Duration(minutes: 5), () {
+      _cancelSelectedTable();
+      _resetTableList();
+    });
+  }
+
+  void _resetTableList() {
+    setState(() {
+      floors = loadFloors(widget.restaurant.restaurantId);
+    });
+  }
+
+  void _onFloorChanged(String? newValue) {
+    setState(() {
+      _cancelSelectedTable();
+      selectedFloor = newValue;
+      widget.floorController.text = newValue!;
+      _resetTableList();
+    });
+  }
+
+  Widget _buildRow(Widget child1, Widget child2) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(child: child1),
+        SizedBox(width: 16.0),
+        Expanded(child: child2),
+      ],
+    );
+  }
+
+  Widget _buildAnnotateList() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        AnnotateBox(color: customBlue, text: 'Trống'),
+        SizedBox(width: 16.0),
+        AnnotateBox(color: customYellow, text: 'Đang chọn'),
+        SizedBox(width: 16.0),
+        AnnotateBox(color: customRed, text: 'Đã đặt'),
+        _buildHelpIcon(),
+      ],
+    );
+  }
+
+  Widget _buildHelpIcon() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: IconButton(
+        icon: Icon(Icons.help_outline),
+        tooltip: '- Chỉ được chọn một bàn tại một thời điểm.\n'
+            '- Chuyển tầng sẽ hủy bàn đã chọn.\n'
+            '- Bàn đã chọn sẽ tự động hủy sau 5 phút nếu không xác nhận.',
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Chú thích'),
+              content: Text(
+                '- Chỉ được chọn một bàn tại một thời điểm.\n'
+                '- Chuyển tầng sẽ hủy bàn đã chọn.\n'
+                '- Bàn đã chọn sẽ tự động hủy sau 5 phút nếu không xác nhận.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Đóng'),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildTableButtons() {
+    return FutureBuilder<List<FloorModel>>(
+      future: floors,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Text('No tables available');
+        } else {
+          final List<TableButton> tables = snapshot.data!
+              .where((floor) => floor.id == selectedFloor)
+              .expand((floor) {
+            return floor.tables.map((table) {
+              return TableButton(
+                table: table,
+                isSelected: selectedTable == table.id,
+                onTap: () => _onTableTap(floor, table),
+              );
+            }).toList();
+          }).toList();
+
+          return Wrap(
+            spacing: 8.0,
+            runSpacing: 8.0,
+            children: tables,
+          );
+        }
+      },
+    );
+  }
+
+  void _onTableTap(FloorModel floor, TableModel table) {
+    setState(() {
+      if (selectedTable == table.id) {
+        selectedTable = null;
+        table.state = 0;
+        FirebaseChooseTableService().cancelChooseTable(
+          widget.restaurant.restaurantId,
+          selectedFloor!,
+          table.id,
+        );
+        _reloadTimer?.cancel();
+      } else {
+        if (selectedTable != null) {
+          final previousTable = floor.tables.firstWhere(
+            (t) => t.id == selectedTable,
+          );
+          previousTable.state = 0;
+          FirebaseChooseTableService().cancelChooseTable(
+            widget.restaurant.restaurantId,
+            selectedFloor!,
+            previousTable.id,
+          );
+        }
+        selectedTable = table.id;
+        table.state = 1;
+        FirebaseChooseTableService().chooseTable(
+          widget.restaurant.restaurantId,
+          selectedFloor!,
+          table.id,
+        );
+        _startReloadTimer();
+      }
+    });
+  }
+
+  Widget _buildContent() {
+    loadFloors(widget.restaurant.restaurantId);
+    return Column(
+      children: [
+        _buildRow(
+          _buildDateField(),
+          _buildFloorDropdown(),
+        ),
+        SizedBox(height: 16.0),
+        _buildRow(
+          _buildStartTimeField(),
+          _buildEndTimeField(),
+        ),
+        SizedBox(height: 16.0),
+        SizedBox(
+          width: 300.0,
+          child: Divider(
+            thickness: 1.0,
+          ),
+        ),
+        SizedBox(height: 24.0),
+        _buildAnnotateList(),
+        SizedBox(height: 24.0),
+        _buildTableButtons(),
+        SizedBox(height: 24.0),
+        _buildAdditionalRequestField(),
+        SizedBox(height: 24.0),
+        _buildConfirmButton(),
+      ],
+    );
+  }
+
+  Widget _buildDateField() {
+    return TextField(
+      controller: widget.dateController,
+      readOnly: true,
+      onTap: () async {
+        final DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime.now(),
+          lastDate: DateTime(2100),
+        );
+        if (pickedDate != null) {
+          setState(() {
+            selectedDate = pickedDate;
+            widget.dateController.text = pickedDate.toString();
+          });
+        }
+      },
+      decoration: InputDecoration(
+        labelText: 'Ngày',
+        prefixIcon: const Icon(Icons.calendar_today),
+      ),
+    );
+  }
+
+  Widget _buildFloorDropdown() {
+    return FutureBuilder<List<FloorModel>>(
+      future: floors,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Text('No floors available');
+        } else {
+          return DropdownButtonFormField<String>(
+            value: selectedFloor,
+            onChanged: _onFloorChanged,
+            items: snapshot.data!
+                .map<DropdownMenuItem<String>>((FloorModel floor) {
+              return DropdownMenuItem<String>(
+                value: floor.id,
+                child: Text(floor.name),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              labelText: 'Chọn tầng',
+              border: OutlineInputBorder(),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
+              prefixIcon: const Icon(Icons.layers),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildStartTimeField() {
+    return TextField(
+      controller: widget.startTimeController,
+      readOnly: true,
+      onTap: () async {
+        final TimeOfDay? pickedTime = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.now(),
+        );
+        if (pickedTime != null) {
+          setState(() {
+            selectedStartTime = pickedTime;
+            widget.startTimeController.text = pickedTime.format(context);
+          });
+        }
+      },
+      decoration: InputDecoration(
+        labelText: 'Giờ bắt đầu',
+        prefixIcon: const Icon(Icons.access_time),
+      ),
+    );
+  }
+
+  Widget _buildEndTimeField() {
+    return TextField(
+      controller: widget.endTimeController,
+      readOnly: true,
+      onTap: () async {
+        final TimeOfDay? pickedTime = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.now(),
+        );
+        if (pickedTime != null) {
+          setState(() {
+            selectedEndTime = pickedTime;
+            widget.endTimeController.text = pickedTime.format(context);
+          });
+        }
+      },
+      decoration: InputDecoration(
+        labelText: 'Giờ kết thúc',
+        prefixIcon: const Icon(Icons.access_time),
+      ),
+    );
+  }
+
+  Widget _buildAdditionalRequestField() {
+    return TextField(
+      controller: widget.additionalRequestController,
+      decoration: InputDecoration(
+        labelText: 'Yêu cầu thêm',
+        border: OutlineInputBorder(),
+        contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
+        prefixIcon: const Icon(Icons.note),
+      ),
+    );
+  }
+
+  Widget _buildConfirmButton() {
+    return PrimaryButton(
+      onPressed: () {
+        FirebaseChooseTableService().confirmChooseTable(
+          widget.restaurant.restaurantId,
+          selectedFloor!,
+          selectedTable!,
+          selectedDate!,
+          selectedStartTime!,
+          selectedEndTime!,
+          widget.additionalRequestController.text,
+        );
+      },
+      buttonText: 'Đặt bàn',
+    );
   }
 
   @override
@@ -39,132 +387,8 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
     return Center(
       child: Container(
         width: double.infinity,
-        margin: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: widget.dateController,
-                    readOnly: true,
-                    onTap: () async {
-                      final DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2100),
-                      );
-                      if (pickedDate != null) {
-                        setState(() {
-                          selectedDate = pickedDate;
-                          widget.dateController.text = pickedDate.toString();
-                        });
-                      }
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Ngày',
-                      prefixIcon: const Icon(Icons.calendar_today),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12.0),
-                Expanded(
-                  child: FutureBuilder<List<FloorModel>>(
-                    future: loadFloors(widget.restaurant.restaurantId),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Text('No floors available');
-                      } else {
-                        return DropdownButtonFormField<String>(
-                          value: selectedFloor,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedFloor = newValue;
-                              widget.floorController.text = newValue!;
-                            });
-                          },
-                          items: snapshot.data!.map<DropdownMenuItem<String>>(
-                              (FloorModel floor) {
-                            return DropdownMenuItem<String>(
-                              value: floor.id,
-                              child: Text(floor.name),
-                            );
-                          }).toList(),
-                          decoration: InputDecoration(
-                            labelText: 'Tầng',
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 12.0, vertical: 16.0),
-                            prefixIcon: const Icon(Icons.layers),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: widget.startTimeController,
-                    readOnly: true,
-                    onTap: () async {
-                      final TimeOfDay? pickedTime = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                      );
-                      if (pickedTime != null) {
-                        setState(() {
-                          selectedStartTime = pickedTime;
-                          widget.startTimeController.text =
-                              pickedTime.format(context);
-                        });
-                      }
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Giờ bắt đầu',
-                      prefixIcon: const Icon(Icons.access_time),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12.0),
-                Expanded(
-                  child: TextField(
-                    controller: widget.endTimeController,
-                    readOnly: true,
-                    onTap: () async {
-                      final TimeOfDay? pickedTime = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                      );
-                      if (pickedTime != null) {
-                        setState(() {
-                          selectedEndTime = pickedTime;
-                          widget.endTimeController.text =
-                              pickedTime.format(context);
-                        });
-                      }
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Giờ kết thúc',
-                      prefixIcon: const Icon(Icons.access_time),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+        margin: EdgeInsets.all(12.0),
+        child: _buildContent(),
       ),
     );
   }

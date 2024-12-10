@@ -61,7 +61,6 @@ class _EditUserProfileState extends State<EditUserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    final User? user = _auth.currentUser;
 
     return Scaffold(
       appBar: AppBar(

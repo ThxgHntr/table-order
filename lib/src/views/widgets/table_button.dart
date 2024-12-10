@@ -8,25 +8,38 @@ class TableButton extends StatelessWidget {
   final TableModel table;
   final VoidCallback onTap;
 
-  const TableButton({super.key, required this.table, required this.onTap});
+  const TableButton({super.key, required this.table, required this.onTap, required bool isSelected});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(8),
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.all<Color>(table.state == 0
-              ? customBlue
-              : (table.state == 1 ? customYellow : customRed)),
+    Color buttonColor;
+    switch (table.state) {
+      case 0:
+        buttonColor = customBlue;
+        break;
+      case 1:
+        buttonColor = customYellow;
+        break;
+      case 2:
+        buttonColor = customRed;
+        break;
+      default:
+        buttonColor = customBlue;
+    }
+
+    return ElevatedButton(
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
         ),
-        child: Text(
-          table.tableNumber,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-          ),
+        backgroundColor: buttonColor,
+      ),
+      child: Text(
+        table.seats.toString(),
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
         ),
       ),
     );

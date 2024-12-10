@@ -18,6 +18,7 @@ class ChooseTableViewState extends State<ChooseTableView> {
   final startTimeController = TextEditingController();
   final endTimeController = TextEditingController();
   final floorController = TextEditingController();
+  final additionalRequestController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -49,7 +50,8 @@ class ChooseTableViewState extends State<ChooseTableView> {
                 dateController: dateController,
                 startTimeController: startTimeController,
                 endTimeController: endTimeController,
-                floorController: floorController),
+                floorController: floorController,
+                additionalRequestController: additionalRequestController),
           ],
         ),
       ),
