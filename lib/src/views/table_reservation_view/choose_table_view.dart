@@ -20,8 +20,6 @@ class ChooseTableViewState extends State<ChooseTableView> {
   final floorController = TextEditingController();
   final additionalRequestController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>();
-
   @override
   void initState() {
     super.initState();
@@ -39,7 +37,7 @@ class ChooseTableViewState extends State<ChooseTableView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đặt bàn'),
+        title: Text(widget.restaurant.name),
       ),
       body: Center(
         child: ListView(

@@ -6,9 +6,12 @@ import 'package:table_order/src/model/table_model.dart';
 import 'package:table_order/src/services/firebase_choose_table_service.dart';
 import 'package:table_order/src/services/firebase_floor_services.dart';
 import 'package:table_order/src/utils/custom_colors.dart';
+import 'package:table_order/src/utils/date_time_parser.dart';
+import 'package:table_order/src/views/table_reservation_view/confirm_view/confirm_choose_table_view.dart';
 import 'package:table_order/src/views/widgets/annotate_box.dart';
 import 'package:table_order/src/views/widgets/primary_button.dart';
 import 'package:table_order/src/views/widgets/table_button.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ChooseTableWidget extends StatefulWidget {
   const ChooseTableWidget({
@@ -182,9 +185,9 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
+          return Text('Lỗi: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Text('No tables available');
+          return Text('Không có bàn trống');
         } else {
           final List<TableButton> tables = snapshot.data!
               .where((floor) => floor.id == selectedFloor)
@@ -344,7 +347,7 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
     return TextField(
       controller: widget.additionalRequestController,
       decoration: InputDecoration(
-        labelText: 'Yêu cầu thêm',
+        labelText: 'Yêu cầu bổ sung',
         border: OutlineInputBorder(),
         contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
         prefixIcon: const Icon(Icons.note),
@@ -355,15 +358,56 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
   Widget _buildConfirmButton() {
     return PrimaryButton(
       onPressed: () {
-        FirebaseChooseTableService().confirmChooseTable(
-          widget.restaurant.restaurantId,
-          selectedFloor!,
-          selectedTable!,
-          DateTime.parse(widget.dateController.text),
-          TimeOfDay.fromDateTime(
-              DateTime.parse(widget.startTimeController.text)),
-          TimeOfDay.fromDateTime(DateTime.parse(widget.endTimeController.text)),
-          widget.additionalRequestController.text,
+        if (widget.dateController.text.isEmpty ||
+            widget.startTimeController.text.isEmpty ||
+            widget.endTimeController.text.isEmpty ||
+            selectedFloor == null ||
+            selectedTable == null) {
+          Fluttertoast.showToast(
+            msg: "Vui lòng điền đầy đủ thông tin.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+          return;
+        }
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FutureBuilder(
+              future: Future.wait([
+                floors.then((floors) =>
+                    floors.firstWhere((floor) => floor.id == selectedFloor)),
+                floors.then((floors) => floors
+                    .firstWhere((floor) => floor.id == selectedFloor)
+                    .tables
+                    .firstWhere((table) => table.id == selectedTable)),
+              ]),
+              builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  final floor = snapshot.data![0] as FloorModel;
+                  final table = snapshot.data![1] as TableModel;
+                  return ConfirmChooseTableView(
+                    restaurant: widget.restaurant,
+                    floor: floor,
+                    table: table,
+                    date: DateTime.parse(widget.dateController.text),
+                    startTime: parseTimeOfDay(widget.startTimeController.text),
+                    endTime: parseTimeOfDay(widget.endTimeController.text),
+                    additionalRequest: widget.additionalRequestController.text,
+                  );
+                }
+              },
+            ),
+          ),
         );
       },
       buttonText: 'Đặt bàn',
