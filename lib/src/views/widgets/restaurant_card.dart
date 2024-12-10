@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:table_order/src/model/restaurant_model.dart';
+import 'package:table_order/src/services/firebase_review_services.dart';
 import 'package:table_order/src/views/restaurant_view/restaurant_item_details_view.dart';
 
 Widget restaurantCard(
     BuildContext context, RestaurantModel restaurant, double distance) {
+  FirebaseReviewServices firebaseReviewServices = FirebaseReviewServices();
   return Card(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(8.0),
@@ -27,7 +29,7 @@ Widget restaurantCard(
           Expanded(
             child: ClipRRect(
               borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(8.0)),
+              const BorderRadius.vertical(top: Radius.circular(8.0)),
               child: Image.network(
                 restaurant.photos[0],
                 fit: BoxFit.cover,
@@ -46,7 +48,7 @@ Widget restaurantCard(
           ),
           Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Text(
               restaurant.name,
               style: Theme.of(context).textTheme.titleMedium,
@@ -68,11 +70,24 @@ Widget restaurantCard(
                         : '${distance.toStringAsFixed(1)} km')),
                   ],
                 ),
-                Row(
-                  children: [
-                    const Icon(Icons.star, size: 16, color: Colors.yellow),
-                    Text(restaurant.rating.toString()),
-                  ],
+                StreamBuilder<double>(
+                  stream: firebaseReviewServices.getAverageRatingStream(restaurant.restaurantId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    if (snapshot.hasError) {
+                      return const Icon(Icons.error, color: Colors.red);
+                    }
+                    final averageRating = snapshot.data ?? 0.0;
+                    return Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.amber, size: 16),
+                        SizedBox(width: 4),
+                        Text(averageRating.toStringAsFixed(1)),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),

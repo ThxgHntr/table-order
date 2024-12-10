@@ -221,33 +221,68 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: List.generate(
-              5,
-              (index) => Icon(
-                index < restaurantData.rating.round()
-                    ? Icons.star
-                    : Icons.star_border,
-                color: Colors.yellow,
-                size: 25, // Increased size
-              ),
-            ),
-          ),
-          const SizedBox(height: 5),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      RestaurantReviewView(restaurantId: widget.restaurantId),
-                ),
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('restaurants')
+                .doc(restaurantData.restaurantId)
+                .collection('reviews')
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+              if (snapshot.hasError) {
+                return const Icon(Icons.error, color: Colors.red);
+              }
+
+              final reviews = snapshot.data?.docs ?? [];
+              final totalReviews = reviews.length;
+              double totalRating = 0.0;
+              for (var review in reviews) {
+                totalRating += review['rating'];
+              }
+              final averageRating = totalReviews > 0 ? totalRating / totalReviews : 0.0;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Row(
+                        children: List.generate(
+                          5,
+                              (index) => Icon(
+                            index < averageRating.round() ? Icons.star : Icons.star_border,
+                            color: Colors.yellow,
+                            size: 25,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        '${averageRating.toStringAsFixed(1)} ($totalReviews reviews)',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RestaurantReviewView(restaurantId: widget.restaurantId),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Xem tất cả đánh giá',
+                      style: TextStyle(fontSize: 16, color: Colors.blue),
+                    ),
+                  ),
+                ],
               );
             },
-            child: Text(
-              'Xem tất cả các đánh giá',
-              style: TextStyle(fontSize: 16, color: Colors.blue),
-            ),
           ),
         ],
       ),
