@@ -34,9 +34,6 @@ class ChooseTableWidget extends StatefulWidget {
 
 class ChooseTableWidgetState extends State<ChooseTableWidget> {
   String? selectedFloor;
-  DateTime? selectedDate;
-  TimeOfDay? selectedStartTime;
-  TimeOfDay? selectedEndTime;
   String? selectedTable;
   late Future<List<FloorModel>> floors;
   Timer? _reloadTimer;
@@ -84,12 +81,40 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
   }
 
   void _onFloorChanged(String? newValue) {
+    _cancelSelectedTable();
     setState(() {
-      _cancelSelectedTable();
       selectedFloor = newValue;
       widget.floorController.text = newValue!;
       _resetTableList();
     });
+  }
+
+  void _onTableTap(FloorModel floor, TableModel table) {
+    if (selectedTable == table.id) {
+      _cancelSelectedTable();
+      table.state = 0;
+      _reloadTimer?.cancel();
+    } else {
+      if (selectedTable != null) {
+        final previousTable =
+            floor.tables.firstWhere((t) => t.id == selectedTable);
+        previousTable.state = 0;
+        FirebaseChooseTableService().cancelChooseTable(
+          widget.restaurant.restaurantId,
+          selectedFloor!,
+          previousTable.id,
+        );
+      }
+      selectedTable = table.id;
+      table.state = 1;
+      FirebaseChooseTableService().chooseTable(
+        widget.restaurant.restaurantId,
+        selectedFloor!,
+        table.id,
+      );
+      _startReloadTimer();
+    }
+    setState(() {});
   }
 
   Widget _buildRow(Widget child1, Widget child2) {
@@ -124,7 +149,8 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
         icon: Icon(Icons.help_outline),
         tooltip: '- Chỉ được chọn một bàn tại một thời điểm.\n'
             '- Chuyển tầng sẽ hủy bàn đã chọn.\n'
-            '- Bàn đã chọn sẽ tự động hủy sau 5 phút nếu không xác nhận.',
+            '- Bàn đã chọn sẽ tự động hủy sau 5 phút nếu không xác nhận.\n'
+            '- Bạn chỉ được đặt trước tối đa 30 ngày.',
         onPressed: () {
           showDialog(
             context: context,
@@ -133,7 +159,8 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
               content: Text(
                 '- Chỉ được chọn một bàn tại một thời điểm.\n'
                 '- Chuyển tầng sẽ hủy bàn đã chọn.\n'
-                '- Bàn đã chọn sẽ tự động hủy sau 5 phút nếu không xác nhận.',
+                '- Bàn đã chọn sẽ tự động hủy sau 5 phút nếu không xác nhận.\n'
+                '- Bạn chỉ được đặt trước tối đa 30 ngày.',
               ),
               actions: [
                 TextButton(
@@ -181,43 +208,7 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
     );
   }
 
-  void _onTableTap(FloorModel floor, TableModel table) {
-    setState(() {
-      if (selectedTable == table.id) {
-        selectedTable = null;
-        table.state = 0;
-        FirebaseChooseTableService().cancelChooseTable(
-          widget.restaurant.restaurantId,
-          selectedFloor!,
-          table.id,
-        );
-        _reloadTimer?.cancel();
-      } else {
-        if (selectedTable != null) {
-          final previousTable = floor.tables.firstWhere(
-            (t) => t.id == selectedTable,
-          );
-          previousTable.state = 0;
-          FirebaseChooseTableService().cancelChooseTable(
-            widget.restaurant.restaurantId,
-            selectedFloor!,
-            previousTable.id,
-          );
-        }
-        selectedTable = table.id;
-        table.state = 1;
-        FirebaseChooseTableService().chooseTable(
-          widget.restaurant.restaurantId,
-          selectedFloor!,
-          table.id,
-        );
-        _startReloadTimer();
-      }
-    });
-  }
-
   Widget _buildContent() {
-    loadFloors(widget.restaurant.restaurantId);
     return Column(
       children: [
         _buildRow(
@@ -232,9 +223,7 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
         SizedBox(height: 16.0),
         SizedBox(
           width: 300.0,
-          child: Divider(
-            thickness: 1.0,
-          ),
+          child: Divider(thickness: 1.0),
         ),
         SizedBox(height: 24.0),
         _buildAnnotateList(),
@@ -257,12 +246,12 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
           context: context,
           initialDate: DateTime.now(),
           firstDate: DateTime.now(),
-          lastDate: DateTime(2100),
+          lastDate: DateTime.now().add(Duration(days: 30)),
         );
         if (pickedDate != null) {
           setState(() {
-            selectedDate = pickedDate;
-            widget.dateController.text = pickedDate.toString();
+            widget.dateController.text =
+                "${pickedDate.toLocal()}".split(' ')[0];
           });
         }
       },
@@ -318,7 +307,6 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
         );
         if (pickedTime != null) {
           setState(() {
-            selectedStartTime = pickedTime;
             widget.startTimeController.text = pickedTime.format(context);
           });
         }
@@ -341,7 +329,6 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
         );
         if (pickedTime != null) {
           setState(() {
-            selectedEndTime = pickedTime;
             widget.endTimeController.text = pickedTime.format(context);
           });
         }
@@ -372,9 +359,10 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
           widget.restaurant.restaurantId,
           selectedFloor!,
           selectedTable!,
-          selectedDate!,
-          selectedStartTime!,
-          selectedEndTime!,
+          DateTime.parse(widget.dateController.text),
+          TimeOfDay.fromDateTime(
+              DateTime.parse(widget.startTimeController.text)),
+          TimeOfDay.fromDateTime(DateTime.parse(widget.endTimeController.text)),
           widget.additionalRequestController.text,
         );
       },
