@@ -54,7 +54,7 @@ class _AddReviewFormState extends State<AddReviewForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -109,7 +109,7 @@ class _AddReviewFormState extends State<AddReviewForm> {
               minLines: 1,
               maxLines: null,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 2),
             Row(
               children: [
                 Expanded(
@@ -137,7 +137,7 @@ class _AddReviewFormState extends State<AddReviewForm> {
                   onPressed: _pickImages,
                   icon: const Icon(Icons.add_a_photo, color: Colors.deepOrange),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 2),
                 IconButton(
                   onPressed: _submitReview,
                   icon: const Icon(Icons.send, color: Colors.lightBlue),
