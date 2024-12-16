@@ -161,20 +161,21 @@ class _ProfilePageViewState extends State<ProfilePageView> {
             ),
           ),
           // IconButton to edit profile
-          IconButton(
-            icon: const Icon(Icons.edit_rounded, color: Colors.white),
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditUserProfile(),
-                ),
-              );
-              if (result == true) {
-                await _fetchUserModel();
-              }
-            },
-          ),
+          if (user != null)
+            IconButton(
+              icon: const Icon(Icons.edit_rounded, color: Colors.white),
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditUserProfile(),
+                  ),
+                );
+                if (result == true) {
+                  await _fetchUserModel();
+                }
+              },
+            ),
         ],
       ),
     );
