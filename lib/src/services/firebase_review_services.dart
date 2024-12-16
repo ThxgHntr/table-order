@@ -11,9 +11,10 @@ class FirebaseReviewServices {
 
   Future<void> submitReview(String restaurantId, String comment, int rating,
       List<XFile> images) async {
+
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw Exception("User is not logged in");
+      throw Exception("Người dùng chưa đăng nhập");
     }
 
     List<String> photoUrls = [];
