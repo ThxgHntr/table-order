@@ -41,9 +41,10 @@ class ConfirmChooseTableView extends StatelessWidget {
         child: Column(
           children: [
             ReservationDetails(
-              restaurant: restaurant,
-              floor: floor,
-              table: table,
+              restaurantName: restaurant.name,
+              floor: floor.name,
+              table: table.tableNumber,
+              seats: table.seats,
               date: date,
               startTime: startTime,
               endTime: endTime,
@@ -55,6 +56,7 @@ class ConfirmChooseTableView extends StatelessWidget {
                 final reservationId =
                     await FirebaseChooseTableService().confirmChooseTable(
                   restaurant.restaurantId,
+                  restaurant.name,
                   floor.id,
                   table.id,
                   date,

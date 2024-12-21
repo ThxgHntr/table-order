@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:table_order/src/model/floor_model.dart';
-import 'package:table_order/src/model/restaurant_model.dart';
-import 'package:table_order/src/model/table_model.dart';
 
 class ReservationDetails extends StatelessWidget {
-  final RestaurantModel restaurant;
-  final FloorModel floor;
-  final TableModel table;
+  final String restaurantName;
+  final String floor;
+  final String table;
+  final int seats;
   final DateTime date;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
@@ -15,9 +13,10 @@ class ReservationDetails extends StatelessWidget {
 
   const ReservationDetails({
     super.key,
-    required this.restaurant,
+    required this.restaurantName,
     required this.floor,
     required this.table,
+    required this.seats,
     required this.date,
     required this.startTime,
     required this.endTime,
@@ -39,7 +38,7 @@ class ReservationDetails extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                restaurant.name,
+                restaurantName,
                 style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
@@ -71,9 +70,9 @@ class ReservationDetails extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildDetailValue(floor.name),
+                        _buildDetailValue(floor),
                         const SizedBox(height: 10.0),
-                        _buildDetailValue(table.tableNumber),
+                        _buildDetailValue(table),
                         const SizedBox(height: 10.0),
                         _buildDetailValue(
                             DateFormat('dd/MM/yyyy').format(date)),

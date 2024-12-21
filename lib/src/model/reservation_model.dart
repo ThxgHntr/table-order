@@ -3,6 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ReservationModel {
   final String? id;
   final String userId;
+  final String restaurantId;
+  final String restaurantName;
+  final String floor;
+  final String table;
+  final String seats;
   final Timestamp reservationDate;
   final Timestamp startTime;
   final Timestamp endTime;
@@ -13,6 +18,11 @@ class ReservationModel {
   ReservationModel({
     this.id = '',
     required this.userId,
+    required this.restaurantId,
+    required this.restaurantName,
+    required this.floor,
+    required this.table,
+    required this.seats,
     required this.reservationDate,
     required this.startTime,
     required this.endTime,
@@ -27,6 +37,11 @@ class ReservationModel {
     return ReservationModel(
       id: snapshot.id,
       userId: data['userId'] ?? '',
+      restaurantId: data['restaurantId'] ?? '',
+      restaurantName: data['restaurantName'] ?? '',
+      floor: data['floor'] ?? '',
+      table: data['table'] ?? '',
+      seats: data['seats'] ?? '',
       reservationDate: data['reservationDate'] ?? Timestamp.now(),
       startTime: data['startTime'] ?? Timestamp.now(),
       endTime: data['endTime'] ?? Timestamp.now(),
@@ -40,6 +55,11 @@ class ReservationModel {
     return {
       'reservationDate': reservationDate,
       'userId': userId,
+      'restaurantId': restaurantId,
+      'restaurantName': restaurantName,
+      'floor': floor,
+      'table': table,
+      'seats': seats,
       'startTime': startTime,
       'endTime': endTime,
       'status': status,

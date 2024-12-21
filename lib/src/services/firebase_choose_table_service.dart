@@ -66,6 +66,7 @@ class FirebaseChooseTableService {
 
   Future<String?> confirmChooseTable(
     String restaurantId,
+    String restaurantName,
     String floorId,
     String tableId,
     DateTime reservationDate,
@@ -84,6 +85,11 @@ class FirebaseChooseTableService {
           tableSnapshot.data()!['userId'] == uid) {
         ReservationModel reservationModel = ReservationModel(
           userId: uid,
+          restaurantId: restaurantId,
+          restaurantName: restaurantName,
+          floor: floorId,
+          table: tableId,
+          seats: tableSnapshot.data()!['seats'],
           reservationDate: Timestamp.fromDate(reservationDate),
           startTime: Timestamp.fromDate(DateTime(
               reservationDate.year,

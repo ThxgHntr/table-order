@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:table_order/src/model/floor_model.dart';
-import 'package:table_order/src/model/restaurant_model.dart';
-import 'package:table_order/src/model/table_model.dart';
 import 'package:table_order/src/utils/custom_colors.dart';
 import 'package:table_order/src/views/widgets/reservation_details.dart';
 
@@ -15,9 +12,10 @@ class ReservationQrView extends StatelessWidget {
   Widget build(BuildContext context) {
     final Map<String, dynamic> args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final RestaurantModel restaurant = args['restaurant'];
-    final FloorModel floor = args['floor'];
-    final TableModel table = args['table'];
+    final String restaurantName = args['restaurantName'];
+    final String floor = args['floor'];
+    final String table = args['table'];
+    final int seats = args['seats'];
     final DateTime date = args['date'];
     final TimeOfDay startTime = args['startTime'];
     final TimeOfDay endTime = args['endTime'];
@@ -64,9 +62,10 @@ class ReservationQrView extends StatelessWidget {
                     ),
                     const SizedBox(height: 10.0),
                     ReservationDetails(
-                      restaurant: restaurant,
+                      restaurantName: restaurantName,
                       floor: floor,
                       table: table,
+                      seats: seats,
                       date: date,
                       startTime: startTime,
                       endTime: endTime,
