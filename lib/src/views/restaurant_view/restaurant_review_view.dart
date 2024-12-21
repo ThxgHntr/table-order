@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:table_order/src/services/firebase_restaurants_services.dart';
 import 'package:table_order/src/services/firebase_review_services.dart';
 import '../widgets/add_review_form.dart';
@@ -25,12 +27,45 @@ class RestaurantReviewView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đánh giá & Bình luận'),
-        backgroundColor: Colors.deepOrange,
+        title: FutureBuilder<DocumentSnapshot>(
+          future: FirebaseFirestore.instance
+              .collection('restaurants')
+              .doc(restaurantId)
+              .get(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            }
+            if (snapshot.hasError ||
+                !snapshot.hasData ||
+                !snapshot.data!.exists) {
+              return const Text('Restaurant');
+            }
+            final restaurant = snapshot.data!.data() as Map<String, dynamic>;
+            //lay restaurant photo dau tien
+            final avatarUrl = restaurant['photos'][0] ?? '';
+            final restaurantName = restaurant['name'] ?? 'Restaurant';
+
+            return Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(avatarUrl),
+                  radius: 20,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  restaurantName,
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            );
+          },
+        ),
       ),
       body: Center(
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints: const BoxConstraints(maxWidth: 1200),
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
@@ -87,7 +122,6 @@ class RestaurantReviewView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              //neu auth id cua user khong phai la owner thi hien thi form review
               FutureBuilder<String?>(
                 future: restaurantService.getOwnerId(restaurantId),
                 builder: (context, snapshot) {
@@ -138,13 +172,16 @@ class _ReviewCard extends StatelessWidget {
   Future<String> _getUserName(String userId) async {
     final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
     if (userDoc.exists) {
-      return userDoc.data()?['name'] ?? 'Anonymous';
+      return userDoc.data()?['name'] ?? 'Ẩn danh';
     }
-    return 'Anonymous';
+    return 'Ẩn danh';
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+
     return FutureBuilder<List<String>>(
       future: Future.wait([_getUserAvatar(userId), _getUserName(userId)]),
       builder: (context, snapshot) {
@@ -152,14 +189,24 @@ class _ReviewCard extends StatelessWidget {
           return const CircularProgressIndicator();
         }
         if (snapshot.hasError || !snapshot.hasData) {
-          return const Text('Error loading user data');
+          return const Text('Lỗi tải dữ liệu');
         }
         final userAvatar = snapshot.data![0];
         final userName = snapshot.data![1];
+        final reviewTime = review.createdAt.toDate();
+        final now = DateTime.now();
+
+        // Set the locale to Vietnamese
+        timeago.setLocaleMessages('vi', timeago.ViMessages());
+
+        final formattedTime = now.difference(reviewTime).inDays > 1
+            ? DateFormat('dd/MM/yyyy HH:mm').format(reviewTime)
+            : timeago.format(reviewTime, locale: 'vi');
 
         return Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          elevation: 1,
+          color: isDarkTheme ? Colors.grey[800] : Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -167,22 +214,49 @@ class _ReviewCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    _AvatarImage(userAvatar),
-                    const SizedBox(width: 16),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(40),
+                      child: Image.network(
+                        userAvatar,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            userName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                userName,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: isDarkTheme ? Colors.white : Colors.black,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                formattedTime,
+                                style: TextStyle(
+                                  color: isDarkTheme ? Colors.white70 : Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            '${review.createdAt.toDate()}',
-                            style: Theme.of(context).textTheme.bodySmall,
+                          const SizedBox(height: 3),
+                          Row(
+                            children: List.generate(5, (index) {
+                              return Icon(
+                                index < review.rating
+                                    ? Icons.star
+                                    : Icons.star_border,
+                                color: Colors.amber,
+                                size: 16,
+                              );
+                            }),
                           ),
                         ],
                       ),
@@ -196,21 +270,21 @@ class _ReviewCard extends StatelessWidget {
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
-                                  title: const Text('Confirm Delete'),
-                                  content: const Text('Are you sure you want to delete this review?'),
+                                  title: const Text('Xoá đánh giá'),
+                                  content: const Text('Bạn có chắc chắn muốn xoá đánh giá này không?'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
                                         Navigator.pop(context);
                                       },
-                                      child: const Text('Cancel'),
+                                      child: const Text('Hủy'),
                                     ),
                                     TextButton(
                                       onPressed: () {
                                         onDelete();
                                         Navigator.pop(context);
                                       },
-                                      child: const Text('Delete'),
+                                      child: const Text('Xoá'),
                                     ),
                                   ],
                                 );
@@ -228,13 +302,13 @@ class _ReviewCard extends StatelessWidget {
                                 return StatefulBuilder(
                                   builder: (context, setState) {
                                     return AlertDialog(
-                                      title: const Text('Update Review'),
+                                      title: const Text('Cập nhật đánh giá'),
                                       content: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           TextFormField(
                                             controller: commentController,
-                                            decoration: const InputDecoration(labelText: 'Comment'),
+                                            decoration: const InputDecoration(labelText: 'Đánh giá của bạn'),
                                           ),
                                           const SizedBox(height: 8),
                                           Row(
@@ -296,7 +370,7 @@ class _ReviewCard extends StatelessWidget {
                                               }
                                             },
                                             icon: const Icon(Icons.add_a_photo, color: Colors.deepOrange),
-                                            label: const Text('Pick Images'),
+                                            label: const Text('Chọn ảnh mới'),
                                             style: TextButton.styleFrom(
                                               foregroundColor: Colors.deepOrange,
                                               textStyle: const TextStyle(fontWeight: FontWeight.bold),
@@ -326,14 +400,14 @@ class _ReviewCard extends StatelessWidget {
                                           onPressed: () {
                                             Navigator.pop(context);
                                           },
-                                          child: const Text('Cancel'),
+                                          child: const Text('Hủy'),
                                         ),
                                         TextButton(
                                           onPressed: () {
                                             onUpdate(commentController.text, rating, newImages, existingImages);
                                             Navigator.pop(context);
                                           },
-                                          child: const Text('Update'),
+                                          child: const Text('Cập nhật'),
                                         ),
                                       ],
                                     );
@@ -350,7 +424,7 @@ class _ReviewCard extends StatelessWidget {
                               children: const [
                                 Icon(Icons.delete, color: Colors.red),
                                 SizedBox(width: 8),
-                                Text('Delete'),
+                                Text('Xoá'),
                               ],
                             ),
                           ),
@@ -360,7 +434,7 @@ class _ReviewCard extends StatelessWidget {
                               children: const [
                                 Icon(Icons.edit, color: Colors.blue),
                                 SizedBox(width: 8),
-                                Text('Update'),
+                                Text('Chỉnh sửa'),
                               ],
                             ),
                           ),
@@ -368,111 +442,85 @@ class _ReviewCard extends StatelessWidget {
                       ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                Row(
-                  children: List.generate(5, (index) {
-                    return Icon(
-                      index < review.rating ? Icons.star : Icons.star_border,
-                      color: Colors.amber,
-                      size: 16,
-                    );
-                  }),
-                ),
-                const SizedBox(height: 8),
-                if (review.comment.isNotEmpty) Text(review.comment),
+                const SizedBox(height: 5),
+                if (review.comment.isNotEmpty)
+                  Text(
+                    review.comment,
+                    style: TextStyle(
+                      color: isDarkTheme ? Colors.white : Colors.black,
+                    ),
+                  ),
+                const SizedBox(height: 5),
                 if (review.photos.isNotEmpty)
                   Column(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return Dialog(
-                                child: Image.network(review.photos.first),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: review.photos.map((photo) => GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return Dialog(
+                                    child: Container(
+                                      constraints: BoxConstraints(
+                                        maxWidth: MediaQuery.of(context).size.width * 0.9,
+                                        maxHeight: MediaQuery.of(context).size.height * 0.9,
+                                      ),
+                                      child: Image.network(photo),
+                                    ),
+                                  );
+                                },
                               );
                             },
-                          );
-                        },
-                        child: Container(
-                          height: 200,
-                          margin: const EdgeInsets.only(top: 8.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.0),
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(review.photos.first),
-                            ),
-                          ),
-                        ),
-                      ),
-                      if (review.photos.length > 1)
-                        Row(
-                          children: review.photos.skip(1).take(2).map((photo) => Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return Dialog(
-                                      child: Image.network(photo),
-                                    );
-                                  },
-                                );
-                              },
-                              child: Container(
-                                height: 100,
-                                margin: const EdgeInsets.only(top: 8.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(photo),
-                                  ),
+                            child: Container(
+                              height: 100,
+                              width: 100,
+                              margin: const EdgeInsets.only(right: 8.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(photo),
                                 ),
                               ),
                             ),
                           )).toList(),
                         ),
+                      ),
                     ],
                   ),
                 const SizedBox(height: 8),
                 if (review.reply.isNotEmpty)
-                  Text(
-                    'Reply from restaurant: ${review.reply}',
-                    style: const TextStyle(fontStyle: FontStyle.italic),
-                  ),
+                  Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Phản hồi của nhà hàng:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: isDarkTheme ? Colors.white : Colors.black,
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          review.reply,
+                          style: TextStyle(
+                            color: isDarkTheme ? Colors.white70 : Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
               ],
             ),
           ),
         );
       },
-    );
-  }
-}
-
-class _AvatarImage extends StatelessWidget {
-  final String url;
-
-  const _AvatarImage(this.url);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 60,
-      height: 60,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-      ),
-      child: ClipOval(
-        child: Image.network(
-          url,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Image.asset('assets/images/placeholder.png', fit: BoxFit.cover);
-          },
-        ),
-      ),
     );
   }
 }

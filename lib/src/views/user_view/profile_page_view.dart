@@ -163,7 +163,6 @@ class _ProfilePageViewState extends State<ProfilePageView> {
               ],
             ),
           ),
-          // IconButton to edit profile
           if (user != null && user.providerData.isNotEmpty && user.providerData[0].providerId == 'password')
             IconButton(
               icon: const Icon(Icons.edit_rounded, color: Colors.white),
