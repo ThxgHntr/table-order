@@ -62,7 +62,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
     if (openDates.contains(todayKey)) {
       return '$openTime - $closeTime';
     } else {
-      return 'Closed';
+      return '$openTime - $closeTime (Closed)';
     }
   }
 

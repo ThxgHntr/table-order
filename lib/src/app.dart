@@ -6,6 +6,7 @@ import 'package:table_order/src/views/navigation_rail_page.dart';
 import 'package:table_order/src/views/owner_view/restaurant_owner_page_view.dart';
 import 'package:table_order/src/views/owner_view/restaurant_registration.dart';
 import 'package:table_order/src/views/qr_view/reservation_qr_view.dart';
+import 'package:table_order/src/views/reservations_view/reservation_item_list_view.dart';
 import 'package:table_order/src/views/restaurant_view/restaurant_item_list_view.dart';
 import 'views/auth_view/sign_up_page_view.dart';
 import 'settings/settings_controller.dart';
@@ -87,6 +88,8 @@ class MyApp extends StatelessWidget {
                     return const RestaurantRegistration();
                   case ReservationQrView.routeName:
                     return const ReservationQrView();
+                  case ReservationItemListView.routeName:
+                    return const ReservationItemListView();
                   case RestaurantItemListView.routeName:
                   default:
                     return const NavigationRailPage();

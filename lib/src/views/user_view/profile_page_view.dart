@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:table_order/src/utils/custom_colors.dart';
 
 import '../../utils/toast_utils.dart';
 import '../../model/user_model.dart';
@@ -108,7 +109,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFC64027), Color(0xFF8A2E1F)], // Gradient colors
+          colors: [customRed, primaryColor], // Gradient colors
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -229,7 +230,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
           },
         ),
         _CustomListTile(
-          title: "Danh sách mã đặt chỗ",
+          title: "Danh sách mã đặt bàn",
           icon: Icons.list_alt_rounded,
           onTap: () {
             if (user == null) {
