@@ -10,6 +10,7 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
+  mobile_scanner: ^6.0.2
   timeago: ^3.7.0
   cached_network_image: ^3.4.1
   intl: ^0.19.0
