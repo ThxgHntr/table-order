@@ -328,7 +328,7 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
         }
       },
       decoration: InputDecoration(
-        labelText: 'Giờ bắt đầu',
+        labelText: 'Từ',
         prefixIcon: const Icon(Icons.access_time),
       ),
     );
@@ -350,7 +350,7 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
         }
       },
       decoration: InputDecoration(
-        labelText: 'Giờ kết thúc',
+        labelText: 'Đến',
         prefixIcon: const Icon(Icons.access_time),
       ),
     );

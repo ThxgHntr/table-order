@@ -4,6 +4,7 @@ import 'package:table_order/src/model/floor_model.dart';
 import 'package:table_order/src/model/table_model.dart';
 import 'package:table_order/src/services/firebase_choose_table_service.dart';
 import 'package:table_order/src/utils/toast_utils.dart';
+import 'package:table_order/src/views/qr_view/reservation_qr_view.dart';
 import 'package:table_order/src/views/widgets/primary_button.dart';
 
 class ConfirmChooseTableView extends StatelessWidget {
@@ -143,7 +144,8 @@ class ConfirmChooseTableView extends StatelessWidget {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 TextSpan(
-                                  text: '${date.day}/${date.month}/${date.year}',
+                                  text:
+                                      '${date.day}/${date.month}/${date.year}',
                                   style: const TextStyle(fontSize: 18),
                                 ),
                               ],
@@ -160,7 +162,7 @@ class ConfirmChooseTableView extends StatelessWidget {
                             TextSpan(
                               children: [
                                 TextSpan(
-                                  text: 'Giờ bắt đầu: ',
+                                  text: 'Từ: ',
                                   style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
@@ -183,7 +185,7 @@ class ConfirmChooseTableView extends StatelessWidget {
                             TextSpan(
                               children: [
                                 TextSpan(
-                                  text: 'Giờ kết thúc: ',
+                                  text: 'Đến: ',
                                   style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
@@ -228,8 +230,8 @@ class ConfirmChooseTableView extends StatelessWidget {
             const SizedBox(height: 20),
             PrimaryButton(
               onPressed: () async {
-                // Handle confirm reservation
-                bool result = await FirebaseChooseTableService().confirmChooseTable(
+                final result =
+                    await FirebaseChooseTableService().confirmChooseTable(
                   restaurant.restaurantId,
                   floor.id,
                   table.id,
@@ -238,8 +240,22 @@ class ConfirmChooseTableView extends StatelessWidget {
                   endTime,
                   additionalRequest,
                 );
-                if (result) {
-                  
+                if (result != null) {
+                  if (context.mounted) {
+                    Navigator.of(context).pushNamed(
+                      ReservationQrView.routeName,
+                      arguments: {
+                        'restaurant': restaurant,
+                        'floor': floor,
+                        'table': table,
+                        'date': date,
+                        'startTime': startTime,
+                        'endTime': endTime,
+                        'additionalRequest': additionalRequest,
+                        'reservationId': result,
+                      },
+                    );
+                  }
                 } else {
                   showWarningToast('Không thể đặt bàn.');
                 }

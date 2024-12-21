@@ -64,7 +64,7 @@ class FirebaseChooseTableService {
     }
   }
 
-  Future<bool> confirmChooseTable(
+  Future<String?> confirmChooseTable(
     String restaurantId,
     String floorId,
     String tableId,
@@ -101,18 +101,18 @@ class FirebaseChooseTableService {
           notes: additionalRequest,
           createdAt: Timestamp.now(),
         );
-        await tableSnapshot.reference.collection('reservations').add(
+        DocumentReference reservationRef = await tableSnapshot.reference.collection('reservations').add(
               reservationModel.toFirestore(),
             );
         await tableRef.update({
           'state': 2,
         });
-        return true;
+        return reservationRef.id;
       }
-      return false;
+      return null;
     } catch (e) {
       debugPrint('Error confirming table: $e');
-      return false;
+      return null;
     }
   }
 }

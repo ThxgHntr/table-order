@@ -29,7 +29,11 @@ class _ProfilePageViewState extends State<ProfilePageView> {
   Future<void> _fetchUserModel() async {
     final User? user = _auth.currentUser;
     if (user != null) {
-      final DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
       setState(() {
         _userModel = UserModel.fromFirebase(snapshot);
       });
@@ -38,7 +42,7 @@ class _ProfilePageViewState extends State<ProfilePageView> {
 
   @override
   Widget build(BuildContext context) {
-    final User? user = _auth.currentUser;
+    final User? currentUser = _auth.currentUser;
     final bool isLargeScreen = MediaQuery.of(context).size.width > 800;
 
     return Scaffold(
@@ -48,8 +52,8 @@ class _ProfilePageViewState extends State<ProfilePageView> {
           child: Text(
             'Trang cá nhân',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
             textAlign: TextAlign.left, // Align text to the left
           ),
         ),
@@ -61,26 +65,26 @@ class _ProfilePageViewState extends State<ProfilePageView> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              _buildProfileHeader(user),
+              _buildProfileHeader(currentUser),
               const SizedBox(height: 16),
               Expanded(
                 child: isLargeScreen
                     ? GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  children: [
-                    _buildOverviewSection(user),
-                    _buildAccountActionsSection(user),
-                  ],
-                )
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        children: [
+                          _buildOverviewSection(currentUser),
+                          _buildAccountActionsSection(currentUser),
+                        ],
+                      )
                     : ListView(
-                  children: [
-                    _buildOverviewSection(user),
-                    const SizedBox(height: 16),
-                    _buildAccountActionsSection(user),
-                  ],
-                ),
+                        children: [
+                          _buildOverviewSection(currentUser),
+                          const SizedBox(height: 16),
+                          _buildAccountActionsSection(currentUser),
+                        ],
+                      ),
               ),
             ],
           ),
@@ -91,14 +95,13 @@ class _ProfilePageViewState extends State<ProfilePageView> {
 
   Widget _buildProfileHeader(User? user) {
     String profilePictureUrl = 'https://via.placeholder.com/150';
-    if (user != null) {
-      if (user.providerData.isNotEmpty) {
-        String providerId = user.providerData[0].providerId;
-        if (providerId == 'google.com') {
-          profilePictureUrl = _userModel?.profilePicture ?? user.photoURL ?? 'https://via.placeholder.com/150';
-        } else if (providerId == 'password') {
-          profilePictureUrl = _userModel?.profilePicture ?? 'https://via.placeholder.com/150';
-        }
+    if (user != null && user.providerData.isNotEmpty) {
+      String providerId = user.providerData[0].providerId;
+      if (providerId == 'google.com') {
+        profilePictureUrl = user.photoURL ?? 'https://via.placeholder.com/150';
+      } else if (providerId == 'password') {
+        profilePictureUrl =
+            _userModel?.profilePicture ?? 'https://via.placeholder.com/150';
       }
     }
 
@@ -161,20 +164,21 @@ class _ProfilePageViewState extends State<ProfilePageView> {
             ),
           ),
           // IconButton to edit profile
-          IconButton(
-            icon: const Icon(Icons.edit_rounded, color: Colors.white),
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditUserProfile(),
-                ),
-              );
-              if (result == true) {
-                await _fetchUserModel();
-              }
-            },
-          ),
+          if (user != null && user.providerData.isNotEmpty && user.providerData[0].providerId == 'password')
+            IconButton(
+              icon: const Icon(Icons.edit_rounded, color: Colors.white),
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditUserProfile(),
+                  ),
+                );
+                if (result == true) {
+                  await _fetchUserModel();
+                }
+              },
+            ),
         ],
       ),
     );
@@ -239,31 +243,31 @@ class _ProfilePageViewState extends State<ProfilePageView> {
       title: "Tài khoản",
       children: user != null
           ? [
-        _CustomListTile(
-          title: "Đăng xuất",
-          icon: Icons.exit_to_app_rounded,
-          onTap: () async {
-            await _auth.signOut();
-            setState(() {});
-          },
-        ),
-      ]
+              _CustomListTile(
+                title: "Đăng xuất",
+                icon: Icons.exit_to_app_rounded,
+                onTap: () async {
+                  await _auth.signOut();
+                  setState(() {});
+                },
+              ),
+            ]
           : [
-        _CustomListTile(
-          title: "Đăng nhập",
-          icon: Icons.login_rounded,
-          onTap: () {
-            Navigator.pushNamed(context, '/login');
-          },
-        ),
-        _CustomListTile(
-          title: "Đăng ký",
-          icon: Icons.app_registration_rounded,
-          onTap: () {
-            Navigator.pushNamed(context, '/signup');
-          },
-        ),
-      ],
+              _CustomListTile(
+                title: "Đăng nhập",
+                icon: Icons.login_rounded,
+                onTap: () {
+                  Navigator.pushNamed(context, '/login');
+                },
+              ),
+              _CustomListTile(
+                title: "Đăng ký",
+                icon: Icons.app_registration_rounded,
+                onTap: () {
+                  Navigator.pushNamed(context, '/signup');
+                },
+              ),
+            ],
     );
   }
 }
