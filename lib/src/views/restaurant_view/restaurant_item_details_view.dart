@@ -241,7 +241,8 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
               for (var review in reviews) {
                 totalRating += review['rating'];
               }
-              final averageRating = totalReviews > 0 ? totalRating / totalReviews : 0.0;
+              final averageRating =
+                  totalReviews > 0 ? totalRating / totalReviews : 0.0;
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,8 +252,10 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
                       Row(
                         children: List.generate(
                           5,
-                              (index) => Icon(
-                            index < averageRating.round() ? Icons.star : Icons.star_border,
+                          (index) => Icon(
+                            index < averageRating.round()
+                                ? Icons.star
+                                : Icons.star_border,
                             color: Colors.yellow,
                             size: 25,
                           ),
@@ -271,7 +274,8 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => RestaurantReviewView(restaurantId: widget.restaurantId),
+                          builder: (context) => RestaurantReviewView(
+                              restaurantId: widget.restaurantId),
                         ),
                       );
                     },
@@ -345,7 +349,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
       borderRadius: BorderRadius.circular(8), // Add rounded corners
       boxShadow: [
         BoxShadow(
-          color: Colors.grey.withOpacity(0.2), // Reduce shadow opacity
+          color: Colors.grey.withAlpha(100),
           blurRadius: 3, // Reduce blur radius
           offset: const Offset(0, 2), // Reduce offset
         ),

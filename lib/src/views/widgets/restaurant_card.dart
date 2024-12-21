@@ -29,7 +29,7 @@ Widget restaurantCard(
           Expanded(
             child: ClipRRect(
               borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(8.0)),
+                  const BorderRadius.vertical(top: Radius.circular(8.0)),
               child: Image.network(
                 restaurant.photos[0],
                 fit: BoxFit.cover,
@@ -48,7 +48,7 @@ Widget restaurantCard(
           ),
           Padding(
             padding:
-            const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Text(
               restaurant.name,
               style: Theme.of(context).textTheme.titleMedium,
@@ -71,7 +71,8 @@ Widget restaurantCard(
                   ],
                 ),
                 StreamBuilder<double>(
-                  stream: firebaseReviewServices.getAverageRatingStream(restaurant.restaurantId),
+                  stream: firebaseReviewServices
+                      .getAverageRatingStream(restaurant.restaurantId),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();

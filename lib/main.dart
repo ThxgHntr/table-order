@@ -33,8 +33,6 @@ void main() async {
   } catch (e, stackTrace) {
     if (kDebugMode) {
       print('Error during Firebase initialization: $e');
-    }
-    if (kDebugMode) {
       print(stackTrace);
     }
   }
