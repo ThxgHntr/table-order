@@ -33,8 +33,7 @@ class _TableManagementViewState extends State<TableManagementView> {
     }
   }
 
-  Future<void> _addFloor(
-      String floorName, List<Map<String, dynamic>> tables) async {
+  void _addFloor(String floorName, List<Map<String, dynamic>> tables) async {
     try {
       await _floorServices.addFloor(widget.restaurantId, floorName, tables);
       _loadFloorsFromDatabase();
@@ -43,8 +42,7 @@ class _TableManagementViewState extends State<TableManagementView> {
     }
   }
 
-  Future<void> _addTable(
-      int floorIndex, String tableNumber, int chairCount) async {
+  void _addTable(int floorIndex, String tableNumber, int chairCount) async {
     try {
       await _floorServices.addTable(
         widget.restaurantId,
@@ -173,8 +171,8 @@ class _TableManagementViewState extends State<TableManagementView> {
                   child: Text('Hủy'),
                 ),
                 TextButton(
-                  onPressed: () async {
-                    await _addFloor(floorNameController.text, tables);
+                  onPressed: () {
+                    _addFloor(floorNameController.text, tables);
                     Navigator.pop(context);
                   },
                   child: Text('Thêm'),
@@ -217,8 +215,8 @@ class _TableManagementViewState extends State<TableManagementView> {
               child: Text('Hủy'),
             ),
             TextButton(
-              onPressed: () async {
-                await _addTable(
+              onPressed: () {
+                _addTable(
                   floorIndex,
                   tableNumberController.text,
                   int.tryParse(chairCountController.text) ?? 0,
