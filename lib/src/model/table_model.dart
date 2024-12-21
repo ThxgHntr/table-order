@@ -4,7 +4,7 @@ class TableModel {
   final String id;
   final String tableNumber;
   final int seats;
-  final int state;
+  late int state;
   final String? reservationID;
   final String location;
 
@@ -17,7 +17,8 @@ class TableModel {
     required this.location,
   });
 
-  factory TableModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+  factory TableModel.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
     final data = snapshot.data() ?? {};
     return TableModel(
       id: snapshot.id,

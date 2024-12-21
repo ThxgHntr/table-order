@@ -1,23 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReservationModel {
-  final String reservationId;
-  final String restaurantId;
-  final String floorId;
-  final String tableId;
+  final String? id;
+  final String userId;
   final Timestamp reservationDate;
-  final Timestamp reservationTime;
+  final Timestamp startTime;
+  final Timestamp endTime;
   final String status;
   final String notes;
   final Timestamp createdAt;
 
   ReservationModel({
-    required this.reservationId,
-    required this.restaurantId,
-    required this.floorId,
-    required this.tableId,
+    this.id = '',
+    required this.userId,
     required this.reservationDate,
-    required this.reservationTime,
+    required this.startTime,
+    required this.endTime,
     required this.status,
     required this.notes,
     required this.createdAt,
@@ -27,12 +25,11 @@ class ReservationModel {
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
     final data = snapshot.data() ?? {};
     return ReservationModel(
-      reservationId: data['reservationId'] ?? '',
-      restaurantId: data['restaurantID'] ?? '',
-      floorId: data['floorID'] ?? '',
-      tableId: data['tableID'] ?? '',
+      id: snapshot.id,
+      userId: data['userId'] ?? '',
       reservationDate: data['reservationDate'] ?? Timestamp.now(),
-      reservationTime: data['reservationTime'] ?? Timestamp.now(),
+      startTime: data['startTime'] ?? Timestamp.now(),
+      endTime: data['endTime'] ?? Timestamp.now(),
       status: data['status'] ?? 'Pending',
       notes: data['notes'] ?? '',
       createdAt: data['created_at'] ?? Timestamp.now(),
@@ -41,12 +38,10 @@ class ReservationModel {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'reservationId': reservationId,
-      'restaurantId': restaurantId,
-      'floorId': floorId,
-      'tableId': tableId,
       'reservationDate': reservationDate,
-      'reservationTime': reservationTime,
+      'userId': userId,
+      'startTime': startTime,
+      'endTime': endTime,
       'status': status,
       'notes': notes,
       'created_at': createdAt,

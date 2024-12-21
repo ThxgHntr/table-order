@@ -77,8 +77,14 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
 
   Future<void> _refreshPage() async {
     setState(() {
-      _restaurantItemListViewKey = UniqueKey();
-      _pages[0] = RestaurantItemListView(key: _restaurantItemListViewKey);
+      if (_selectedIndex == 0) {
+        _restaurantItemListViewKey = UniqueKey();
+        _pages[0] = RestaurantItemListView(key: _restaurantItemListViewKey);
+      } else if (_selectedIndex == 1) {
+        _pages[1] = const NotifyPageView();
+      } else if (_selectedIndex == 2) {
+        _pages[2] = const ProfilePageView();
+      }
     });
   }
 
@@ -103,7 +109,9 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
       appBar: AppBar(
         title: Image(
           image: const AssetImage('assets/logos/logo.png'),
-          width: MediaQuery.of(context).size.width > 800 ? 60 : 50,  // Nếu màn hình rộng hơn 800px, logo sẽ có chiều rộng 60, còn lại là 50
+          width: MediaQuery.of(context).size.width > 800
+              ? 60
+              : 50, // Nếu màn hình rộng hơn 800px, logo sẽ có chiều rộng 60, còn lại là 50
           fit: BoxFit.contain,
         ),
         automaticallyImplyLeading: false,
@@ -111,9 +119,9 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
           Text(
             locationText ?? '',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w300,
-              fontSize: 16,
-            ),
+                  fontWeight: FontWeight.w300,
+                  fontSize: 16,
+                ),
           ),
           IconButton(
             icon: const Icon(Icons.location_pin),
@@ -129,7 +137,6 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
           ),
         ],
       ),
-
       bottomNavigationBar: isSmallScreen
           ? BottomNavigationBar(
               items: _navBarItems,

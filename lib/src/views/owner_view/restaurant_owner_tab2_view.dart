@@ -77,17 +77,21 @@ class _RestaurantOwnerTab2ViewState extends State<RestaurantOwnerTab2View> {
           .collection('restaurants')
           .doc(restaurantId)
           .delete();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đã xoá nhà hàng và tất cả ảnh liên quan')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Đã xoá nhà hàng và tất cả ảnh liên quan')),
+        );
+      }
     } catch (e) {
       if (kDebugMode) {
         print("Error deleting restaurant: $e");
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Có lỗi xảy ra khi xoá nhà hàng: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Có lỗi xảy ra khi xoá nhà hàng: $e')),
+        );
+      }
     }
   }
 

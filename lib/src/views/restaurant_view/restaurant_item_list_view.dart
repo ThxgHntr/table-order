@@ -70,7 +70,9 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
   Future<void> _loadRestaurants({required bool isNearby}) async {
     if ((isNearby && (_isLoadingMoreNearby || !_hasMoreNearbyData)) ||
         (!isNearby && (_isLoadingMoreAll || !_hasMoreAllData)) ||
-        _isLoadingLocation) return;
+        _isLoadingLocation) {
+      return;
+    }
 
     setState(() {
       if (isNearby) {
@@ -190,9 +192,10 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'Nhà hàng gần bạn',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                       textAlign: TextAlign.left, // Align text to the left
                     ),
                   ),
@@ -238,9 +241,10 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'Tất cả nhà hàng',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                       textAlign: TextAlign.left, // Align text to the left
                     ),
                   ),

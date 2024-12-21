@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../services/firebase_auth_services.dart';
 import '../../utils/toast_utils.dart';
@@ -47,7 +46,7 @@ class LoginFormContentState extends State<LoginFormContent> {
                 }
 
                 bool emailValid = RegExp(
-                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                     .hasMatch(value);
                 if (!emailValid) {
                   return 'Email không hợp lệ';
@@ -103,10 +102,15 @@ class LoginFormContentState extends State<LoginFormContent> {
                 onPressed: _signIn,
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: _isSigning ? CircularProgressIndicator(color: Colors.white,): Text(
-                    'Đăng nhập',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                  child: _isSigning
+                      ? CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : Text(
+                          'Đăng nhập',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
                 ),
               ),
             ),
@@ -189,49 +193,18 @@ class LoginFormContentState extends State<LoginFormContent> {
   }
 
   Future<void> _signInWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-    await googleSignIn.signOut(); // Đăng xuất trước khi đăng nhập lại
     try {
-      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
-        final AuthCredential authCredential = GoogleAuthProvider.credential(
-          accessToken: googleSignInAuthentication.accessToken,
-          idToken: googleSignInAuthentication.idToken,
-        );
-
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(authCredential);
-        User? user = userCredential.user; // Lấy User sau khi đăng nhập thành công
-
-        if (mounted && user != null) {
-          // Gọi hàm checkRole để kiểm tra vai trò của người dùng
-          String? role = await _auth.checkRole(user);
-
-          // Kiểm tra vai trò và điều hướng tương ứng
-          if (role == "admin" && mounted) {
-            showToast("Đăng nhập thành công với vai trò admin");
-            Navigator.of(context).pushNamed("/admin");
-          } else if (mounted) {
-            showToast("Đăng nhập thành công");
-            Navigator.of(context).pushNamed("/");
-          }
-        }
+      final UserCredential userCredential = await _auth.signInWithGoogle();
+      final user = userCredential.user;
+      if (user != null && mounted) {
+        showToast("Đăng nhập thành công");
+        Navigator.of(context).pushNamed("/");
+      } else {
+        showToast("Đăng nhập thất bại");
       }
     } catch (e) {
-      // In lỗi chi tiết ra console để debug
-      showToast("Đăng nhập thất bại");
       if (kDebugMode) {
-        // In ra lỗi cụ thể để debug dễ dàng
-        print("Error: ${e.toString()}");
-
-        // Kiểm tra lỗi chi tiết từ FirebaseAuth
-        if (e is FirebaseAuthException) {
-          // Bạn có thể in ra mã lỗi và mô tả chi tiết của FirebaseAuthException
-          print("FirebaseAuthError: ${e.code} - ${e.message}");
-        } else {
-          // Xử lý các lỗi khác (nếu có)
-          print("Non-Firebase error: $e");
-        }
+        print("Login failed: $e");
       }
     }
   }

@@ -31,7 +31,11 @@ class _EditUserProfileState extends State<EditUserProfile> {
   Future<void> _initializeUser() async {
     final User? user = _auth.currentUser;
     if (user != null) {
-      final DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
       _userModel = UserModel.fromFirebase(snapshot);
       setState(() {
         _nameController.text = _userModel?.name ?? '';
@@ -41,7 +45,8 @@ class _EditUserProfileState extends State<EditUserProfile> {
   }
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
@@ -56,13 +61,13 @@ class _EditUserProfileState extends State<EditUserProfile> {
       profileImage: _selectedImage,
     );
     Fluttertoast.showToast(msg: "Cập nhật thành công");
-    Navigator.of(context).pop(true); // Pass true to indicate success
+    if (mounted) {
+      Navigator.of(context).pop(true); // Pass true to indicate success
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final User? user = _auth.currentUser;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chỉnh sửa thông tin cá nhân'),
@@ -76,10 +81,13 @@ class _EditUserProfileState extends State<EditUserProfile> {
                 onTap: _pickImage,
                 child: CircleAvatar(
                   radius: 60,
-                  backgroundImage: _selectedImage != null && _selectedImage!.existsSync()
+                  backgroundImage: _selectedImage != null &&
+                          _selectedImage!.existsSync()
                       ? FileImage(_selectedImage!)
-                      : NetworkImage(_userModel?.profilePicture ?? 'https://via.placeholder.com/150') as ImageProvider,
-                  child: const Icon(Icons.camera_alt, color: Colors.white, size: 30),
+                      : NetworkImage(_userModel?.profilePicture ??
+                          'https://via.placeholder.com/150') as ImageProvider,
+                  child: const Icon(Icons.camera_alt,
+                      color: Colors.white, size: 30),
                 ),
               ),
             ),
@@ -90,9 +98,10 @@ class _EditUserProfileState extends State<EditUserProfile> {
                 labelText: 'Họ và tên',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
+                  borderSide: BorderSide(color: Colors.grey.withAlpha(100)),
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               ),
             ),
             const SizedBox(height: 16),
@@ -102,9 +111,10 @@ class _EditUserProfileState extends State<EditUserProfile> {
                 labelText: 'Email',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
+                  borderSide: BorderSide(color: Colors.grey.withAlpha(100)),
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               ),
               readOnly: true,
             ),
@@ -115,9 +125,10 @@ class _EditUserProfileState extends State<EditUserProfile> {
                 labelText: 'Số điện thoại',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
+                  borderSide: BorderSide(color: Colors.grey.withAlpha(100)),
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               ),
             ),
             const SizedBox(height: 24),
@@ -127,19 +138,22 @@ class _EditUserProfileState extends State<EditUserProfile> {
                 ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 40),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 40),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                     backgroundColor: Colors.grey,
                   ),
-                  child: const Text('Hủy', style: TextStyle(color: Colors.white)),
+                  child:
+                      const Text('Hủy', style: TextStyle(color: Colors.white)),
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton(
                   onPressed: _saveProfile,
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 40),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 40),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),

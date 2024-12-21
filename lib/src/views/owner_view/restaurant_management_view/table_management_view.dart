@@ -33,7 +33,7 @@ class _TableManagementViewState extends State<TableManagementView> {
     }
   }
 
-  Future<void> _addFloor(String floorName, List<Map<String, dynamic>> tables) async {
+  void _addFloor(String floorName, List<Map<String, dynamic>> tables) async {
     try {
       await _floorServices.addFloor(widget.restaurantId, floorName, tables);
       _loadFloorsFromDatabase();
@@ -42,7 +42,7 @@ class _TableManagementViewState extends State<TableManagementView> {
     }
   }
 
-  Future<void> _addTable(int floorIndex, String tableNumber, int chairCount) async {
+  void _addTable(int floorIndex, String tableNumber, int chairCount) async {
     try {
       await _floorServices.addTable(
         widget.restaurantId,
@@ -67,7 +67,8 @@ class _TableManagementViewState extends State<TableManagementView> {
       return;
     }
     try {
-      await _floorServices.deleteFloor(widget.restaurantId, floors[floorIndex].id);
+      await _floorServices.deleteFloor(
+          widget.restaurantId, floors[floorIndex].id);
       _loadFloorsFromDatabase();
     } catch (e) {
       debugPrint("Lỗi xóa tầng: $e");
@@ -87,7 +88,8 @@ class _TableManagementViewState extends State<TableManagementView> {
     }
   }
 
-  Future<void> _updateTableStatus(int floorIndex, int tableIndex, int newStatus) async {
+  Future<void> _updateTableStatus(
+      int floorIndex, int tableIndex, int newStatus) async {
     try {
       await _floorServices.updateTableStatus(
         widget.restaurantId,
@@ -114,32 +116,54 @@ class _TableManagementViewState extends State<TableManagementView> {
           builder: (context, setState) {
             return AlertDialog(
               title: Text('Thêm tầng mới'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: floorNameController,
-                    decoration: InputDecoration(labelText: 'Tên tầng'),
+              content: SingleChildScrollView(
+                child: SizedBox(
+                  width: double.maxFinite,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: floorNameController,
+                        decoration: InputDecoration(labelText: 'Tên tầng'),
+                      ),
+                      TextField(
+                        controller: chairCountController,
+                        decoration: InputDecoration(labelText: 'Số lượng ghế'),
+                        keyboardType: TextInputType.number,
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          final chairCount =
+                              int.tryParse(chairCountController.text) ?? 0;
+                          setState(() {
+                            tables.add({
+                              'tableNumber': '$tableCounter',
+                              'seats': chairCount
+                            });
+                            tableCounter++;
+                            chairCountController.clear();
+                          });
+                        },
+                        child: Text('Thêm bàn'),
+                      ),
+                      SizedBox(
+                        height: 100,
+                        child: Scrollbar(
+                          child: ListView(
+                            shrinkWrap: true,
+                            children: tables
+                                .map((table) => Center(
+                                      child: Text(
+                                          '${table['tableNumber']}: ${table['seats']} ghế'),
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  TextField(
-                    controller: chairCountController,
-                    decoration: InputDecoration(labelText: 'Số ghế'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      final chairCount = int.tryParse(chairCountController.text) ?? 0;
-                      setState(() {
-                        tables.add({'tableNumber': '$tableCounter', 'seats': chairCount});
-                        tableCounter++;
-                        chairCountController.clear();
-                      });
-                    },
-                    child: Text('Thêm bàn'),
-                  ),
-                  SizedBox(height: 10),
-                  ...tables.map((table) => Text('${table['tableNumber']}: ${table['seats']} ghế')),
-                ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -147,8 +171,8 @@ class _TableManagementViewState extends State<TableManagementView> {
                   child: Text('Hủy'),
                 ),
                 TextButton(
-                  onPressed: () async {
-                    await _addFloor(floorNameController.text, tables);
+                  onPressed: () {
+                    _addFloor(floorNameController.text, tables);
                     Navigator.pop(context);
                   },
                   child: Text('Thêm'),
@@ -180,7 +204,7 @@ class _TableManagementViewState extends State<TableManagementView> {
               ),
               TextField(
                 controller: chairCountController,
-                decoration: InputDecoration(labelText: 'Số ghế'),
+                decoration: InputDecoration(labelText: 'Số lượng ghế'),
                 keyboardType: TextInputType.number,
               ),
             ],
@@ -191,8 +215,8 @@ class _TableManagementViewState extends State<TableManagementView> {
               child: Text('Hủy'),
             ),
             TextButton(
-              onPressed: () async {
-                await _addTable(
+              onPressed: () {
+                _addTable(
                   floorIndex,
                   tableNumberController.text,
                   int.tryParse(chairCountController.text) ?? 0,
@@ -228,17 +252,21 @@ class _TableManagementViewState extends State<TableManagementView> {
                   final table = floor.tables[tableIndex];
                   return ListTile(
                     title: Text('Bàn số: ${table.tableNumber}'),
-                    subtitle: Text('Số ghế: ${table.seats} - Trạng thái: ${_getStatusLabel(table.state)}'),
+                    subtitle: Text(
+                        'Số lượng ghế: ${table.seats} - Trạng thái: ${_getStatusLabel(table.state)}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         PopupMenuButton<int>(
                           icon: Icon(Icons.more_vert),
-                          onSelected: (newStatus) => _updateTableStatus(floorIndex, tableIndex, newStatus),
+                          onSelected: (newStatus) => _updateTableStatus(
+                              floorIndex, tableIndex, newStatus),
                           itemBuilder: (context) => [
-                            PopupMenuItem(value: 0, child: Text('Chưa có ai đặt')),
+                            PopupMenuItem(
+                                value: 0, child: Text('Chưa có ai đặt')),
                             PopupMenuItem(value: 1, child: Text('Đang chọn')),
-                            PopupMenuItem(value: 2, child: Text('Đang sử dụng')),
+                            PopupMenuItem(
+                                value: 2, child: Text('Đang sử dụng')),
                           ],
                         ),
                         IconButton(
