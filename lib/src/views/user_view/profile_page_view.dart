@@ -163,7 +163,10 @@ class _ProfilePageViewState extends State<ProfilePageView> {
               ],
             ),
           ),
-          if (user != null && user.providerData.isNotEmpty && user.providerData[0].providerId == 'password')
+          // IconButton to edit profile
+          if (user != null &&
+              user.providerData.isNotEmpty &&
+              user.providerData[0].providerId == 'password')
             IconButton(
               icon: const Icon(Icons.edit_rounded, color: Colors.white),
               onPressed: () async {
@@ -222,6 +225,17 @@ class _ProfilePageViewState extends State<ProfilePageView> {
               showToast("Bạn cần đăng nhập để truy cập");
             } else {
               Navigator.pushNamed(context, '/restaurant-owner');
+            }
+          },
+        ),
+        _CustomListTile(
+          title: "Danh sách mã đặt chỗ",
+          icon: Icons.list_alt_rounded,
+          onTap: () {
+            if (user == null) {
+              showToast("Bạn cần đăng nhập để truy cập");
+            } else {
+              Navigator.pushNamed(context, '/reservations');
             }
           },
         ),

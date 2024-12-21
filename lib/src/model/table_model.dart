@@ -5,16 +5,14 @@ class TableModel {
   final String tableNumber;
   final int seats;
   late int state;
-  final String? reservationID;
-  final String location;
+  late String userId = '';
 
   TableModel({
     this.id = '',
     required this.tableNumber,
     required this.seats,
     required this.state,
-    this.reservationID,
-    required this.location,
+    this.userId = '',
   });
 
   factory TableModel.fromFirestore(
@@ -25,8 +23,7 @@ class TableModel {
       tableNumber: data['tableNumber'] ?? '',
       seats: data['seats'] ?? 0,
       state: data['state'] ?? false,
-      reservationID: data['reservationID'],
-      location: data['location'] ?? '',
+      userId: data['userId'] ?? '',
     );
   }
 
@@ -35,8 +32,7 @@ class TableModel {
       'tableNumber': tableNumber,
       'seats': seats,
       'state': state,
-      'reservationID': reservationID,
-      'location': location,
+      'userId': userId,
     };
   }
 }
