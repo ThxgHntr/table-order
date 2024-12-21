@@ -115,7 +115,7 @@ class ConfirmChooseTableView extends StatelessWidget {
                             TextSpan(
                               children: [
                                 TextSpan(
-                                  text: 'Số ghế: ',
+                                  text: 'Số lượng ghế: ',
                                   style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
@@ -230,7 +230,7 @@ class ConfirmChooseTableView extends StatelessWidget {
             const SizedBox(height: 20),
             PrimaryButton(
               onPressed: () async {
-                final result =
+                final reservationId =
                     await FirebaseChooseTableService().confirmChooseTable(
                   restaurant.restaurantId,
                   floor.id,
@@ -240,7 +240,7 @@ class ConfirmChooseTableView extends StatelessWidget {
                   endTime,
                   additionalRequest,
                 );
-                if (result != null) {
+                if (reservationId != null) {
                   if (context.mounted) {
                     Navigator.of(context).pushNamed(
                       ReservationQrView.routeName,
@@ -252,7 +252,7 @@ class ConfirmChooseTableView extends StatelessWidget {
                         'startTime': startTime,
                         'endTime': endTime,
                         'additionalRequest': additionalRequest,
-                        'reservationId': result,
+                        'reservationId': reservationId,
                       },
                     );
                   }

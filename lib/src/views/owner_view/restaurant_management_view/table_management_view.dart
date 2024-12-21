@@ -130,7 +130,7 @@ class _TableManagementViewState extends State<TableManagementView> {
                       ),
                       TextField(
                         controller: chairCountController,
-                        decoration: InputDecoration(labelText: 'Số ghế'),
+                        decoration: InputDecoration(labelText: 'Số lượng ghế'),
                         keyboardType: TextInputType.number,
                       ),
                       SizedBox(height: 10),
@@ -206,7 +206,7 @@ class _TableManagementViewState extends State<TableManagementView> {
               ),
               TextField(
                 controller: chairCountController,
-                decoration: InputDecoration(labelText: 'Số ghế'),
+                decoration: InputDecoration(labelText: 'Số lượng ghế'),
                 keyboardType: TextInputType.number,
               ),
             ],
@@ -255,7 +255,7 @@ class _TableManagementViewState extends State<TableManagementView> {
                   return ListTile(
                     title: Text('Bàn số: ${table.tableNumber}'),
                     subtitle: Text(
-                        'Số ghế: ${table.seats} - Trạng thái: ${_getStatusLabel(table.state)}'),
+                        'Số lượng ghế: ${table.seats} - Trạng thái: ${_getStatusLabel(table.state)}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

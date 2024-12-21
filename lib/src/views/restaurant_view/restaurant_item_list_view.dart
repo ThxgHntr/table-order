@@ -70,7 +70,9 @@ class RestaurantItemListViewState extends State<RestaurantItemListView> {
   Future<void> _loadRestaurants({required bool isNearby}) async {
     if ((isNearby && (_isLoadingMoreNearby || !_hasMoreNearbyData)) ||
         (!isNearby && (_isLoadingMoreAll || !_hasMoreAllData)) ||
-        _isLoadingLocation) return;
+        _isLoadingLocation) {
+      return;
+    }
 
     setState(() {
       if (isNearby) {
