@@ -359,6 +359,7 @@ class ChooseTableWidgetState extends State<ChooseTableWidget> {
   Widget _buildAdditionalRequestField() {
     return TextField(
       controller: widget.additionalRequestController,
+      maxLength: 50, // Limit input to 50 characters
       decoration: InputDecoration(
         labelText: 'Yêu cầu bổ sung',
         border: OutlineInputBorder(),

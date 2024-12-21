@@ -4,7 +4,7 @@ import 'package:table_order/src/model/floor_model.dart';
 import 'package:table_order/src/model/restaurant_model.dart';
 import 'package:table_order/src/model/table_model.dart';
 import 'package:table_order/src/utils/custom_colors.dart';
-import 'package:intl/intl.dart';
+import 'package:table_order/src/views/widgets/reservation_details.dart';
 
 class ReservationQrView extends StatelessWidget {
   static const routeName = '/reservation-qr';
@@ -63,8 +63,15 @@ class ReservationQrView extends StatelessWidget {
                       thickness: 1.0,
                     ),
                     const SizedBox(height: 10.0),
-                    _buildReservationDetails(context, restaurant, floor, table, date,
-                        startTime, endTime, additionalRequest),
+                    ReservationDetails(
+                      restaurant: restaurant,
+                      floor: floor,
+                      table: table,
+                      date: date,
+                      startTime: startTime,
+                      endTime: endTime,
+                      additionalRequest: additionalRequest,
+                    ),
                   ],
                 ),
               ),
@@ -116,101 +123,6 @@ class ReservationQrView extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildReservationDetails(
-    BuildContext context,
-    RestaurantModel restaurant,
-    FloorModel floor,
-    TableModel table,
-    DateTime date,
-    TimeOfDay startTime,
-    TimeOfDay endTime,
-    String additionalRequest,
-  ) {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              restaurant.name,
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10.0),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailText('Tầng:'),
-                      const SizedBox(height: 10.0),
-                      _buildDetailText('Mã bàn:'),
-                      const SizedBox(height: 10.0),
-                      _buildDetailText('Ngày:'),
-                      const SizedBox(height: 10.0),
-                      _buildDetailText('Từ:'),
-                      const SizedBox(height: 10.0),
-                      _buildDetailText('Đến:'),
-                      const SizedBox(height: 10.0),
-                      _buildDetailText('Yêu cầu bổ sung:'),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailValue(floor.name),
-                      const SizedBox(height: 10.0),
-                      _buildDetailValue(table.tableNumber),
-                      const SizedBox(height: 10.0),
-                      _buildDetailValue(DateFormat('dd/MM/yyyy').format(date)),
-                      const SizedBox(height: 10.0),
-                      _buildDetailValue(startTime.format(context)),
-                      const SizedBox(height: 10.0),
-                      _buildDetailValue(endTime.format(context)),
-                      const SizedBox(height: 10.0),
-                      _buildDetailValue(additionalRequest),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDetailText(String text) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: 16.0,
-        fontWeight: FontWeight.w400,
-        color: Colors.grey,
-      ),
-    );
-  }
-
-  Widget _buildDetailValue(String value) {
-    return Text(
-      value,
-      style: TextStyle(
-        fontSize: 16.0,
-        fontWeight: FontWeight.w400,
       ),
     );
   }

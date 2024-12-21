@@ -6,6 +6,7 @@ import 'package:table_order/src/services/firebase_choose_table_service.dart';
 import 'package:table_order/src/utils/toast_utils.dart';
 import 'package:table_order/src/views/qr_view/reservation_qr_view.dart';
 import 'package:table_order/src/views/widgets/primary_button.dart';
+import 'package:table_order/src/views/widgets/reservation_details.dart';
 
 class ConfirmChooseTableView extends StatelessWidget {
   final RestaurantModel restaurant;
@@ -39,193 +40,14 @@ class ConfirmChooseTableView extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            SizedBox(
-              width: double.infinity,
-              child: Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Text(
-                          restaurant.name,
-                          style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Icon(Icons.layers),
-                          const SizedBox(width: 5),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Tầng: ',
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text: floor.name,
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Icon(Icons.table_chart),
-                          const SizedBox(width: 5),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Mã bàn: ',
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text: table.tableNumber,
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Icon(Icons.chair),
-                          const SizedBox(width: 5),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Số lượng ghế: ',
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text: table.seats.toString(),
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Icon(Icons.calendar_today),
-                          const SizedBox(width: 5),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Ngày: ',
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text:
-                                      '${date.day}/${date.month}/${date.year}',
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Icon(Icons.access_time),
-                          const SizedBox(width: 5),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Từ: ',
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text: startTime.format(context),
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Icon(Icons.access_time),
-                          const SizedBox(width: 5),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Đến: ',
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text: endTime.format(context),
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Icon(Icons.note),
-                          const SizedBox(width: 5),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Yêu cầu bổ sung: ',
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text: additionalRequest,
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            ReservationDetails(
+              restaurant: restaurant,
+              floor: floor,
+              table: table,
+              date: date,
+              startTime: startTime,
+              endTime: endTime,
+              additionalRequest: additionalRequest,
             ),
             const SizedBox(height: 20),
             PrimaryButton(
