@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:table_order/src/views/owner_view/restaurant_management_view/review_management_view.dart';
 import 'package:table_order/src/views/owner_view/restaurant_management_view/table_management_view.dart';
 
@@ -17,12 +19,25 @@ class RestaurantOwnerManagementView extends StatefulWidget {
 
 class _RestaurantOwnerManagementViewState
     extends State<RestaurantOwnerManagementView> {
+  void _scanQRCode() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QRViewScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.restaurantName),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.qr_code_scanner_sharp),
+            onPressed: _scanQRCode,
+          ),
           IconButton(
             icon: Icon(Icons.edit),
             onPressed: () {
@@ -103,6 +118,32 @@ class _RestaurantOwnerManagementViewState
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class QRViewScreen extends StatelessWidget {
+  const QRViewScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Scan QR Code'),
+      ),
+      body: MobileScanner(
+        onDetect: (barcodeCapture) {
+          final String? code = barcodeCapture.barcodes.first.rawValue;
+          if (code != null) {
+            Fluttertoast.showToast(
+              msg: 'Scanned QR Code: $code',
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+            );
+            Navigator.pop(context);
+          }
+        },
       ),
     );
   }
