@@ -259,14 +259,6 @@ class _ProfilePageViewState extends State<ProfilePageView> {
       children: user != null
           ? [
               _CustomListTile(
-                title: "Thêm dữ liệu mẫu",
-                icon: Icons.data_exploration_rounded,
-                onTap: () {
-                  final currentUserId = _auth.currentUser!.uid;
-                  FirebaseNotificationServices.addSampleNotification(currentUserId);
-                },
-              ),
-              _CustomListTile(
                 title: "Đăng xuất",
                 icon: Icons.exit_to_app_rounded,
                 onTap: () async {
