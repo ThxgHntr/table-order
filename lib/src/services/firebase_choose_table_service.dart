@@ -69,7 +69,7 @@ class FirebaseChooseTableService {
     String restaurantName,
     String floorId,
     String tableId,
-    DateTime reservationDate,
+    DateTime reserveDate,
     TimeOfDay startTime,
     TimeOfDay endTime,
     String additionalRequest,
@@ -90,26 +90,26 @@ class FirebaseChooseTableService {
           floorName: floorId,
           tableName: tableId,
           seats: tableSnapshot.data()!['seats'],
-          reservationDate: Timestamp.fromDate(reservationDate),
+          reserveDate: Timestamp.fromDate(reserveDate),
           startTime: Timestamp.fromDate(DateTime(
-              reservationDate.year,
-              reservationDate.month,
-              reservationDate.day,
+              reserveDate.year,
+              reserveDate.month,
+              reserveDate.day,
               startTime.hour,
               startTime.minute)),
           endTime: Timestamp.fromDate(DateTime(
-              reservationDate.year,
-              reservationDate.month,
-              reservationDate.day,
+              reserveDate.year,
+              reserveDate.month,
+              reserveDate.day,
               startTime.hour,
               startTime.minute)),
-          status: 'Pending',
           notes: additionalRequest,
           createdAt: Timestamp.now(),
         );
-        DocumentReference reservationRef = await tableSnapshot.reference.collection('reservations').add(
-              reservationModel.toFirestore(),
-            );
+        DocumentReference reservationRef =
+            await tableSnapshot.reference.collection('reservations').add(
+                  reservationModel.toFirestore(),
+                );
         await tableRef.update({
           'state': 2,
         });

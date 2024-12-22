@@ -18,7 +18,8 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
   @override
   void initState() {
     super.initState();
-    _reservationsFuture = FirebaseReservationServices().getReservationListForUser();
+    _reservationsFuture =
+        FirebaseReservationServices().getReservationListForUser();
   }
 
   @override
@@ -39,30 +40,84 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
             return Center(child: Text('No reservations found.'));
           } else {
             final reservations = snapshot.data!;
-            return ListView.builder(
-              itemCount: reservations.length,
-              itemBuilder: (context, index) {
-                final reservation = reservations[index];
-                return ListTile(
-                  title: Text('Reservation ID: ${reservation.id}'),
-                  subtitle: Text('Status: ${reservation.status}'),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      ReservationQrView.routeName,
-                      arguments: {
-                        'reservationId': reservation.id,
-                        // 'restaurant': reservation.restaurant,
-                        // 'floor': reservation.floor,
-                        // 'table': reservation.table,
-                        'date': reservation.reservationDate.toDate(),
-                        'startTime': TimeOfDay.fromDateTime(reservation.startTime.toDate()),
-                        'endTime': TimeOfDay.fromDateTime(reservation.endTime.toDate()),
-                        'additionalRequest': reservation.notes,
-                      },
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: reservations.length,
+                  itemBuilder: (context, index) {
+                    final reservation = reservations[index];
+                    return Column(
+                      children: [
+                        Container(
+                          constraints: BoxConstraints(
+                            maxWidth: 375,
+                            minWidth: MediaQuery.of(context).size.width * 0.9,
+                          ), // Responsive card width
+                          child: Card(
+                            child: ListTile(
+                              leading: Icon(Icons.table_bar),
+                              title: Text(
+                                'Tên nhà hàng: ${reservation.restaurantName}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 5),
+                                      Text(
+                                        reservation.status
+                                            ? 'Đã sử dụng'
+                                            : 'Chưa sử dụng',
+                                        style: TextStyle(
+                                          color: reservation.status
+                                              ? Colors.green
+                                              : Colors.orange,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    'Ngày đặt: ${reservation.reserveDate.toDate().toString().substring(0, 10)}',
+                                  ),
+                                ],
+                              ),
+                              onTap: () {
+                                Navigator.of(context).pushNamed(
+                                  ReservationQrView.routeName,
+                                  arguments: {
+                                    'isFromReservationList': true,
+                                    'reservationId': reservation.id,
+                                    'restaurantName':
+                                        reservation.restaurantName,
+                                    'floorName': reservation.floorName,
+                                    'tableName': reservation.tableName,
+                                    'seats': reservation.seats,
+                                    'date': reservation.reserveDate.toDate(),
+                                    'startTime': TimeOfDay.fromDateTime(
+                                        reservation.startTime.toDate()),
+                                    'endTime': TimeOfDay.fromDateTime(
+                                        reservation.endTime.toDate()),
+                                    'additionalRequest': reservation.notes,
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 4.0), // Reduced space between cards
+                      ],
                     );
                   },
-                );
-              },
+                ),
+              ),
             );
           }
         },

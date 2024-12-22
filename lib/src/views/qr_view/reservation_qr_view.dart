@@ -12,6 +12,7 @@ class ReservationQrView extends StatelessWidget {
   Widget build(BuildContext context) {
     final Map<String, dynamic> args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final bool isFromReservationList = args['isFromReservationList'] ?? false;
     final String restaurantName = args['restaurantName'];
     final String floorName = args['floorName'];
     final String tableName = args['tableName'];
@@ -23,17 +24,39 @@ class ReservationQrView extends StatelessWidget {
     final String qrData = args['reservationId'];
 
     return PopScope(
-      canPop: false,
+      canPop: isFromReservationList,
       onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) {
+        if (didPop && isFromReservationList) {
           return;
         }
-        if (context.mounted) {
+        if (context.mounted && !isFromReservationList) {
           Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+        } else if (context.mounted) {
+          Navigator.of(context).pop();
         }
       },
       child: Scaffold(
-        appBar: _buildAppBar(),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: isFromReservationList
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              : null,
+          title: Text(
+            isFromReservationList ? 'QR đặt bàn' : 'QR CỦA BẠN',
+            style: isFromReservationList
+                ? null
+                : TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+          ),
+          centerTitle: !isFromReservationList,
+        ),
         body: LayoutBuilder(
           builder: (context, constraints) {
             final double padding = constraints.maxWidth < 600 ? 20.0 : 40.0;
@@ -77,22 +100,9 @@ class ReservationQrView extends StatelessWidget {
             );
           },
         ),
-        bottomNavigationBar: _buildBottomNavigationBar(context),
+        bottomNavigationBar:
+            isFromReservationList ? null : _buildBottomNavigationBar(context),
       ),
-    );
-  }
-
-  AppBar _buildAppBar() {
-    return AppBar(
-      automaticallyImplyLeading: false,
-      title: const Text(
-        'QR CỦA BẠN',
-        style: TextStyle(
-          fontSize: 24.0,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      centerTitle: true,
     );
   }
 
@@ -140,9 +150,9 @@ class ReservationQrView extends StatelessWidget {
         onPressed: () {
           Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
         },
-        child: const Text(
+        child: Text(
           'Trở về trang chủ',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20.0,
             fontWeight: FontWeight.bold,
             color: Colors.white,

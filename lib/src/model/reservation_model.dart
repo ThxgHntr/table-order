@@ -8,10 +8,10 @@ class ReservationModel {
   final String floorName;
   final String tableName;
   final int seats;
-  final Timestamp reservationDate;
+  final Timestamp reserveDate;
   final Timestamp startTime;
   final Timestamp endTime;
-  final String status;
+  final bool status;
   final String notes;
   final Timestamp createdAt;
 
@@ -23,10 +23,10 @@ class ReservationModel {
     required this.floorName,
     required this.tableName,
     required this.seats,
-    required this.reservationDate,
+    required this.reserveDate,
     required this.startTime,
     required this.endTime,
-    required this.status,
+    this.status = false,
     this.notes = '',
     required this.createdAt,
   });
@@ -42,10 +42,10 @@ class ReservationModel {
       floorName: data['floor'] ?? '',
       tableName: data['table'] ?? '',
       seats: data['seats'] ?? 0,
-      reservationDate: data['reservationDate'] ?? Timestamp.now(),
+      reserveDate: data['reserveDate'] ?? Timestamp.now(),
       startTime: data['startTime'] ?? Timestamp.now(),
       endTime: data['endTime'] ?? Timestamp.now(),
-      status: data['status'] ?? 'Pending',
+      status: data['status'] ?? false,
       notes: data['notes'] ?? '',
       createdAt: data['created_at'] ?? Timestamp.now(),
     );
@@ -59,7 +59,7 @@ class ReservationModel {
       'floorName': floorName,
       'tableName': tableName,
       'seats': seats,
-      'reservationDate': reservationDate,
+      'reserveDate': reserveDate,
       'startTime': startTime,
       'endTime': endTime,
       'status': status,
