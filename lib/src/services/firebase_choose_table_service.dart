@@ -73,11 +73,13 @@ class FirebaseChooseTableService {
     TimeOfDay startTime,
     TimeOfDay endTime,
     String additionalRequest,
+    String ref,
   ) async {
     try {
       final restaurantRef =
           _firestore.collection('restaurants').doc(restaurantId);
       final floorRef = restaurantRef.collection('floors').doc(floorId);
+      final floorSnapshot = await floorRef.get();
       final tableRef = floorRef.collection('tables').doc(tableId);
       final tableSnapshot = await tableRef.get();
 
@@ -87,8 +89,8 @@ class FirebaseChooseTableService {
           userId: uid,
           restaurantId: restaurantId,
           restaurantName: restaurantName,
-          floorName: floorId,
-          tableName: tableId,
+          floorName: floorSnapshot.data()!['name'],
+          tableName: tableSnapshot.data()!['tableNumber'],
           seats: tableSnapshot.data()!['seats'],
           reserveDate: Timestamp.fromDate(reserveDate),
           startTime: Timestamp.fromDate(DateTime(
@@ -105,6 +107,7 @@ class FirebaseChooseTableService {
               startTime.minute)),
           notes: additionalRequest,
           createdAt: Timestamp.now(),
+          ref: ref,
         );
         DocumentReference reservationRef =
             await tableSnapshot.reference.collection('reservations').add(

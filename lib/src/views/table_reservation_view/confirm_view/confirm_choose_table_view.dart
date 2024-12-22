@@ -32,6 +32,8 @@ class ConfirmChooseTableView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String ref =
+        'restaurants/${restaurant.restaurantId}/floors/${floor.id}/tables/${table.id}/reservations/';
     return Scaffold(
       appBar: AppBar(
         title: const Text('Xác nhận đặt bàn'),
@@ -53,22 +55,24 @@ class ConfirmChooseTableView extends StatelessWidget {
             const SizedBox(height: 20),
             PrimaryButton(
               onPressed: () async {
-                final reservationId =
-                    await FirebaseChooseTableService().confirmChooseTable(
-                  restaurant.restaurantId,
-                  restaurant.name,
-                  floor.id,
-                  table.id,
-                  date,
-                  startTime,
-                  endTime,
-                  additionalRequest,
-                );
+                final reservationId = await FirebaseChooseTableService()
+                    .confirmChooseTable(
+                        restaurant.restaurantId,
+                        restaurant.name,
+                        floor.id,
+                        table.id,
+                        date,
+                        startTime,
+                        endTime,
+                        additionalRequest,
+                        ref);
                 if (reservationId != null) {
                   if (context.mounted) {
                     Navigator.of(context).pushNamed(
                       ReservationQrView.routeName,
                       arguments: {
+                        'isFromReservationList': false,
+                        'restaurantId': restaurant.restaurantId,
                         'restaurantName': restaurant.name,
                         'floorName': floor.name,
                         'tableName': table.tableNumber,
@@ -77,7 +81,7 @@ class ConfirmChooseTableView extends StatelessWidget {
                         'startTime': startTime,
                         'endTime': endTime,
                         'additionalRequest': additionalRequest,
-                        'reservationId': reservationId,
+                        'qrData': '$ref/$reservationId',
                       },
                     );
                   }

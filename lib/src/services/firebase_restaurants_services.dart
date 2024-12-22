@@ -11,7 +11,8 @@ class FirebaseRestaurantsServices {
   //ham lay owner id dua tren restaurant id
   Future<String?> getOwnerId(String restaurantId) async {
     try {
-      final restaurantRef = _firestore.collection('restaurants').doc(restaurantId);
+      final restaurantRef =
+          _firestore.collection('restaurants').doc(restaurantId);
       final restaurantDoc = await restaurantRef.get();
       final ownerId = restaurantDoc.get('ownerId');
       return ownerId;
@@ -51,7 +52,7 @@ class FirebaseRestaurantsServices {
       }
 
       final restaurantRef =
-      _firestore.collection('restaurants').doc(restaurant.restaurantId);
+          _firestore.collection('restaurants').doc(restaurant.restaurantId);
       await restaurantRef.set(restaurant.toFirestore());
       restaurantRef.collection('floors').doc();
       restaurantRef.collection('employees').doc();
@@ -76,6 +77,29 @@ class FirebaseRestaurantsServices {
     } catch (e) {
       if (kDebugMode) {
         print('Error saving restaurant info: $e');
+      }
+      return false;
+    }
+  }
+
+  // get Reservation from collectionGroup where reservationId = reservationId
+  Future<bool> approveReservation(String ref) async {
+    try {
+      final reservationDoc = await _firestore
+          .collectionGroup('reservations')
+          .where('ref', isEqualTo: ref)
+          .where('status', isEqualTo: false)
+          .get();
+      if (reservationDoc.docs.isNotEmpty) {
+        // Update reservation status to true
+        await reservationDoc.docs.first.reference.update({'status': true});
+
+        return true;
+      }
+      return false;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting reservation: $e');
       }
       return false;
     }
