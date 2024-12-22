@@ -113,7 +113,7 @@ class _RestaurantOwnerTab1ViewState extends State<RestaurantOwnerTab1View> {
                     },
                   ),
                   trailing: const Text(
-                    "Thay đổi >",
+                    "Tùy chỉnh",
                     style: TextStyle(color: Colors.blue),
                   ),
                 ),

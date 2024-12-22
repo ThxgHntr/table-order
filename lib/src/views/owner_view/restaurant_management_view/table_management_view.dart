@@ -304,7 +304,7 @@ class _TableManagementViewState extends State<TableManagementView> {
       case 0:
         return 'Chưa có ai đặt';
       case 1:
-        return 'Đã đặt';
+        return 'Đang chọn';
       case 2:
         return 'Đang sử dụng';
       default:

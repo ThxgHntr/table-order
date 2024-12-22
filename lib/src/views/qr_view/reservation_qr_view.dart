@@ -62,7 +62,7 @@ class ReservationQrView extends StatelessWidget {
         body: LayoutBuilder(
           builder: (context, constraints) {
             final double padding = constraints.maxWidth < 600 ? 20.0 : 40.0;
-            final double qrSize = constraints.maxWidth < 600 ? 200.0 : 300.0;
+            final double qrSize = constraints.maxWidth < 600 ? 250.0 : 350.0;
             return SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.all(padding),
