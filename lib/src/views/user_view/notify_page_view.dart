@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_order/src/views/restaurant_view/restaurant_review_view.dart';
 
+import '../../services/firebase_notification_services.dart';
+import '../../utils/custom_colors.dart';
+
 class NotifyPageView extends StatefulWidget {
   const NotifyPageView({super.key});
 
@@ -14,15 +17,43 @@ class NotifyPageView extends StatefulWidget {
 
 class _NotifyPageViewState extends State<NotifyPageView> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseNotificationServices _notificationServices = FirebaseNotificationServices();
+
+  Future<void> _markAllAsRead() async {
+    final currentUserId = _auth.currentUser?.uid;
+    if (currentUserId != null) {
+      await _notificationServices.markAllNotificationsAsRead(currentUserId);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final currentUserId = _auth.currentUser!.uid;
+    final currentUser = _auth.currentUser;
+
+    if (currentUser == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Thông báo'),
+          automaticallyImplyLeading: false,
+        ),
+        body: const Center(
+          child: Text('Không có thông báo nào.'),
+        ),
+      );
+    }
+
+    final currentUserId = currentUser.uid;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thông báo'),
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.mark_chat_read),
+            onPressed: _markAllAsRead,
+          ),
+        ],
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
@@ -41,6 +72,26 @@ class _NotifyPageViewState extends State<NotifyPageView> {
 
           final notifications = snapshot.data!.docs;
 
+          // Check for new notifications only once when data is fetched
+          for (var notification in notifications) {
+            final notificationId = notification.id;
+            final isNotified = notification['isNotified'];
+
+            // If notification hasn't been shown before, show it
+            if (!isNotified) {
+              _notificationServices.showNotification(
+                title: 'Thông báo mới',
+                body: notification['message'],
+              );
+
+              // Update notification status to 'isNotified: true'
+              FirebaseFirestore.instance
+                  .collection('notifications')
+                  .doc(notificationId)
+                  .update({'isNotified': true});
+            }
+          }
+
           return ListView.builder(
             itemCount: notifications.length,
             itemBuilder: (context, index) {
@@ -51,9 +102,14 @@ class _NotifyPageViewState extends State<NotifyPageView> {
               final Timestamp createdAt = notification['created_at'];
               final String relatedId = notification['relatedId'];
               final String restaurantId = notification['restaurantId'];
+              final String notificationId = notification.id;
 
               return InkWell(
-                onTap: () {
+                onTap: () async {
+                  // Mark the notification as read when clicked
+                  await _notificationServices.markNotificationAsRead(notificationId);
+
+                  // Navigate to the corresponding screen
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -73,8 +129,17 @@ class _NotifyPageViewState extends State<NotifyPageView> {
                   ),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.blueAccent,
+                      Container(
+                        width: 40.0,
+                        height: 40.0,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [customRed, primaryColor],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          shape: BoxShape.circle,
+                        ),
                         child: Icon(
                           type == 'review' ? Icons.comment : Icons.event_note,
                           color: Colors.white,
@@ -104,7 +169,7 @@ class _NotifyPageViewState extends State<NotifyPageView> {
                       ),
                       isRead
                           ? const Icon(Icons.check_circle, color: Colors.green)
-                          : const Icon(Icons.circle, color: Colors.grey),
+                          : const Icon(Icons.mark_chat_read, color: Colors.grey),
                     ],
                   ),
                 ),
