@@ -1,8 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:table_order/src/services/firebase_restaurants_services.dart';
+import 'package:table_order/src/views/owner_view/restaurant_management_view/qr_scan_view.dart';
 import 'package:table_order/src/views/owner_view/restaurant_management_view/review_management_view.dart';
 import 'package:table_order/src/views/owner_view/restaurant_management_view/table_management_view.dart';
 
@@ -21,14 +18,6 @@ class RestaurantOwnerManagementView extends StatefulWidget {
 
 class _RestaurantOwnerManagementViewState
     extends State<RestaurantOwnerManagementView> {
-  void _scanQRCode() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => QRViewScreen(),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +27,9 @@ class _RestaurantOwnerManagementViewState
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.qr_code_scanner_sharp),
-            onPressed: _scanQRCode,
+            onPressed: () {
+              Navigator.of(context).pushNamed(QrScanView.routeName);
+            },
           ),
           IconButton(
             icon: Icon(Icons.edit),
@@ -121,43 +112,6 @@ class _RestaurantOwnerManagementViewState
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class QRViewScreen extends StatelessWidget {
-  const QRViewScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Quét mã QR'),
-      ),
-      body: MobileScanner(
-        onDetect: (barcodeCapture) async {
-          final String? code = barcodeCapture.barcodes.first.rawValue;
-          if (code != null) {
-            if (kDebugMode) {
-              print(code);
-            }
-            Future<bool> isApproved =
-                FirebaseRestaurantsServices().approveReservation(code);
-            if (await isApproved) {
-              Fluttertoast.showToast(
-                msg: 'Mã QR hợp lệ.',
-                toastLength: Toast.LENGTH_SHORT,
-              );
-              Navigator.pop(context);
-            } else {
-              Fluttertoast.showToast(
-                msg: 'Mã QR không hợp lệ. Vui lòng thử lại.',
-                toastLength: Toast.LENGTH_SHORT,
-              );
-            }
-          }
-        },
       ),
     );
   }

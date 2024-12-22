@@ -88,6 +88,7 @@ class FirebaseRestaurantsServices {
       final reservationDoc = await _firestore
           .collectionGroup('reservations')
           .where('ref', isEqualTo: ref)
+          .where('status', isEqualTo: false)
           .get();
       if (reservationDoc.docs.isNotEmpty) {
         // Update reservation status to true
