@@ -8,6 +8,7 @@ class NotificationModel {
   final String message;
   final String restaurantId;
   final bool isRead;
+  final bool isNotified;
   final Timestamp createdAt;
 
   NotificationModel({
@@ -18,6 +19,7 @@ class NotificationModel {
     required this.message,
     required this.restaurantId,
     required this.isRead,
+    required this.isNotified,
     required this.createdAt,
   });
 
@@ -32,6 +34,7 @@ class NotificationModel {
       message: data['message'] ?? '',
       restaurantId: data['restaurantId'] ?? '',
       isRead: data['isRead'] ?? false,
+      isNotified: data['isNotified'] ?? false,
       createdAt: data['created_at'] ?? Timestamp.now(),
     );
   }
@@ -44,6 +47,7 @@ class NotificationModel {
       'message': message,
       'restaurantId': restaurantId,
       'isRead': isRead,
+      'isNotified': isNotified,
       'created_at': createdAt,
     };
   }
