@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' as foundation;
+import 'package:table_order/src/services/firebase_notification_services.dart';
 
 import 'firebase_options.dart';
 import 'src/app.dart';
@@ -25,6 +26,9 @@ void main() async {
         options: DefaultFirebaseOptions.currentPlatform,
       );
     }
+
+    FirebaseNotificationServices().initNotification();
+    FirebaseNotificationServices().requestPermission();
 
     final settingsController = SettingsController(SettingsService());
     await settingsController.loadSettings();

@@ -1,139 +1,183 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:table_order/src/views/restaurant_view/restaurant_review_view.dart';
 
-class NotifyPageView extends StatelessWidget {
+import '../../services/firebase_notification_services.dart';
+import '../../utils/custom_colors.dart';
+
+class NotifyPageView extends StatefulWidget {
   const NotifyPageView({super.key});
 
   static const routeName = '/notify_page';
 
   @override
+  State<NotifyPageView> createState() => _NotifyPageViewState();
+}
+
+class _NotifyPageViewState extends State<NotifyPageView> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseNotificationServices _notificationServices = FirebaseNotificationServices();
+
+  Future<void> _markAllAsRead() async {
+    final currentUserId = _auth.currentUser?.uid;
+    if (currentUserId != null) {
+      await _notificationServices.markAllNotificationsAsRead(currentUserId);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final currentUser = _auth.currentUser;
+
+    if (currentUser == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Thông báo'),
+          automaticallyImplyLeading: false,
+        ),
+        body: const Center(
+          child: Text('Không có thông báo nào.'),
+        ),
+      );
+    }
+
+    final currentUserId = currentUser.uid;
+
     return Scaffold(
-      body: Center(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: ListView.builder(
-            itemCount: _articles.length,
-            itemBuilder: (BuildContext context, int index) {
-              final item = _articles[index];
-              return Container(
-                height: 136,
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
-                decoration: BoxDecoration(
+      appBar: AppBar(
+        title: const Text('Thông báo'),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.mark_chat_read),
+            onPressed: _markAllAsRead,
+          ),
+        ],
+      ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('notifications')
+            .where('recipientId', isEqualTo: currentUserId)
+            .orderBy('created_at', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('Không có thông báo nào.'));
+          }
+
+          final notifications = snapshot.data!.docs;
+
+          // Check for new notifications only once when data is fetched
+          for (var notification in notifications) {
+            final notificationId = notification.id;
+            final isNotified = notification['isNotified'];
+
+            // If notification hasn't been shown before, show it
+            if (!isNotified) {
+              _notificationServices.showNotification(
+                title: 'Thông báo mới',
+                body: notification['message'],
+              );
+
+              // Update notification status to 'isNotified: true'
+              FirebaseFirestore.instance
+                  .collection('notifications')
+                  .doc(notificationId)
+                  .update({'isNotified': true});
+            }
+          }
+
+          return ListView.builder(
+            itemCount: notifications.length,
+            itemBuilder: (context, index) {
+              final notification = notifications[index];
+              final String message = notification['message'];
+              final String type = notification['type'];
+              final bool isRead = notification['isRead'];
+              final Timestamp createdAt = notification['created_at'];
+              final String relatedId = notification['relatedId'];
+              final String restaurantId = notification['restaurantId'];
+              final String notificationId = notification.id;
+
+              return InkWell(
+                onTap: () async {
+                  // Mark the notification as read when clicked
+                  await _notificationServices.markNotificationAsRead(notificationId);
+
+                  // Navigate to the corresponding screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RestaurantReviewView(
+                        restaurantId: restaurantId,
+                        relatedId: relatedId,
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
                     border: Border.all(color: const Color(0xFFE0E0E0)),
-                    borderRadius: BorderRadius.circular(8.0)),
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.title,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 8),
-                        Text("${item.author} · ${item.postedOn}",
-                            style: Theme.of(context).textTheme.bodySmall),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icons.bookmark_border_rounded,
-                            Icons.share,
-                            Icons.more_vert
-                          ].map((e) {
-                            return InkWell(
-                              onTap: () {},
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: Icon(e, size: 16),
-                              ),
-                            );
-                          }).toList(),
-                        )
-                      ],
-                    )),
-                    Container(
-                        width: 100,
-                        height: 100,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40.0,
+                        height: 40.0,
                         decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.circular(8.0),
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(item.imageUrl),
-                            ))),
-                  ],
+                          gradient: const LinearGradient(
+                            colors: [customRed, primaryColor],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          type == 'review' ? Icons.comment : Icons.event_note,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              message,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isRead ? Colors.grey : Colors.black,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${type.toUpperCase()} · ${createdAt.toDate().toLocal().toString().substring(0, 19)}',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      isRead
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : const Icon(Icons.mark_chat_read, color: Colors.grey),
+                    ],
+                  ),
                 ),
               );
             },
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 }
-
-class Article {
-  final String title;
-  final String imageUrl;
-  final String author;
-  final String postedOn;
-
-  Article(
-      {required this.title,
-      required this.imageUrl,
-      required this.author,
-      required this.postedOn});
-}
-
-final List<Article> _articles = [
-  Article(
-    title: "Instagram quietly limits ‘daily time limit’ option",
-    author: "MacRumors",
-    imageUrl: "https://picsum.photos/id/1000/960/540",
-    postedOn: "Yesterday",
-  ),
-  Article(
-      title: "Google Search dark theme goes fully black for some on the web",
-      imageUrl: "https://picsum.photos/id/1010/960/540",
-      author: "9to5Google",
-      postedOn: "4 hours ago"),
-  Article(
-    title: "Check your iPhone now: warning signs someone is spying on you",
-    author: "New York Times",
-    imageUrl: "https://picsum.photos/id/1001/960/540",
-    postedOn: "2 days ago",
-  ),
-  Article(
-    title:
-        "Amazon’s incredibly popular Lost Ark MMO is ‘at capacity’ in central Europe",
-    author: "MacRumors",
-    imageUrl: "https://picsum.photos/id/1002/960/540",
-    postedOn: "22 hours ago",
-  ),
-  Article(
-    title:
-        "Panasonic's 25-megapixel GH6 is the highest resolution Micro Four Thirds camera yet",
-    author: "Polygon",
-    imageUrl: "https://picsum.photos/id/1020/960/540",
-    postedOn: "2 hours ago",
-  ),
-  Article(
-    title: "Samsung Galaxy S22 Ultra charges strangely slowly",
-    author: "TechRadar",
-    imageUrl: "https://picsum.photos/id/1021/960/540",
-    postedOn: "10 days ago",
-  ),
-  Article(
-    title: "Snapchat unveils real-time location sharing",
-    author: "Fox Business",
-    imageUrl: "https://picsum.photos/id/1060/960/540",
-    postedOn: "10 hours ago",
-  ),
-];

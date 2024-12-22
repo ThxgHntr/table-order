@@ -13,8 +13,9 @@ import '../../model/review_model.dart';
 
 class RestaurantReviewView extends StatelessWidget {
   final String restaurantId;
+  final String? relatedId;
 
-  const RestaurantReviewView({super.key, required this.restaurantId});
+  const RestaurantReviewView({super.key, required this.restaurantId, this.relatedId});
 
   static const routeName = '/restaurant_review';
 
@@ -100,6 +101,15 @@ class RestaurantReviewView extends StatelessWidget {
                       },
                       itemBuilder: (BuildContext context, int index) {
                         final review = reviews[index];
+                        if (relatedId != null && review.reviewId == relatedId) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            Scrollable.ensureVisible(
+                              context,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          });
+                        }
                         return _ReviewCard(
                           review: review,
                           user: user,

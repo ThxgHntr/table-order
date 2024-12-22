@@ -45,4 +45,13 @@ class FirebaseUserService {
     final path = getUserProfilePictureStoragePath(userId);
     return await uploadImageToStorage(path, image);
   }
+
+  Future<String> getUserName(String userId) async {
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if (userDoc.exists) {
+      return userDoc.data()?['name'] ?? 'Ẩn danh';
+    }
+    return 'Ẩn danh';
+  }
+
 }

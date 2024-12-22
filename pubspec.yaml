@@ -10,6 +10,9 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
+  firebase_messaging: ^15.1.6
+  app_settings: ^5.1.1
+  flutter_local_notifications: ^18.0.1
   mobile_scanner: ^6.0.2
   timeago: ^3.7.0
   cached_network_image: ^3.4.1
