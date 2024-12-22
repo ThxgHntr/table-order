@@ -94,7 +94,8 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
                                   ReservationQrView.routeName,
                                   arguments: {
                                     'isFromReservationList': true,
-                                    'reservationId': reservation.id,
+                                    'qrData': reservation.id,
+                                    'restaurantId': reservation.restaurantId,
                                     'restaurantName':
                                         reservation.restaurantName,
                                     'floorName': reservation.floorName,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:table_order/src/utils/custom_colors.dart';
+import 'package:table_order/src/views/restaurant_view/restaurant_item_details_view.dart';
 import 'package:table_order/src/views/widgets/reservation_details.dart';
 
 class ReservationQrView extends StatelessWidget {
@@ -13,6 +14,7 @@ class ReservationQrView extends StatelessWidget {
     final Map<String, dynamic> args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final bool isFromReservationList = args['isFromReservationList'] ?? false;
+    final String restaurantId = args['restaurantId'];
     final String restaurantName = args['restaurantName'];
     final String floorName = args['floorName'];
     final String tableName = args['tableName'];
@@ -21,7 +23,7 @@ class ReservationQrView extends StatelessWidget {
     final TimeOfDay startTime = args['startTime'];
     final TimeOfDay endTime = args['endTime'];
     final String additionalRequest = args['additionalRequest'];
-    final String qrData = args['reservationId'];
+    final String qrData = args['qrData'];
 
     return PopScope(
       canPop: isFromReservationList,
@@ -100,8 +102,9 @@ class ReservationQrView extends StatelessWidget {
             );
           },
         ),
-        bottomNavigationBar:
-            isFromReservationList ? null : _buildBottomNavigationBar(context),
+        bottomNavigationBar: isFromReservationList
+            ? _buildRestaurantDetailsButton(context, restaurantId)
+            : _buildBottomNavigationBar(context),
       ),
     );
   }
@@ -152,6 +155,40 @@ class ReservationQrView extends StatelessWidget {
         },
         child: Text(
           'Trở về trang chủ',
+          style: const TextStyle(
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRestaurantDetailsButton(
+      BuildContext context, String restaurantId) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryColor, // Use custom color
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0), // Adjust border radius
+          ),
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RestaurantItemDetailsView(
+                restaurantId: restaurantId,
+              ),
+            ),
+          );
+        },
+        child: Text(
+          'Chi tiết nhà hàng',
           style: const TextStyle(
             fontSize: 20.0,
             fontWeight: FontWeight.bold,
