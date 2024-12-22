@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:table_order/src/services/firebase_notification_services.dart';
 import 'package:table_order/src/utils/custom_colors.dart';
 
 import '../../utils/toast_utils.dart';
@@ -257,6 +258,14 @@ class _ProfilePageViewState extends State<ProfilePageView> {
       title: "Tài khoản",
       children: user != null
           ? [
+              _CustomListTile(
+                title: "Thêm dữ liệu mẫu",
+                icon: Icons.data_exploration_rounded,
+                onTap: () {
+                  final currentUserId = _auth.currentUser!.uid;
+                  FirebaseNotificationServices.addSampleNotification(currentUserId);
+                },
+              ),
               _CustomListTile(
                 title: "Đăng xuất",
                 icon: Icons.exit_to_app_rounded,
