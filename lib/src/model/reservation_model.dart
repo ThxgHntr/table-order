@@ -14,6 +14,7 @@ class ReservationModel {
   final bool status;
   final String notes;
   final Timestamp createdAt;
+  final String ref;
 
   ReservationModel({
     this.id = '',
@@ -29,6 +30,7 @@ class ReservationModel {
     this.status = false,
     this.notes = '',
     required this.createdAt,
+    this.ref = '',
   });
 
   factory ReservationModel.fromFirestore(
@@ -39,8 +41,8 @@ class ReservationModel {
       userId: data['userId'] ?? '',
       restaurantId: data['restaurantId'] ?? '',
       restaurantName: data['restaurantName'] ?? '',
-      floorName: data['floor'] ?? '',
-      tableName: data['table'] ?? '',
+      floorName: data['floorName'] ?? '',
+      tableName: data['tableName'] ?? '',
       seats: data['seats'] ?? 0,
       reserveDate: data['reserveDate'] ?? Timestamp.now(),
       startTime: data['startTime'] ?? Timestamp.now(),
@@ -48,6 +50,7 @@ class ReservationModel {
       status: data['status'] ?? false,
       notes: data['notes'] ?? '',
       createdAt: data['created_at'] ?? Timestamp.now(),
+      ref: data['ref'] ?? '',
     );
   }
 

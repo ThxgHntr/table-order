@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:table_order/src/services/firebase_restaurants_services.dart';
 import 'package:table_order/src/views/owner_view/restaurant_management_view/review_management_view.dart';
 import 'package:table_order/src/views/owner_view/restaurant_management_view/table_management_view.dart';
 
@@ -63,7 +65,7 @@ class _RestaurantOwnerManagementViewState
               child: GridView.count(
                 crossAxisCount: crossAxisCount,
                 crossAxisSpacing: 16.0, // Space between columns
-                mainAxisSpacing: 16.0,  // Space between rows
+                mainAxisSpacing: 16.0, // Space between rows
                 children: <Widget>[
                   _buildDashboardItem(Icons.table_bar, 'Bàn đã được đặt'),
                   _buildDashboardItem(Icons.star, 'Đánh giá'),
@@ -113,7 +115,8 @@ class _RestaurantOwnerManagementViewState
             const SizedBox(height: 8.0), // Space between icon and text
             Text(
               title,
-              style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+              style:
+                  const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
           ],
@@ -130,18 +133,29 @@ class QRViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scan QR Code'),
+        title: Text('Quét mã QR'),
       ),
       body: MobileScanner(
-        onDetect: (barcodeCapture) {
+        onDetect: (barcodeCapture) async {
           final String? code = barcodeCapture.barcodes.first.rawValue;
           if (code != null) {
-            Fluttertoast.showToast(
-              msg: 'Scanned QR Code: $code',
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-            );
-            Navigator.pop(context);
+            if (kDebugMode) {
+              print(code);
+            }
+            Future<bool> isApproved =
+                FirebaseRestaurantsServices().approveReservation(code);
+            if (await isApproved) {
+              Fluttertoast.showToast(
+                msg: 'Mã QR hợp lệ.',
+                toastLength: Toast.LENGTH_SHORT,
+              );
+              Navigator.pop(context);
+            } else {
+              Fluttertoast.showToast(
+                msg: 'Mã QR không hợp lệ. Vui lòng thử lại.',
+                toastLength: Toast.LENGTH_SHORT,
+              );
+            }
           }
         },
       ),
