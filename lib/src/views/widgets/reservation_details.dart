@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 
 class ReservationDetails extends StatelessWidget {
   final String restaurantName;
-  final String floor;
-  final String table;
+  final String floorName;
+  final String tableName;
   final int seats;
   final DateTime date;
   final TimeOfDay startTime;
@@ -14,8 +14,8 @@ class ReservationDetails extends StatelessWidget {
   const ReservationDetails({
     super.key,
     required this.restaurantName,
-    required this.floor,
-    required this.table,
+    required this.floorName,
+    required this.tableName,
     required this.seats,
     required this.date,
     required this.startTime,
@@ -70,9 +70,9 @@ class ReservationDetails extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildDetailValue(floor),
+                        _buildDetailValue(floorName),
                         const SizedBox(height: 10.0),
-                        _buildDetailValue(table),
+                        _buildDetailValue(tableName),
                         const SizedBox(height: 10.0),
                         _buildDetailValue(
                             DateFormat('dd/MM/yyyy').format(date)),

@@ -87,8 +87,8 @@ class FirebaseChooseTableService {
           userId: uid,
           restaurantId: restaurantId,
           restaurantName: restaurantName,
-          floor: floorId,
-          table: tableId,
+          floorName: floorId,
+          tableName: tableId,
           seats: tableSnapshot.data()!['seats'],
           reservationDate: Timestamp.fromDate(reservationDate),
           startTime: Timestamp.fromDate(DateTime(

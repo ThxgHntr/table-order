@@ -5,9 +5,9 @@ class ReservationModel {
   final String userId;
   final String restaurantId;
   final String restaurantName;
-  final String floor;
-  final String table;
-  final String seats;
+  final String floorName;
+  final String tableName;
+  final int seats;
   final Timestamp reservationDate;
   final Timestamp startTime;
   final Timestamp endTime;
@@ -20,14 +20,14 @@ class ReservationModel {
     required this.userId,
     required this.restaurantId,
     required this.restaurantName,
-    required this.floor,
-    required this.table,
+    required this.floorName,
+    required this.tableName,
     required this.seats,
     required this.reservationDate,
     required this.startTime,
     required this.endTime,
     required this.status,
-    required this.notes,
+    this.notes = '',
     required this.createdAt,
   });
 
@@ -39,9 +39,9 @@ class ReservationModel {
       userId: data['userId'] ?? '',
       restaurantId: data['restaurantId'] ?? '',
       restaurantName: data['restaurantName'] ?? '',
-      floor: data['floor'] ?? '',
-      table: data['table'] ?? '',
-      seats: data['seats'] ?? '',
+      floorName: data['floor'] ?? '',
+      tableName: data['table'] ?? '',
+      seats: data['seats'] ?? 0,
       reservationDate: data['reservationDate'] ?? Timestamp.now(),
       startTime: data['startTime'] ?? Timestamp.now(),
       endTime: data['endTime'] ?? Timestamp.now(),
@@ -53,13 +53,13 @@ class ReservationModel {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'reservationDate': reservationDate,
       'userId': userId,
       'restaurantId': restaurantId,
       'restaurantName': restaurantName,
-      'floor': floor,
-      'table': table,
+      'floorName': floorName,
+      'tableName': tableName,
       'seats': seats,
+      'reservationDate': reservationDate,
       'startTime': startTime,
       'endTime': endTime,
       'status': status,

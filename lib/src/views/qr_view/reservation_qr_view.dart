@@ -13,8 +13,8 @@ class ReservationQrView extends StatelessWidget {
     final Map<String, dynamic> args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final String restaurantName = args['restaurantName'];
-    final String floor = args['floor'];
-    final String table = args['table'];
+    final String floorName = args['floorName'];
+    final String tableName = args['tableName'];
     final int seats = args['seats'];
     final DateTime date = args['date'];
     final TimeOfDay startTime = args['startTime'];
@@ -63,8 +63,8 @@ class ReservationQrView extends StatelessWidget {
                     const SizedBox(height: 10.0),
                     ReservationDetails(
                       restaurantName: restaurantName,
-                      floor: floor,
-                      table: table,
+                      floorName: floorName,
+                      tableName: tableName,
                       seats: seats,
                       date: date,
                       startTime: startTime,

@@ -42,8 +42,8 @@ class ConfirmChooseTableView extends StatelessWidget {
           children: [
             ReservationDetails(
               restaurantName: restaurant.name,
-              floor: floor.name,
-              table: table.tableNumber,
+              floorName: floor.name,
+              tableName: table.tableNumber,
               seats: table.seats,
               date: date,
               startTime: startTime,
@@ -69,9 +69,10 @@ class ConfirmChooseTableView extends StatelessWidget {
                     Navigator.of(context).pushNamed(
                       ReservationQrView.routeName,
                       arguments: {
-                        'restaurant': restaurant,
-                        'floor': floor,
-                        'table': table,
+                        'restaurantName': restaurant.name,
+                        'floorName': floor.name,
+                        'tableName': table.tableNumber,
+                        'seats': table.seats,
                         'date': date,
                         'startTime': startTime,
                         'endTime': endTime,

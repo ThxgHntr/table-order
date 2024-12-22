@@ -251,7 +251,7 @@ class _TableManagementViewState extends State<TableManagementView> {
                 itemBuilder: (context, tableIndex) {
                   final table = floor.tables[tableIndex];
                   return ListTile(
-                    title: Text('Bàn số: ${table.tableNumber}'),
+                    title: Text('Mã bàn: ${table.tableNumber}'),
                     subtitle: Text(
                         'Số lượng ghế: ${table.seats} - Trạng thái: ${_getStatusLabel(table.state)}'),
                     trailing: Row(
