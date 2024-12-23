@@ -10,7 +10,8 @@ import 'package:table_order/src/views/widgets/restaurant_details_form.dart';
 import 'package:table_order/src/views/widgets/restaurant_representative_form_content.dart';
 import '../../model/restaurant_model.dart';
 import '../../services/firebase_restaurants_services.dart';
-import '../../utils/location_helper.dart'; // Import the location helper
+import '../../utils/location_helper.dart';
+import '../../utils/validation_utils.dart';
 
 class RestaurantRegistration extends StatefulWidget {
   const RestaurantRegistration({super.key});
@@ -24,6 +25,7 @@ class RestaurantRegistration extends StatefulWidget {
 class _RestaurantRegistrationState extends State<RestaurantRegistration> {
   int currentStep = 0;
   bool isCompleted = false;
+  bool isUploading = false; // Add this line
 
   // Controllers for basic info
   final restaurantName = TextEditingController();
@@ -83,31 +85,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       type: type,
       steps: getSteps(),
       currentStep: currentStep,
-      onStepContinue: () {
-        if (currentStep == 0) {
-          final isValid = BasicRestaurantInformationFormContent
-              .formKey.currentState
-              ?.validate() ??
-              false;
-          if (!isValid) return;
-        } else if (currentStep == 1) {
-          final isValid = RestaurantRepresentativeFormContent
-              .formKey.currentState
-              ?.validate() ??
-              false;
-          if (!isValid) return;
-        }
-
-        final isLastStep = currentStep == getSteps().length - 1;
-        if (isLastStep) {
-          // Lưu thông tin vào Firebase
-          saveRestaurantInfoToDatabase();
-        } else {
-          setState(() {
-            currentStep += 1;
-          });
-        }
-      },
+      onStepContinue: isUploading ? null : onStepContinue, // Disable button if uploading
       onStepTapped: (step) {
         if (currentStep == 0) {
           final isValid = BasicRestaurantInformationFormContent
@@ -144,7 +122,9 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
             children: <Widget>[
               ElevatedButton(
                 onPressed: details.onStepContinue,
-                child: Text(isLastStep ? 'Hoàn tất' : 'Tiếp theo'),
+                child: isUploading
+                    ? CircularProgressIndicator() // Show progress indicator
+                    : Text(isLastStep ? 'Hoàn tất' : 'Tiếp theo'),
               ),
               const SizedBox(width: 8),
               if (currentStep != 0)
@@ -156,6 +136,141 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
           ),
         );
       },
+    );
+  }
+
+  void onStepContinue() async {
+    if (currentStep == 0) {
+      final isValid = BasicRestaurantInformationFormContent
+          .formKey.currentState
+          ?.validate() ??
+          false;
+      if (!isValid) return;
+    } else if (currentStep == 1) {
+      final isValid = RestaurantRepresentativeFormContent
+          .formKey.currentState
+          ?.validate() ??
+          false;
+      if (!isValid) return;
+    } else if (currentStep == 2) {
+      final isValid =
+          RestaurantDetailsForm.formKey.currentState?.validate() ?? false;
+      if (!isValid) return;
+      if (validateOpeningDays(isOpened) != null ||
+          validateImages(selectedImages) != null ||
+          validateKeywords(selectedKeywords) != null) {
+        showToast('Vui lòng điền đầy đủ thông tin');
+        return;
+      }
+    }
+
+    final isLastStep = currentStep == getSteps().length - 1;
+    if (isLastStep) {
+      setState(() {
+        isUploading = true; // Set uploading to true
+      });
+      await saveRestaurantInfoToDatabase();
+      setState(() {
+        isUploading = false; // Set uploading to false
+      });
+    } else {
+      setState(() {
+        currentStep += 1;
+      });
+    }
+  }
+
+  Future<void> saveRestaurantInfoToDatabase() async {
+    final selectedDays = <String>[];
+    final openCloseTimes = <String, String>{};
+
+    isOpened.forEach((day, isSelected) {
+      if (isSelected) {
+        selectedDays.add(day);
+      }
+    });
+
+    openCloseTimes['open'] = openTimeController.text;
+    openCloseTimes['close'] = closeTimeController.text;
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      showToast('Vui lòng đăng nhập trước khi đăng ký nhà hàng.');
+      return;
+    }
+
+    final restaurantId =
+        user.uid + DateTime.now().millisecondsSinceEpoch.toString();
+
+    final ownerId = user.uid;
+
+    final location = await getGeopointFromAddress(restaurantAddress.text);
+
+    final restaurantInfo = RestaurantModel(
+      restaurantId: restaurantId,
+      name: restaurantName.text,
+      phone: restaurantPhone.text,
+      description: restaurantDescription.text,
+      dishesStyle: selectedKeywords,
+      lowestPrice: int.parse(minPriceController.text),
+      highestPrice: int.parse(maxPriceController.text),
+      openDates: selectedDays,
+      openTime: openCloseTimes['open'],
+      closeTime: openCloseTimes['close'],
+      rating: 0.0,
+      photosToUpload: selectedImages,
+      ownerId: ownerId,
+      location: location,
+      state: 0,
+      // 0: Chờ duyệt, 1: Đã duyệt, 2: Từ chối
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    );
+
+    final result =
+    await FirebaseRestaurantsServices().saveRestaurantInfo(restaurantInfo);
+
+    if (result) {
+      setState(() {
+        isCompleted = true;
+      });
+    } else {
+      showToast('Lỗi khi lưu thông tin. Vui lòng thử lại.');
+    }
+  }
+
+  buildCompleted() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Icon(
+            Icons.check_circle,
+            color: Colors.green,
+            size: 100,
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Đăng ký nhà hàng thành công!',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Quay lại'),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -209,7 +324,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
                 selectedImages.addAll(images);
               });
               if (kDebugMode) {
-                print('Selected images: $selectedImages');
+                print('Selected images: ${selectedImages.length}');
               }
             },
           ),
@@ -217,97 +332,4 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
       ),
     ),
   ];
-
-  Future<void> saveRestaurantInfoToDatabase() async {
-    final selectedDays = <String>[];
-    final openCloseTimes = <String, String>{};
-
-    isOpened.forEach((day, isSelected) {
-      if (isSelected) {
-        selectedDays.add(day);
-      }
-    });
-
-    openCloseTimes['open'] = openTimeController.text;
-    openCloseTimes['close'] = closeTimeController.text;
-
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      showToast('Vui lòng đăng nhập trước khi đăng ký nhà hàng.');
-      return;
-    }
-
-    final restaurantId =
-        user.uid + DateTime.now().millisecondsSinceEpoch.toString();
-
-    final ownerId = user.uid;
-
-    final location = await getGeopointFromAddress(restaurantAddress.text);
-
-    final restaurantInfo = RestaurantModel(
-      restaurantId: restaurantId,
-      name: restaurantName.text,
-      phone: restaurantPhone.text,
-      description: restaurantDescription.text,
-      dishesStyle: selectedKeywords,
-      lowestPrice: int.parse(minPriceController.text),
-      highestPrice: int.parse(maxPriceController.text),
-      openDates: selectedDays,
-      openTime: openCloseTimes['open'],
-      closeTime: openCloseTimes['close'],
-      rating: 0.0,
-      photosToUpload: selectedImages,
-      ownerId: ownerId,
-      location: location,
-      state: 0, // 0: Chờ duyệt, 1: Đã duyệt, 2: Từ chối
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
-    );
-
-    final result =
-    await FirebaseRestaurantsServices().saveRestaurantInfo(restaurantInfo);
-
-    if (result) {
-      setState(() {
-        isCompleted = true;
-      });
-    } else {
-      showToast('Lỗi khi lưu thông tin. Vui lòng thử lại.');
-    }
-  }
-
-  buildCompleted() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Icon(
-            Icons.check_circle,
-            color: Colors.green,
-            size: 100,
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Đăng ký nhà hàng thành công!',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/');
-                },
-                child: const Text('Trở về trang chủ'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }

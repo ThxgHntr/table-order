@@ -24,12 +24,16 @@ class _TableManagementViewState extends State<TableManagementView> {
   void _loadFloorsFromDatabase() async {
     try {
       final loadedFloors = await _floorServices.loadFloors(widget.restaurantId);
-      setState(() {
-        floors.clear();
-        floors.addAll(loadedFloors);
-      });
+      if (mounted) {
+        setState(() {
+          floors.clear();
+          floors.addAll(loadedFloors);
+        });
+      }
     } catch (e) {
-      debugPrint("Lỗi tải dữ liệu tầng: $e");
+      if (mounted) {
+        debugPrint("Lỗi tải dữ liệu tầng: $e");
+      }
     }
   }
 
@@ -38,7 +42,9 @@ class _TableManagementViewState extends State<TableManagementView> {
       await _floorServices.addFloor(widget.restaurantId, floorName, tables);
       _loadFloorsFromDatabase();
     } catch (e) {
-      debugPrint("Lỗi thêm tầng: $e");
+      if (mounted) {
+        debugPrint("Lỗi thêm tầng: $e");
+      }
     }
   }
 
@@ -52,7 +58,9 @@ class _TableManagementViewState extends State<TableManagementView> {
       );
       _loadFloorsFromDatabase();
     } catch (e) {
-      debugPrint("Lỗi thêm bàn: $e");
+      if (mounted) {
+        debugPrint("Lỗi thêm bàn: $e");
+      }
     }
   }
 
@@ -71,7 +79,9 @@ class _TableManagementViewState extends State<TableManagementView> {
           widget.restaurantId, floors[floorIndex].id);
       _loadFloorsFromDatabase();
     } catch (e) {
-      debugPrint("Lỗi xóa tầng: $e");
+      if (mounted) {
+        debugPrint("Lỗi xóa tầng: $e");
+      }
     }
   }
 
@@ -84,7 +94,9 @@ class _TableManagementViewState extends State<TableManagementView> {
       );
       _loadFloorsFromDatabase();
     } catch (e) {
-      debugPrint("Lỗi xóa bàn: $e");
+      if (mounted) {
+        debugPrint("Lỗi xóa bàn: $e");
+      }
     }
   }
 
@@ -99,7 +111,9 @@ class _TableManagementViewState extends State<TableManagementView> {
       );
       _loadFloorsFromDatabase();
     } catch (e) {
-      debugPrint("Lỗi cập nhật trạng thái bàn: $e");
+      if (mounted) {
+        debugPrint("Lỗi cập nhật trạng thái bàn: $e");
+      }
     }
   }
 
@@ -154,9 +168,9 @@ class _TableManagementViewState extends State<TableManagementView> {
                             shrinkWrap: true,
                             children: tables
                                 .map((table) => Center(
-                                      child: Text(
-                                          '${table['tableNumber']}: ${table['seats']} ghế'),
-                                    ))
+                              child: Text(
+                                  '${table['tableNumber']}: ${table['seats']} ghế'),
+                            ))
                                 .toList(),
                           ),
                         ),

@@ -58,11 +58,11 @@ class _RestaurantOwnerManagementViewState
                 crossAxisSpacing: 16.0, // Space between columns
                 mainAxisSpacing: 16.0, // Space between rows
                 children: <Widget>[
-                  _buildDashboardItem(Icons.table_bar, 'Bàn đã được đặt'),
+                  // _buildDashboardItem(Icons.table_bar, 'Bàn đã được đặt'),
                   _buildDashboardItem(Icons.star, 'Đánh giá'),
                   _buildDashboardItem(
                       Icons.pivot_table_chart_rounded, 'Quản lý tầng'),
-                  _buildDashboardItem(Icons.group, 'Quản lý nhân viên'),
+                  // _buildDashboardItem(Icons.group, 'Quản lý nhân viên'),
                 ],
               ),
             );

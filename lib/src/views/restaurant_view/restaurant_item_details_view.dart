@@ -38,7 +38,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
       if (snapshot.exists) {
         return RestaurantModel.fromFirestore(snapshot);
       } else {
-        throw Exception("Restaurant not found");
+        throw Exception("Nhà hàng không tồn tại");
       }
     } catch (e) {
       throw Exception("Error fetching restaurant data: $e");
@@ -62,7 +62,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
     if (openDates.contains(todayKey)) {
       return '$openTime - $closeTime';
     } else {
-      return '$openTime - $closeTime (Closed)';
+      return '$openTime - $closeTime (Đóng cửa)';
     }
   }
 
@@ -91,7 +91,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
               ),
             );
           } else {
-            return const Center(child: Text('No data available'));
+            return const Center(child: Text('Không có dữ liệu'));
           }
         },
       ),
@@ -144,7 +144,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
               softWrap: true,
             ),
           ),
-          Flexible(
+          /*Flexible(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -164,7 +164,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
                 ),
               ],
             ),
-          ),
+          ),*/
         ],
       ),
     );
@@ -263,7 +263,7 @@ class _RestaurantItemDetailsViewState extends State<RestaurantItemDetailsView> {
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        '${averageRating.toStringAsFixed(1)} ($totalReviews reviews)',
+                        '${averageRating.toStringAsFixed(1)} ($totalReviews Đánh giá)',
                         style: const TextStyle(fontSize: 16),
                       ),
                     ],
