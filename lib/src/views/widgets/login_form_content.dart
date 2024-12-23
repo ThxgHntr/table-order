@@ -6,6 +6,8 @@ import '../../services/firebase_auth_services.dart';
 import '../../utils/toast_utils.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../utils/validation_utils.dart';
+
 class LoginFormContent extends StatefulWidget {
   const LoginFormContent({super.key});
 
@@ -40,20 +42,7 @@ class LoginFormContentState extends State<LoginFormContent> {
           children: [
             TextFormField(
               controller: _emailController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Vui lòng nhập email';
-                }
-
-                bool emailValid = RegExp(
-                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                    .hasMatch(value);
-                if (!emailValid) {
-                  return 'Email không hợp lệ';
-                }
-
-                return null;
-              },
+              validator: validateEmail,
               decoration: const InputDecoration(
                 labelText: 'Email',
                 hintText: 'Nhập email',
@@ -64,16 +53,7 @@ class LoginFormContentState extends State<LoginFormContent> {
             _gap(),
             TextFormField(
               controller: _passwordController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Vui lòng nhập mật khẩu';
-                }
-
-                if (value.length < 6) {
-                  return 'Mật khẩu phải chứa ít nhất 6 ký tự';
-                }
-                return null;
-              },
+              validator: validatePassword,
               obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
                   labelText: 'Mật khẩu',

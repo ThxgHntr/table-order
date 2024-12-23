@@ -37,7 +37,7 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No reservations found.'));
+            return Center(child: Text('Không có mã đặt bàn nào'));
           } else {
             final reservations = snapshot.data!;
             return SingleChildScrollView(
@@ -54,8 +54,8 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
                         Container(
                           constraints: BoxConstraints(
                             maxWidth: 375,
-                            minWidth:
-                                0, // Ensure minWidth is less than maxWidth
+                            minWidth: 0, // Ensure minWidth is less than or equal to maxWidth
+
                           ), // Responsive card width
                           child: Card(
                             child: ListTile(
@@ -68,7 +68,7 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
                               ),
                               subtitle: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
@@ -98,7 +98,7 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
                                     'qrData': reservation.ref,
                                     'restaurantId': reservation.restaurantId,
                                     'restaurantName':
-                                        reservation.restaurantName,
+                                    reservation.restaurantName,
                                     'floorName': reservation.floorName,
                                     'tableName': reservation.tableName,
                                     'seats': reservation.seats,
@@ -127,5 +127,4 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
     );
   }
 }
-
 

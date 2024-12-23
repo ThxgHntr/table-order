@@ -84,11 +84,11 @@ class RestaurantReviewView extends StatelessWidget {
                     }
                     if (snapshot.hasError) {
                       debugPrint("Error: ${snapshot.error}");
-                      return const Text('Error loading reviews');
+                      return const Text('Lỗi tải dữ liệu');
                     }
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                       debugPrint("No reviews found");
-                      return const Text('No reviews yet');
+                      return const Text('Không có đánh giá nào');
                     }
                     final reviews = snapshot.data!.docs.map((doc) {
                       return ReviewModel.fromFirestore(

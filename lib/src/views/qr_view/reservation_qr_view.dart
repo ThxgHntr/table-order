@@ -12,7 +12,7 @@ class ReservationQrView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final bool isFromReservationList = args['isFromReservationList'] ?? false;
     final String restaurantId = args['restaurantId'];
     final String restaurantName = args['restaurantName'];
@@ -42,20 +42,20 @@ class ReservationQrView extends StatelessWidget {
           automaticallyImplyLeading: false,
           leading: isFromReservationList
               ? IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
               : null,
           title: Text(
             isFromReservationList ? 'QR đặt bàn' : 'QR CỦA BẠN',
             style: isFromReservationList
                 ? null
                 : TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           centerTitle: !isFromReservationList,
         ),
@@ -64,39 +64,44 @@ class ReservationQrView extends StatelessWidget {
             final double padding = constraints.maxWidth < 600 ? 20.0 : 40.0;
             final double qrSize = constraints.maxWidth < 600 ? 250.0 : 350.0;
             return SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.all(padding),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20.0),
-                    _buildQrCode(qrData, qrSize),
-                    const SizedBox(height: 10.0),
-                    const Text(
-                      'Bạn có thể quét mã QR này tại nhà hàng',
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.grey,
-                      ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 600),
+                  child: Padding(
+                    padding: EdgeInsets.all(padding),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20.0),
+                        _buildQrCode(qrData, qrSize),
+                        const SizedBox(height: 10.0),
+                        const Text(
+                          'Bạn có thể quét mã QR này tại nhà hàng',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 10.0),
+                        Divider(
+                          color: Colors.grey,
+                          thickness: 1.0,
+                        ),
+                        const SizedBox(height: 10.0),
+                        ReservationDetails(
+                          restaurantName: restaurantName,
+                          floorName: floorName,
+                          tableName: tableName,
+                          seats: seats,
+                          date: date,
+                          startTime: startTime,
+                          endTime: endTime,
+                          additionalRequest: additionalRequest,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 10.0),
-                    Divider(
-                      color: Colors.grey,
-                      thickness: 1.0,
-                    ),
-                    const SizedBox(height: 10.0),
-                    ReservationDetails(
-                      restaurantName: restaurantName,
-                      floorName: floorName,
-                      tableName: tableName,
-                      seats: seats,
-                      date: date,
-                      startTime: startTime,
-                      endTime: endTime,
-                      additionalRequest: additionalRequest,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             );
@@ -172,7 +177,7 @@ class ReservationQrView extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor, // Use custom color
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0), // Adjust border radius
           ),

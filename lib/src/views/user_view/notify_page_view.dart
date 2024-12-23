@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:table_order/src/views/restaurant_view/restaurant_review_view.dart';
-
+import 'package:timeago/timeago.dart' as timeago;
 import '../../services/firebase_notification_services.dart';
 import '../../utils/custom_colors.dart';
 
@@ -104,6 +105,12 @@ class _NotifyPageViewState extends State<NotifyPageView> {
               final String restaurantId = notification['restaurantId'];
               final String notificationId = notification.id;
 
+              final now = DateTime.now();
+              final notificationTime = createdAt.toDate();
+              final formattedTime = now.difference(notificationTime).inDays > 1
+                  ? DateFormat('dd/MM/yyyy HH:mm').format(notificationTime)
+                  : timeago.format(notificationTime, locale: 'vi');
+
               return InkWell(
                 onTap: () async {
                   // Mark the notification as read when clicked
@@ -161,7 +168,7 @@ class _NotifyPageViewState extends State<NotifyPageView> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '${type.toUpperCase()} · ${createdAt.toDate().toLocal().toString().substring(0, 19)}',
+                              formattedTime,
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],

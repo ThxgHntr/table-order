@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:table_order/src/utils/location_helper.dart';
 
+import '../../utils/validation_utils.dart';
+
 class BasicRestaurantInformationFormContent extends StatefulWidget {
   const BasicRestaurantInformationFormContent({
     super.key,
@@ -54,17 +56,16 @@ class BasicRestaurantInformationFormContentState
             // Tên nhà hàng
             TextFormField(
               controller: widget.restaurantName,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Làm ơn nhập tên nhà hàng';
-                }
-                return null;
-              },
+              validator: validateRestaurantName,
+
               decoration: const InputDecoration(
                 labelText: 'Tên nhà hàng',
                 hintText: 'Nhập tên nhà hàng',
-                prefixIcon: Icon(Icons.drive_file_rename_outline),
-                border: OutlineInputBorder(),
+                hintStyle: const TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+
               ),
             ),
             const SizedBox(height: 20),
@@ -79,17 +80,16 @@ class BasicRestaurantInformationFormContentState
                     children: [
                       TextFormField(
                         controller: widget.restaurantAddress,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Làm ơn nhập địa chỉ';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
+                        validator: validateRestaurantAddress,
+                        decoration: const InputDecoration(
                           labelText: 'Địa chỉ',
+                          labelStyle: TextStyle(color: Colors.grey),
+                          floatingLabelStyle: TextStyle(color: Colors.blue),
                           hintText: 'Nhập địa chỉ',
-                          prefixIcon: Icon(Icons.location_on_outlined),
-                          border: OutlineInputBorder(),
+                          hintStyle: TextStyle(color: Colors.grey),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
                         ),
                         enabled: !_isLoading,
                       ),
@@ -100,16 +100,9 @@ class BasicRestaurantInformationFormContentState
                     ],
                   ),
                 ),
-                const SizedBox(width: 10),
-                ElevatedButton(
+                IconButton(
+                  icon: const Icon(Icons.location_pin),
                   onPressed: _getCurrentAddress,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(12), backgroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Icon(Icons.location_pin, size: 30, color: Colors.white),
                 ),
               ],
             ),

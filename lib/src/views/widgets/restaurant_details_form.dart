@@ -1,7 +1,9 @@
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../utils/toast_utils.dart';
+import '../../utils/validation_utils.dart';
 import 'list_map.dart';
 
 class RestaurantDetailsForm extends StatefulWidget {
@@ -82,139 +84,156 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
           key: RestaurantDetailsForm.formKey,
           child: Column(
             children: [
-              Card(
-                elevation: 5,
-                margin: const EdgeInsets.only(bottom: 16),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Ngày mở cửa', style: Theme.of(context).textTheme.titleMedium),
-                      ...daysOfTheWeek.map((day) {
-                        return CheckboxListTile(
-                          title: Text(day, style: Theme.of(context).textTheme.bodyLarge),
-                          value: widget.isOpened[day] ?? false,
-                          onChanged: (value) {
-                            setState(() {
-                              widget.isOpened[day] = value ?? false;
-                            });
-                          },
-                        );
-                      }),
-                    ],
-                  ),
-                ),
-              ),
-              Card(
-                elevation: 5,
-                margin: const EdgeInsets.only(bottom: 16),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Giờ mở cửa', style: Theme.of(context).textTheme.titleMedium),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: widget.openTimeController,
-                              readOnly: true,
-                              onTap: () => _selectTime(context, widget.openTimeController),
-                              decoration: InputDecoration(
-                                labelText: 'Từ',
-                                icon: const Icon(Icons.access_time),
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: TextFormField(
-                              controller: widget.closeTimeController,
-                              readOnly: true,
-                              onTap: () => _selectTime(context, widget.closeTimeController),
-                              decoration: InputDecoration(
-                                labelText: 'Đến',
-                                icon: const Icon(Icons.access_time),
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Card(
-                elevation: 5,
-                margin: const EdgeInsets.only(bottom: 16),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextFormField(
-                        controller: widget.restaurantDescription,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Vui lòng nhập mô tả nhà hàng';
-                          }
-                          return null;
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Ngày mở cửa', style: Theme.of(context).textTheme.titleMedium),
+                    ...daysOfTheWeek.map((day) {
+                      return CheckboxListTile(
+                        title: Text(day, style: Theme.of(context).textTheme.bodyLarge),
+                        value: widget.isOpened[day] ?? false,
+                        onChanged: (value) {
+                          setState(() {
+                            widget.isOpened[day] = value ?? false;
+                          });
                         },
-                        maxLines: 3,  // Allow multi-line input
-                        minLines: 3,  // Start with 3 lines
-                        decoration: InputDecoration(
-                          labelText: 'Mô tả nhà hàng',
-                          hintText: 'Nhập mô tả nhà hàng',
-                          icon: const Icon(Icons.restaurant),
-                          border: OutlineInputBorder(),
+                      );
+                    }),
+                    if (validateOpeningDays(widget.isOpened) != null)
+                      Text(
+                        validateOpeningDays(widget.isOpened)!,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Giờ mở cửa', style: Theme.of(context).textTheme.titleMedium),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: widget.openTimeController,
+                            readOnly: true,
+                            onTap: () => _selectTime(context, widget.openTimeController),
+                            validator: validateTime,
+                            decoration: const InputDecoration(
+                              labelText: 'Từ',
+                              labelStyle: TextStyle(color: Colors.grey),
+                              floatingLabelStyle: TextStyle(color: Colors.blue),
+                              hintText: 'Chọn giờ mở cửa',
+                              hintStyle: TextStyle(color: Colors.grey),
+                              icon: Icon(Icons.access_time),
+                              border: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextFormField(
+                            controller: widget.closeTimeController,
+                            readOnly: true,
+                            onTap: () => _selectTime(context, widget.closeTimeController),
+                            validator: validateTime, // Add validation
+                            decoration: const InputDecoration(
+                              labelText: 'Đến',
+                              labelStyle: TextStyle(color: Colors.grey),
+                              floatingLabelStyle: TextStyle(color: Colors.blue),
+                              hintText: 'Chọn giờ đóng cửa',
+                              hintStyle: TextStyle(color: Colors.grey),
+                              icon: Icon(Icons.access_time),
+                              border: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      controller: widget.restaurantDescription,
+                      validator: validateDescription, // Add validation
+                      maxLines: 3,  // Allow multi-line input
+                      minLines: 3,  // Start with 3 lines
+                      decoration: const InputDecoration(
+                        labelText: 'Mô tả nhà hàng',
+                        labelStyle: TextStyle(color: Colors.grey),
+                        floatingLabelStyle: TextStyle(color: Colors.blue),
+                        hintText: 'Nhập mô tả nhà hàng',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        icon: Icon(Icons.restaurant),
+                        border: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              Card(
-                elevation: 5,
-                margin: const EdgeInsets.only(bottom: 16),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Giá cả', style: Theme.of(context).textTheme.titleMedium),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: widget.minPriceController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: 'Thấp I',
-                                icon: const Icon(Icons.attach_money),
-                                border: OutlineInputBorder(),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Giá cả', style: Theme.of(context).textTheme.titleMedium),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: widget.minPriceController,
+                            keyboardType: TextInputType.number,
+                            validator: validatePrice, // Add validation
+                            decoration: const InputDecoration(
+                              labelText: 'Thấp nhất',
+                              labelStyle: TextStyle(color: Colors.grey),
+                              floatingLabelStyle: TextStyle(color: Colors.blue),
+                              hintText: 'Nhập giá thấp nhất',
+                              hintStyle: TextStyle(color: Colors.grey),
+                              icon: Icon(Icons.attach_money),
+                              border: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: TextFormField(
-                              controller: widget.maxPriceController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: 'Cao I',
-                                icon: const Icon(Icons.attach_money),
-                                border: OutlineInputBorder(),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextFormField(
+                            controller: widget.maxPriceController,
+                            keyboardType: TextInputType.number,
+                            validator: validatePrice, // Add validation
+                            decoration: const InputDecoration(
+                              labelText: 'Cao nhất',
+                              labelStyle: TextStyle(color: Colors.grey),
+                              floatingLabelStyle: TextStyle(color: Colors.blue),
+                              hintText: 'Nhập giá cao nhất',
+                              hintStyle: TextStyle(color: Colors.grey),
+                              icon: Icon(Icons.attach_money),
+                              border: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey),
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               ElevatedButton.icon(
@@ -222,13 +241,18 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                 icon: const Icon(Icons.image),
                 label: const Text('Chọn ảnh từ thư viện'),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
               const SizedBox(height: 10),
+              if (validateImages(_selectedImages) != null)
+                Text(
+                  validateImages(_selectedImages)!,
+                  style: TextStyle(color: Colors.red),
+                ),
               _selectedImages.isNotEmpty
                   ? Wrap(
                 spacing: 10,
@@ -266,11 +290,16 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
               const SizedBox(height: 10),
               TextFormField(
                 controller: keywordController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Từ khóa',
+                  labelStyle: TextStyle(color: Colors.grey),
+                  floatingLabelStyle: TextStyle(color: Colors.blue),
                   hintText: 'Nhập từ khóa',
-                  icon: const Icon(Icons.search),
-                  border: OutlineInputBorder(),
+                  hintStyle: TextStyle(color: Colors.grey),
+                  icon: Icon(Icons.search),
+                  border: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
                 ),
                 onChanged: (input) {
                   setState(() {
@@ -281,6 +310,11 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                   });
                 },
               ),
+              if (validateKeywords(widget.selectedKeywords) != null)
+                Text(
+                  validateKeywords(widget.selectedKeywords)!,
+                  style: TextStyle(color: Colors.red),
+                ),
               if (filteredKeywords.isNotEmpty)
                 ListView.builder(
                   shrinkWrap: true,
@@ -315,6 +349,7 @@ class _RestaurantDetailsFormState extends State<RestaurantDetailsForm> {
                 ))
                     .toList(),
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

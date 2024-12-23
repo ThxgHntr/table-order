@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../services/firebase_auth_services.dart';
 import '../../utils/toast_utils.dart';
+import '../../utils/validation_utils.dart';
 
 class SignupFormContent extends StatefulWidget {
   const SignupFormContent({super.key});
@@ -42,12 +43,7 @@ class SignupFormContentState extends State<SignupFormContent> {
           children: [
             TextFormField(
               controller: _nameController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Vui lòng nhập tên';
-                }
-                return null;
-              },
+              validator: validateName,
               decoration: const InputDecoration(
                 labelText: 'Tên',
                 hintText: 'Nhập tên của bạn',
@@ -113,16 +109,7 @@ class SignupFormContentState extends State<SignupFormContent> {
             //reenter password
             TextFormField(
               controller: _confirmPasswordController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Vui lòng nhập mật khẩu';
-                }
-
-                if (value != _passwordController.text) {
-                  return 'Mật khẩu không khớp';
-                }
-                return null;
-              },
+              validator: (value) => validateConfirmPassword(value, _passwordController.text),
               obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
                   labelText: 'Nhập lại mật khẩu',

@@ -106,7 +106,7 @@ class CustomSeachDelegate extends SearchDelegate<String> {
             itemBuilder: (context, index) {
               final restaurantData = snapshot.data![index];
               final restaurant = restaurantData['restaurant'] as RestaurantModel;
-              final distance = restaurantData['distance'] as double;
+              final distance = restaurantData['distance'] as double?;
 
               return ListTile(
                 leading: Image.network(
@@ -130,7 +130,8 @@ class CustomSeachDelegate extends SearchDelegate<String> {
                       }),
                     ),
                     const SizedBox(width: 5),
-                    Text('${distance.toStringAsFixed(1)} km'),
+                    if (distance != null)
+                      Text('${distance.toStringAsFixed(1)} km'),
                   ],
                 ),
                 onTap: () {
@@ -166,19 +167,26 @@ class CustomSeachDelegate extends SearchDelegate<String> {
         .limit(10) // Limit the number of results
         .get();
 
-    final currentPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    Position? currentPosition;
+    try {
+      currentPosition = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+    } catch (e) {
+      currentPosition = null;
+    }
 
     final lowerCaseQuery = removeDiacritics(query.toLowerCase());
 
     return snapshot.docs.map((doc) {
       final restaurant = RestaurantModel.fromFirestore(doc);
-      final distance = Geolocator.distanceBetween(
+      final distance = currentPosition != null
+          ? Geolocator.distanceBetween(
         currentPosition.latitude,
         currentPosition.longitude,
         restaurant.location.latitude,
         restaurant.location.longitude,
-      ) / 1000; // Convert to kilometers
+      ) / 1000 // Convert to kilometers
+          : null;
 
       if (removeDiacritics(restaurant.name.toLowerCase()).contains(lowerCaseQuery)) {
         return {
