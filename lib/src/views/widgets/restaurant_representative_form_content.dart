@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../utils/validation_utils.dart';
+
 class RestaurantRepresentativeFormContent extends StatefulWidget {
   const RestaurantRepresentativeFormContent(
       {super.key,
@@ -34,58 +36,32 @@ class RestaurantRepresentativeFormContentState
             TextFormField(
               controller: widget.restaurantPhone,
               keyboardType: TextInputType.phone,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Làm ơn nhập số điện thoại';
-                }
-                final numericRegex = RegExp(r'^[0-9]+$');
-                if (!numericRegex.hasMatch(value)) {
-                  return 'Số điện thoại chỉ được chứa số';
-                }
-                return null;
-              },
-              decoration: InputDecoration(
+              validator: validatePhone,
+              decoration: const InputDecoration(
                 labelText: 'Số điện thoại',
-                labelStyle: const TextStyle(color: Colors.grey),
-                floatingLabelStyle: const TextStyle(color: Colors.blue),
+                labelStyle: TextStyle(color: Colors.grey),
+                floatingLabelStyle: TextStyle(color: Colors.blue),
                 hintText: 'Nhập số điện thoại',
-                hintStyle: const TextStyle(color: Colors.grey),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.grey),
+                hintStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.blue),
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
               ),
             ),
             _gap(),
             // Email
             TextFormField(
               controller: widget.restaurantEmail,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Làm ơn nhập email';
-                }
-                return null;
-              },
-              decoration: InputDecoration(
+              validator: validateEmail,
+              decoration: const InputDecoration(
                 labelText: 'Email',
-                labelStyle: const TextStyle(color: Colors.grey),
-                floatingLabelStyle: const TextStyle(color: Colors.blue),
+                labelStyle: TextStyle(color: Colors.grey),
+                floatingLabelStyle: TextStyle(color: Colors.blue),
                 hintText: 'Nhập email',
-                hintStyle: const TextStyle(color: Colors.grey),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.grey),
+                hintStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.blue),
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
               ),
             ),
           ],
