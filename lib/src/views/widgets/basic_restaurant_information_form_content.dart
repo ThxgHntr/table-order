@@ -44,13 +44,12 @@ class BasicRestaurantInformationFormContentState
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20.0),
-      constraints: const BoxConstraints(maxWidth: 600),
+      constraints: const BoxConstraints(maxWidth: 500),
       child: Form(
         key: BasicRestaurantInformationFormContent.formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Tên nhà hàng
             TextFormField(
@@ -61,21 +60,11 @@ class BasicRestaurantInformationFormContentState
                 }
                 return null;
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Tên nhà hàng',
-                labelStyle: const TextStyle(color: Colors.grey),
-                floatingLabelStyle: const TextStyle(color: Colors.blue),
                 hintText: 'Nhập tên nhà hàng',
-                hintStyle: const TextStyle(color: Colors.grey),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.grey),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.blue),
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                prefixIcon: Icon(Icons.drive_file_rename_outline),
+                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 20),
@@ -98,19 +87,9 @@ class BasicRestaurantInformationFormContentState
                         },
                         decoration: InputDecoration(
                           labelText: 'Địa chỉ',
-                          labelStyle: const TextStyle(color: Colors.grey),
-                          floatingLabelStyle: const TextStyle(color: Colors.blue),
                           hintText: 'Nhập địa chỉ',
-                          hintStyle: const TextStyle(color: Colors.grey),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Colors.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Colors.blue),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                          prefixIcon: Icon(Icons.location_on_outlined),
+                          border: OutlineInputBorder(),
                         ),
                         enabled: !_isLoading,
                       ),
