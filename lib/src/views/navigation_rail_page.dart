@@ -9,6 +9,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/custom_seach_delegate.dart';
+
 class NavigationRailPage extends StatefulWidget {
   const NavigationRailPage({super.key});
 
@@ -104,6 +106,7 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
     final width = MediaQuery.of(context).size.width;
     final bool isSmallScreen = width < 600;
     final bool isLargeScreen = width > 800;
+    bool _isActive = false;
 
     return Scaffold(
       appBar: AppBar(
@@ -128,6 +131,15 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
             onPressed: () async {
               await _initializeLocation();
             },
+          ),
+          IconButton(
+              onPressed: () {
+                showSearch(
+                    context: context,
+                    delegate: CustomSeachDelegate(),
+                );
+              },
+              icon: const Icon(Icons.search),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
