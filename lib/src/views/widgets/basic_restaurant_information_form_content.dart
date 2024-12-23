@@ -46,8 +46,7 @@ class BasicRestaurantInformationFormContentState
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20.0),
-      constraints: const BoxConstraints(maxWidth: 600),
+      constraints: const BoxConstraints(maxWidth: 500),
       child: Form(
         key: BasicRestaurantInformationFormContent.formKey,
         child: Column(
@@ -58,15 +57,15 @@ class BasicRestaurantInformationFormContentState
             TextFormField(
               controller: widget.restaurantName,
               validator: validateRestaurantName,
+
               decoration: const InputDecoration(
                 labelText: 'Tên nhà hàng',
-                labelStyle: const TextStyle(color: Colors.grey),
-                floatingLabelStyle: const TextStyle(color: Colors.blue),
                 hintText: 'Nhập tên nhà hàng',
                 hintStyle: const TextStyle(color: Colors.grey),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),
+
               ),
             ),
             const SizedBox(height: 20),

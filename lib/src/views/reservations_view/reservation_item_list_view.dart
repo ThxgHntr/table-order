@@ -55,6 +55,7 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
                           constraints: BoxConstraints(
                             maxWidth: 375,
                             minWidth: 0, // Ensure minWidth is less than or equal to maxWidth
+
                           ), // Responsive card width
                           child: Card(
                             child: ListTile(
@@ -126,3 +127,4 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
     );
   }
 }
+
