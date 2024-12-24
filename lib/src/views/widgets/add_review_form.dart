@@ -19,6 +19,8 @@ class _AddReviewFormState extends State<AddReviewForm> {
   int _rating = 0;
   List<XFile> _images = [];
   final FirebaseReviewServices _service = FirebaseReviewServices();
+  String? _ratingError;
+  String? _commentError;
 
   Future<void> _pickImages() async {
     final ImagePicker picker = ImagePicker();
@@ -29,7 +31,12 @@ class _AddReviewFormState extends State<AddReviewForm> {
   }
 
   Future<void> _submitReview() async {
-    if (_formKey.currentState!.validate()) {
+    setState(() {
+      _ratingError = _rating == 0 ? 'Vui lòng chọn số sao' : null;
+      _commentError = _commentController.text.isEmpty ? 'Vui lòng nhập đánh giá' : null;
+    });
+
+    if (_formKey.currentState!.validate() && _ratingError == null && _commentError == null) {
       try {
         await _service.submitReview(widget.restaurantId, _commentController.text, _rating, _images);
         _commentController.clear();
@@ -95,10 +102,11 @@ class _AddReviewFormState extends State<AddReviewForm> {
             const SizedBox(height: 8),
             TextFormField(
               controller: _commentController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Thêm đánh giá',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                border: const OutlineInputBorder(),
+                contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                errorText: _commentError,
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -126,6 +134,7 @@ class _AddReviewFormState extends State<AddReviewForm> {
                           onPressed: () {
                             setState(() {
                               _rating = index + 1;
+                              _ratingError = null;
                             });
                           },
                         );
@@ -133,6 +142,14 @@ class _AddReviewFormState extends State<AddReviewForm> {
                     ),
                   ),
                 ),
+                if (_ratingError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      _ratingError!,
+                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
                 IconButton(
                   onPressed: _pickImages,
                   icon: const Icon(Icons.add_a_photo, color: Colors.deepOrange),
