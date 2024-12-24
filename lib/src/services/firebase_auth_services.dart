@@ -13,7 +13,7 @@ class FirebaseAuthServices {
   Future<User?> signInWithEmailAndPassword(
       String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
-      showToast('Email and password cannot be empty.');
+      showToast('Email và mật khẩu không được để trống.');
       return null;
     }
 
@@ -23,9 +23,9 @@ class FirebaseAuthServices {
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        showToast('No user found for that email.');
+        showToast('Không tìm thấy người dùng với email này.');
       } else if (e.code == 'wrong-password') {
-        showToast('Wrong password provided for that user.');
+        showToast('Mật khẩu không chính xác.');
       } else {
         showToast('An error occurred: ${e.message}');
       }
@@ -36,7 +36,7 @@ class FirebaseAuthServices {
   Future<User?> signUpWithEmailAndPassword(String email, String password,
       {String? username}) async {
     if (email.isEmpty || password.isEmpty) {
-      showToast('Email and password cannot be empty.');
+      showToast('Email và mật khẩu không được để trống.');
       return null;
     }
 
@@ -69,12 +69,11 @@ class FirebaseAuthServices {
             .collection("users")
             .doc(uid)
             .set(userModel.toFirestore());
-        showToast("User data saved successfully.");
       }
       return user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        showToast('The account already exists for that email.');
+        showToast('Email đã được sử dụng.');
       } else {
         showToast('An error occurred: ${e.message}');
       }
@@ -91,7 +90,7 @@ class FirebaseAuthServices {
       final userModel = UserModel.fromFirebase(snapshot);
       return userModel.role;
     } else {
-      showToast("User data not found");
+      showToast("Người dùng không tồn tại.");
       return null;
     }
   }
