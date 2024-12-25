@@ -73,7 +73,6 @@ class FirebaseChooseTableService {
     TimeOfDay startTime,
     TimeOfDay endTime,
     String additionalRequest,
-    String ref,
   ) async {
     try {
       final restaurantRef =
@@ -82,10 +81,15 @@ class FirebaseChooseTableService {
       final floorSnapshot = await floorRef.get();
       final tableRef = floorRef.collection('tables').doc(tableId);
       final tableSnapshot = await tableRef.get();
+      final String reservationId =
+          '$floorId-$tableId-${DateTime.now().millisecondsSinceEpoch}';
+      final String ref =
+          'restaurants/$restaurantId/floors/$floorId/tables/$tableId/reservations/$reservationId';
 
       if (tableSnapshot.data()!['state'] == 1 &&
           tableSnapshot.data()!['userId'] == uid) {
         ReservationModel reservationModel = ReservationModel(
+          id: reservationId,
           userId: uid,
           restaurantId: restaurantId,
           restaurantName: restaurantName,
@@ -109,14 +113,14 @@ class FirebaseChooseTableService {
           createdAt: Timestamp.now(),
           ref: ref,
         );
-        DocumentReference reservationRef =
-            await tableSnapshot.reference.collection('reservations').add(
-                  reservationModel.toFirestore(),
-                );
+        DocumentReference reservationRef = tableSnapshot.reference
+            .collection('reservations')
+            .doc(reservationId);
+        await reservationRef.set(reservationModel.toFirestore());
         await tableRef.update({
           'state': 2,
         });
-        return reservationRef.id;
+        return ref;
       }
       return null;
     } catch (e) {

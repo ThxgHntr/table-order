@@ -54,8 +54,8 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
                         Container(
                           constraints: BoxConstraints(
                             maxWidth: 375,
-                            minWidth: 0, // Ensure minWidth is less than or equal to maxWidth
-
+                            minWidth:
+                                0, // Ensure minWidth is less than or equal to maxWidth
                           ), // Responsive card width
                           child: Card(
                             child: ListTile(
@@ -68,7 +68,7 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
                               ),
                               subtitle: Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
@@ -95,10 +95,11 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
                                   ReservationQrView.routeName,
                                   arguments: {
                                     'isFromReservationList': true,
-                                    'qrData': reservation.ref,
+                                    'qrData':
+                                        '${reservation.ref}/${reservation.id}',
                                     'restaurantId': reservation.restaurantId,
                                     'restaurantName':
-                                    reservation.restaurantName,
+                                        reservation.restaurantName,
                                     'floorName': reservation.floorName,
                                     'tableName': reservation.tableName,
                                     'seats': reservation.seats,
@@ -127,4 +128,3 @@ class ReservationItemListViewState extends State<ReservationItemListView> {
     );
   }
 }
-

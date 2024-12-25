@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReservationModel {
-  final String? id;
+  final String id;
   final String userId;
   final String restaurantId;
   final String restaurantName;
@@ -17,7 +17,7 @@ class ReservationModel {
   final String ref;
 
   ReservationModel({
-    this.id = '',
+    required this.id,
     required this.userId,
     required this.restaurantId,
     required this.restaurantName,
@@ -56,6 +56,7 @@ class ReservationModel {
 
   Map<String, dynamic> toFirestore() {
     return {
+      'id': id,
       'userId': userId,
       'restaurantId': restaurantId,
       'restaurantName': restaurantName,
@@ -68,6 +69,7 @@ class ReservationModel {
       'status': status,
       'notes': notes,
       'created_at': createdAt,
+      'ref': ref,
     };
   }
 }

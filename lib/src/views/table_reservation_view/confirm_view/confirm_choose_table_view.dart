@@ -32,8 +32,6 @@ class ConfirmChooseTableView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String ref =
-        'restaurants/${restaurant.restaurantId}/floors/${floor.id}/tables/${table.id}/reservations/';
     return Scaffold(
       appBar: AppBar(
         title: const Text('Xác nhận đặt bàn'),
@@ -55,7 +53,7 @@ class ConfirmChooseTableView extends StatelessWidget {
             const SizedBox(height: 20),
             PrimaryButton(
               onPressed: () async {
-                final reservationId = await FirebaseChooseTableService()
+                final ref = await FirebaseChooseTableService()
                     .confirmChooseTable(
                         restaurant.restaurantId,
                         restaurant.name,
@@ -64,9 +62,8 @@ class ConfirmChooseTableView extends StatelessWidget {
                         date,
                         startTime,
                         endTime,
-                        additionalRequest,
-                        ref);
-                if (reservationId != null) {
+                        additionalRequest);
+                if (ref != null) {
                   if (context.mounted) {
                     Navigator.of(context).pushNamed(
                       ReservationQrView.routeName,
@@ -81,7 +78,7 @@ class ConfirmChooseTableView extends StatelessWidget {
                         'startTime': startTime,
                         'endTime': endTime,
                         'additionalRequest': additionalRequest,
-                        'qrData': '$ref/$reservationId',
+                        'qrData': ref,
                       },
                     );
                   }
