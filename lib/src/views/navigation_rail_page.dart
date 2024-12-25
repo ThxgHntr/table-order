@@ -106,7 +106,6 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
     final width = MediaQuery.of(context).size.width;
     final bool isSmallScreen = width < 600;
     final bool isLargeScreen = width > 800;
-    bool _isActive = false;
 
     return Scaffold(
       appBar: AppBar(
