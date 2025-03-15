@@ -1,0 +1,1080 @@
+{
+    "__collections__": {
+        "notifications": {
+            "40oswAPNScaS60n2EkAv": {
+                "recipientId": "LKBA7wXOmSSipI3gJpGzfNJbb4v2",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735053444,
+                        "_nanoseconds": 21553000
+                    }
+                },
+                "type": "review",
+                "message": "Đánh giá từ người dùng: Dat Haong",
+                "restaurantId": "LKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935",
+                "relatedId": "GzA1tLIthbG2DiKNalTE",
+                "isNotified": true,
+                "isRead": true,
+                "__collections__": {}
+            },
+            "DgdE1ckJItxTV4dZFrL8": {
+                "recipientId": "LKBA7wXOmSSipI3gJpGzfNJbb4v2",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735053472,
+                        "_nanoseconds": 862674000
+                    }
+                },
+                "type": "review",
+                "message": "Đánh giá từ người dùng: Dat Haong",
+                "restaurantId": "LKBA7wXOmSSipI3gJpGzfNJbb4v21735049198944",
+                "relatedId": "XBs8nfDogTZjQ4NFQGdd",
+                "isNotified": true,
+                "isRead": true,
+                "__collections__": {}
+            },
+            "IspPOemAApbsUBPIhd7z": {
+                "isRead": false,
+                "recipientId": "gNtmvxOAmpNSFRNiMszJxUWIuUt1",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735054471,
+                        "_nanoseconds": 3859000
+                    }
+                },
+                "type": "review",
+                "message": "Đánh giá từ người dùng: Hoàng Trần",
+                "restaurantId": "gNtmvxOAmpNSFRNiMszJxUWIuUt11735053341915",
+                "relatedId": "BwPxNFUeoXVIfNspRIfd",
+                "isNotified": true,
+                "__collections__": {}
+            },
+            "Kg9OnxCAc6DfHaP4WtDl": {
+                "recipientId": "LKBA7wXOmSSipI3gJpGzfNJbb4v2",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735054547,
+                        "_nanoseconds": 347783000
+                    }
+                },
+                "type": "review",
+                "message": "Đánh giá từ người dùng: Hoàng Văn Nam",
+                "restaurantId": "LKBA7wXOmSSipI3gJpGzfNJbb4v21735049198944",
+                "relatedId": "QmcuxpPKdbWEst8xxbf8",
+                "isNotified": true,
+                "isRead": true,
+                "__collections__": {}
+            },
+            "VqtfBJJ9QW06JPHTZIzz": {
+                "isNotified": false,
+                "isRead": false,
+                "recipientId": "ZAC7OFUm2lTnxA2ohIa2sHYxhYK2",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735054499,
+                        "_nanoseconds": 57339000
+                    }
+                },
+                "type": "review",
+                "message": "Đánh giá từ người dùng: Hoàng Trần",
+                "restaurantId": "ZAC7OFUm2lTnxA2ohIa2sHYxhYK21735054394014",
+                "relatedId": "sutdCDRJ9f8vuVIECuJX",
+                "__collections__": {}
+            },
+            "ZiCPCQ2U98KYZ6kVImn5": {
+                "recipientId": "LKBA7wXOmSSipI3gJpGzfNJbb4v2",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735050871,
+                        "_nanoseconds": 487028000
+                    }
+                },
+                "type": "review",
+                "message": "Đánh giá từ người dùng: Hoàng Văn Nam",
+                "restaurantId": "LKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935",
+                "relatedId": "mQCUuyZfh8VrYRk3t11y",
+                "isNotified": true,
+                "isRead": true,
+                "__collections__": {}
+            },
+            "hdxd4H52YjM79wSkNh5U": {
+                "recipientId": "LKBA7wXOmSSipI3gJpGzfNJbb4v2",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735053488,
+                        "_nanoseconds": 713033000
+                    }
+                },
+                "type": "review",
+                "message": "Đánh giá từ người dùng: Dat Haong",
+                "restaurantId": "LKBA7wXOmSSipI3gJpGzfNJbb4v21735049592607",
+                "relatedId": "0jYTrW9mS5ystU1AZuOu",
+                "isNotified": true,
+                "isRead": true,
+                "__collections__": {}
+            },
+            "rVdcEXii9R6KqpnGNFT1": {
+                "recipientId": "LKBA7wXOmSSipI3gJpGzfNJbb4v2",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735051029,
+                        "_nanoseconds": 345390000
+                    }
+                },
+                "type": "review",
+                "message": "Đánh giá từ người dùng: Hoàng Văn Nam",
+                "restaurantId": "LKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935",
+                "relatedId": "YbDW5iaokysDGq7mgWyB",
+                "isNotified": true,
+                "isRead": true,
+                "__collections__": {}
+            },
+            "w14R0dmTyNgDRdFZMYvR": {
+                "recipientId": "LKBA7wXOmSSipI3gJpGzfNJbb4v2",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735050898,
+                        "_nanoseconds": 436021000
+                    }
+                },
+                "type": "review",
+                "message": "Đánh giá từ người dùng: Hoàng Văn Nam",
+                "restaurantId": "LKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935",
+                "relatedId": "TEgcBCmynJxcYknDXR6C",
+                "isNotified": true,
+                "isRead": true,
+                "__collections__": {}
+            }
+        },
+        "restaurants": {
+            "LKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935": {
+                "dishesStyle": [
+                    "Bít tết",
+                    "Bữa tối",
+                    "Quán rượu",
+                    "Quán bar phục vụ đồ ăn",
+                    "Kiểu Argentina"
+                ],
+                "highestPrice": 769231,
+                "lowestPrice": 179487,
+                "description": "La Cabana là nhà hàng thịt nướng, bít tết mang phong cách Argentina tại Đà Nẵng. Với vị trí đối diện Cá Chép Hóa Rồng, Sông Hàn, ngay đầu Cầu Rồng. La Cabana có thiết kế đơn giản nhưng sang trọng và thanh lịch: Tầng một với một quầy bar cực chill với các trang trí văn hóa và con người Argentina. Tầng hai với một ban công lãng mạn có tầm nhìn bao trọn dòng sông Hàn thơ mộng. Thực đơn của La Cabana bao ồm nhiều loại thịt hảo hạng như thịt bò black angus cho đến sườn cừu, heo, gà và các loại hải sản. Tất cả đều được nướng một cách hoàn hảo và ngon tuyệt. La Cabana là nơi tuyệt vời để thưởng thức buổi tối từ một buổi hẹn hò yêu đương, cho đến các buổi tiếp khách quan trọng hoặc các buổi tiệc gia đình gia đình tại Đà Nẵng. Một buổi tối với âm nhạc êm dịu, thức ăn tuyệt vời cùng các loại rượu nhập khẩu sẽ là khoảnh khắc khó quên tại La Cabana.",
+                "ownerId": "LKBA7wXOmSSipI3gJpGzfNJbb4v2",
+                "createdAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735048813,
+                        "_nanoseconds": 552607000
+                    }
+                },
+                "phone": "0934935198",
+                "name": "La Cabana - House of BBQ",
+                "closeTime": "23:00",
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 16.0630164,
+                        "_longitude": 108.2302488
+                    }
+                },
+                "openTime": "16:00",
+                "openDates": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday"
+                ],
+                "updatedAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735048813,
+                        "_nanoseconds": 552862000
+                    }
+                },
+                "photos": [
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935_1735048813849_1000006023.jpg?alt=media&token=fbbd9b57-0bdb-4206-a2ca-d5de5dfd54c1",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935_1735048815151_1000006022.jpg?alt=media&token=59c24494-063f-46cb-8670-e26dee0f405e",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935_1735048815863_1000006020.jpg?alt=media&token=26baf425-8e83-4f1c-b5cd-ef283e5f095b",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935_1735048816427_1000006021.jpg?alt=media&token=74559b49-50c0-4e76-8d12-d7bd2493e842"
+                ],
+                "state": 1,
+                "rating": 4.5,
+                "__collections__": {
+                    "floors": {
+                        "MqqLYAbdoGdl9cgvvskf": {
+                            "name": "1",
+                            "__collections__": {
+                                "tables": {
+                                    "ca4cZUVOoEWaLgcvwD4j": {
+                                        "seats": 8,
+                                        "tableNumber": "4",
+                                        "userId": "",
+                                        "state": 0,
+                                        "__collections__": {}
+                                    },
+                                    "endjnYlRZIda90VGdlXR": {
+                                        "seats": 4,
+                                        "tableNumber": "1",
+                                        "state": 0,
+                                        "userId": "",
+                                        "__collections__": {}
+                                    },
+                                    "r3jCsYw9OeiHWCtqB0Ky": {
+                                        "seats": 6,
+                                        "tableNumber": "3",
+                                        "state": 0,
+                                        "userId": "",
+                                        "__collections__": {}
+                                    },
+                                    "wZ8LYepsHOqd9RfEhJ4X": {
+                                        "seats": 4,
+                                        "tableNumber": "2",
+                                        "state": 0,
+                                        "userId": "",
+                                        "__collections__": {}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "reviews": {
+                        "GzA1tLIthbG2DiKNalTE": {
+                            "photos": [],
+                            "rating": 4,
+                            "created_at": {
+                                "__datatype__": "timestamp",
+                                "value": {
+                                    "_seconds": 1735053443,
+                                    "_nanoseconds": 352610000
+                                }
+                            },
+                            "comment": "Cũng ngon",
+                            "reply": "",
+                            "userID": "gNtmvxOAmpNSFRNiMszJxUWIuUt1",
+                            "__collections__": {}
+                        },
+                        "mQCUuyZfh8VrYRk3t11y": {
+                            "rating": 5,
+                            "userID": "M46UiW7HzeTJ0IE43rS88Ta6qyH2",
+                            "photos": [
+                                "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935%2Freview_images%2FmQCUuyZfh8VrYRk3t11y%2F1000006031.jpg?alt=media&token=324f1fbe-5e53-4e02-a353-e8f9566946c5",
+                                "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935%2Freview_images%2FmQCUuyZfh8VrYRk3t11y%2F1000006028.jpg?alt=media&token=fda84a76-30c5-4be1-87dd-4ce742099590",
+                                "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735048812935%2Freview_images%2FmQCUuyZfh8VrYRk3t11y%2F1000006029.jpg?alt=media&token=0a399dd6-205e-499d-98bf-cdf1441ce940"
+                            ],
+                            "created_at": {
+                                "__datatype__": "timestamp",
+                                "value": {
+                                    "_seconds": 1735050888,
+                                    "_nanoseconds": 449008000
+                                }
+                            },
+                            "comment": "Đồ ăn ngon, tôi sẽ đến đây cùng với gia đình.",
+                            "reply": "Cảm ơn bạn",
+                            "__collections__": {}
+                        }
+                    }
+                }
+            },
+            "LKBA7wXOmSSipI3gJpGzfNJbb4v21735049198944": {
+                "dishesStyle": [
+                    "Hải sản",
+                    "Đồ nướng",
+                    "Kiểu Hàn Quốc",
+                    "Món kết hợp",
+                    "Món Việt",
+                    "Bữa tối"
+                ],
+                "highestPrice": 349000,
+                "lowestPrice": 175000,
+                "description": "Doc Moc Buffet is a seafood buffet restaurant offering a unique 3-in-1 dining experience. Guests can indulge in fresh seafood, BBQ, and hotpot, all within a stylish garden setting. The friendly staff ensures a seamless dining experience, with a wide variety of dishes to choose and enjoy them at their own pace. All you can eat, only 14$ for adult. Warmly Welcome!",
+                "ownerId": "LKBA7wXOmSSipI3gJpGzfNJbb4v2",
+                "createdAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735049199,
+                        "_nanoseconds": 423964000
+                    }
+                },
+                "phone": "0934935198",
+                "name": "Độc Mộc Buffet",
+                "closeTime": "22:00",
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 16.0559759,
+                        "_longitude": 108.243521
+                    }
+                },
+                "openTime": "17:00",
+                "openDates": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday"
+                ],
+                "updatedAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735049199,
+                        "_nanoseconds": 423992000
+                    }
+                },
+                "photos": [
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049198944%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049198944_1735049199674_1000006026.jpg?alt=media&token=0f9cb498-9cbc-4a77-bba8-383309f78a51",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049198944%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049198944_1735049200897_1000006025.jpg?alt=media&token=297bc9e6-0817-4068-9b8d-f0e764512555",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049198944%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049198944_1735049201610_1000006024.jpg?alt=media&token=6cb4290b-bb4f-4608-8df8-3b0304b643de"
+                ],
+                "state": 1,
+                "rating": 2.5,
+                "__collections__": {
+                    "reviews": {
+                        "QmcuxpPKdbWEst8xxbf8": {
+                            "photos": [],
+                            "rating": 2,
+                            "created_at": {
+                                "__datatype__": "timestamp",
+                                "value": {
+                                    "_seconds": 1735054547,
+                                    "_nanoseconds": 82327000
+                                }
+                            },
+                            "comment": "cũng được",
+                            "reply": "",
+                            "userID": "M46UiW7HzeTJ0IE43rS88Ta6qyH2",
+                            "__collections__": {}
+                        },
+                        "XBs8nfDogTZjQ4NFQGdd": {
+                            "rating": 3,
+                            "created_at": {
+                                "__datatype__": "timestamp",
+                                "value": {
+                                    "_seconds": 1735053472,
+                                    "_nanoseconds": 560595000
+                                }
+                            },
+                            "comment": "Dở tệ ",
+                            "reply": "",
+                            "userID": "gNtmvxOAmpNSFRNiMszJxUWIuUt1",
+                            "photos": [
+                                "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049198944%2Freview_images%2FXBs8nfDogTZjQ4NFQGdd%2F1000006022.jpg?alt=media&token=a2f9f084-25bc-4b3c-b1ee-fb431365b39a"
+                            ],
+                            "__collections__": {}
+                        }
+                    }
+                }
+            },
+            "LKBA7wXOmSSipI3gJpGzfNJbb4v21735049331504": {
+                "dishesStyle": [
+                    "Kiểu Tây Ban Nha",
+                    "Đồ ăn nhanh"
+                ],
+                "highestPrice": 100000,
+                "lowestPrice": 20000,
+                "rating": 0,
+                "description": "Doc Moc Buffet is a seafood buffet restaurant offering a unique 3-in-1 dining experience. Guests can indulge in fresh seafood, BBQ, and hotpot, all within a stylish garden setting. The friendly staff ensures a seamless dining experience, with a wide variety of dishes to choose and enjoy them at their own pace. All you can eat, only 14$ for adult. Warmly Welcome!",
+                "ownerId": "LKBA7wXOmSSipI3gJpGzfNJbb4v2",
+                "createdAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735049331,
+                        "_nanoseconds": 779450000
+                    }
+                },
+                "phone": "0934935198",
+                "name": "Hảo tốc",
+                "closeTime": "20:08",
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 16.0545032,
+                        "_longitude": 108.2392926
+                    }
+                },
+                "openTime": "16:08",
+                "openDates": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday"
+                ],
+                "updatedAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735049331,
+                        "_nanoseconds": 779466000
+                    }
+                },
+                "photos": [
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049331504%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049331504_1735049331998_1000006022.jpg?alt=media&token=5f1b6f05-663e-41f2-8256-57c179ecd4b9",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049331504%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049331504_1735049332812_1000006021.jpg?alt=media&token=8bdbb4e5-d11b-49c8-bde0-e90c3afabd6a",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049331504%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049331504_1735049333570_1000006025.jpg?alt=media&token=c4612142-dd5c-4b61-9593-348e8365ea6f",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049331504%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049331504_1735049334386_1000006026.jpg?alt=media&token=324eb4df-ae01-4dbe-ad94-8fa51c41dd33"
+                ],
+                "state": 2,
+                "__collections__": {}
+            },
+            "LKBA7wXOmSSipI3gJpGzfNJbb4v21735049592607": {
+                "dishesStyle": [
+                    "Kiểu Trung Á",
+                    "Món Việt",
+                    "Quán bar phục vụ đồ ăn",
+                    "Bữa trưa",
+                    "Bữa tối"
+                ],
+                "highestPrice": 1700000,
+                "lowestPrice": 850000,
+                "description": "Nhà hàng All Seasons Buffet Đà Nẵng, địa điểm tiên phong mang đến trải nghiệm ẩm thực không giới hạn với bữa tiệc tôm hùm không giới hạn. Thực đơn đa dạng với điểm nhấn không chỉ có tôm hùm mà còn là sự kết hợp hương vị của các loại hải sản và hơn 50 món đặc sản địa phương. Bên cạnh đó, buffet được phục vụ theo một hình thức mới, các món sẽ được phục vụ trực tiếp tại bàn, nâng cao trải nghiệm ẩm thực và dịch vụ thuận tiện cho mỗi khách hàng. Nằm tại vị trí trung tâm thành phố biển Đà Nẵng, All Seasons Buffet mang đến một hành trình ẩm thực lý tưởng cho những người yêu thích tôm hùm và hải sản. Sức hút của nhà hàng được tăng cường thêm bởi thiết kế hiện tại, mang đến một không gian hoàn hảo cho một buổi tối ẩm thực đáng nhớ.",
+                "ownerId": "LKBA7wXOmSSipI3gJpGzfNJbb4v2",
+                "createdAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735049593,
+                        "_nanoseconds": 32929000
+                    }
+                },
+                "phone": "0934935198",
+                "closeTime": "22:00",
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 16.055459,
+                        "_longitude": 108.2430332
+                    }
+                },
+                "openTime": "07:00",
+                "openDates": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday"
+                ],
+                "updatedAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735049593,
+                        "_nanoseconds": 32944000
+                    }
+                },
+                "photos": [
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049592607%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049592607_1735049593307_1000006029.jpg?alt=media&token=fed2e93e-c4a2-4628-8b40-0eda77ec3b73",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049592607%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049592607_1735049594666_1000006028.jpg?alt=media&token=c53e6559-68e0-4864-ac7c-8da8f6e4a018",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049592607%2FLKBA7wXOmSSipI3gJpGzfNJbb4v21735049592607_1735049595756_1000006027.jpg?alt=media&token=3ee8716d-085d-4877-b502-125b41e385df"
+                ],
+                "state": 1,
+                "rating": 4,
+                "name": "All Seasons Buffet",
+                "__collections__": {
+                    "reviews": {
+                        "0jYTrW9mS5ystU1AZuOu": {
+                            "photos": [],
+                            "rating": 4,
+                            "created_at": {
+                                "__datatype__": "timestamp",
+                                "value": {
+                                    "_seconds": 1735053488,
+                                    "_nanoseconds": 297289000
+                                }
+                            },
+                            "comment": "Ngon",
+                            "reply": "",
+                            "userID": "gNtmvxOAmpNSFRNiMszJxUWIuUt1",
+                            "__collections__": {}
+                        }
+                    }
+                }
+            },
+            "ZAC7OFUm2lTnxA2ohIa2sHYxhYK21735053988337": {
+                "dishesStyle": [
+                    "Món Việt",
+                    "Bữa trưa",
+                    "Bữa tối",
+                    "Đồ nướng"
+                ],
+                "highestPrice": 512821,
+                "lowestPrice": 128205,
+                "rating": 0,
+                "description": "mmerse yourself in the charm of an ancient wooden house design, seamlessly blending Indochina influences. Our menu is 100% Vietnamese, showcases the essence of a thousand-year-old mountainous region. You can choose from our à la carte menu or set menu options at affordable prices. Viet Rice Essence has set ambitious goals to participate in the prestigious Michelin Awards by the end of 2024. Grounded in experience, achievements, passion, and unwavering efforts, we aim to deliver the finest service to our valued partners and customers.",
+                "ownerId": "ZAC7OFUm2lTnxA2ohIa2sHYxhYK2",
+                "createdAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735053988,
+                        "_nanoseconds": 850866000
+                    }
+                },
+                "phone": "0963723722",
+                "name": "Le Comptoir Danang",
+                "closeTime": "10:00",
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 21.0358688,
+                        "_longitude": 105.8460903
+                    }
+                },
+                "openTime": "09:00",
+                "openDates": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday"
+                ],
+                "updatedAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735053988,
+                        "_nanoseconds": 850895000
+                    }
+                },
+                "photos": [
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK21735053988337%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK21735053988337_1735053989129_1000006038.jpg?alt=media&token=f16860ba-7d49-4b29-b245-3c3daf16b3bf",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK21735053988337%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK21735053988337_1735053990370_1000006037.jpg?alt=media&token=285aa2cf-745c-461c-a1a2-c51c22a82d49",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK21735053988337%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK21735053988337_1735053991067_1000006036.jpg?alt=media&token=7945b281-a9c6-4780-a560-79b8a821a3ba"
+                ],
+                "state": 1,
+                "__collections__": {}
+            },
+            "ZAC7OFUm2lTnxA2ohIa2sHYxhYK21735054394014": {
+                "dishesStyle": [
+                    "Hải sản",
+                    "Món Việt",
+                    "Bữa trưa"
+                ],
+                "highestPrice": 600250,
+                "lowestPrice": 200000,
+                "description": "Cau Go Restaurant offers fabulous Vietnamese cuisine amongst tasteful interior design and breathtaking views. Nestled up high between the bustle of the old quarter and the calm of Hoan Kiem Lake, Cau Go brings you a dignified dining experience in the very heart of the city.",
+                "ownerId": "ZAC7OFUm2lTnxA2ohIa2sHYxhYK2",
+                "createdAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735054394,
+                        "_nanoseconds": 836960000
+                    }
+                },
+                "phone": "0963723722",
+                "name": "Cau Go Vietnamese",
+                "closeTime": "00:32",
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 21.0320256,
+                        "_longitude": 105.8520696
+                    }
+                },
+                "openTime": "10:00",
+                "openDates": [
+                    "Monday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday"
+                ],
+                "updatedAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735054394,
+                        "_nanoseconds": 836979000
+                    }
+                },
+                "photos": [
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK21735054394014%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK21735054394014_1735054395056_1000006040.jpg?alt=media&token=16109d44-43c2-4082-9cdd-dbcd246186d8",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK21735054394014%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK21735054394014_1735054395882_1000006039.jpg?alt=media&token=09f32954-0fa5-4d22-aad1-500d53afbd42",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK21735054394014%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK21735054394014_1735054396596_1000006038.jpg?alt=media&token=0c3a8126-e67b-43f0-948a-fa4a3783e7b5"
+                ],
+                "state": 1,
+                "rating": 5,
+                "__collections__": {
+                    "reviews": {
+                        "sutdCDRJ9f8vuVIECuJX": {
+                            "photos": [],
+                            "rating": 5,
+                            "created_at": {
+                                "__datatype__": "timestamp",
+                                "value": {
+                                    "_seconds": 1735054498,
+                                    "_nanoseconds": 774613000
+                                }
+                            },
+                            "comment": "Thật không bõ công tôi đi Hà Nội",
+                            "reply": "",
+                            "userID": "R3dj6LCcuSazkcd2BObBofqMdfN2",
+                            "__collections__": {}
+                        }
+                    }
+                }
+            },
+            "gNtmvxOAmpNSFRNiMszJxUWIuUt11735050672896": {
+                "dishesStyle": [
+                    "Món Việt",
+                    "Bữa sáng",
+                    "Bữa trưa",
+                    "Bữa tối",
+                    "Đồ nướng"
+                ],
+                "highestPrice": 500000,
+                "lowestPrice": 40000,
+                "rating": 0,
+                "description": "Chào mừng bạn đến quán ăn ngon Thia Go Danang-style—quán ăn ngon Đà Nẵng với phong cách thân mật và sân vườn này được khánh thành vào tháng 7 năm 2016 và phục vụ các món ăn Việt Nam chính thống. Tham vọng của những người sáng lập là mang công thức nấu ăn miền Nam gia truyền của họ ra thế giới. Quán ăn ngon Đà Nẵng này đã chào đón hàng ngàn du khách từ khắp nơi trên thế giới và phục vụ nhiều yêu cầu ăn kiêng hiếm có ở Việt Nam, như halal, thuần chay, không chứa gluten và thân thiện với thực khách Kosher, Guanyin và Hindu.",
+                "ownerId": "gNtmvxOAmpNSFRNiMszJxUWIuUt1",
+                "createdAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735050673,
+                        "_nanoseconds": 388512000
+                    }
+                },
+                "phone": "02363689005",
+                "name": "Thìa Gỗ Restaurant",
+                "closeTime": "22:00",
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 10.733500999999999,
+                        "_longitude": 106.6707551
+                    }
+                },
+                "openTime": "10:00",
+                "openDates": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday"
+                ],
+                "updatedAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735050673,
+                        "_nanoseconds": 388873000
+                    }
+                },
+                "photos": [
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735050672896%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735050672896_1735050673671_1000006032.jpg?alt=media&token=e4a6ca68-f2aa-4367-8cbf-84cb5a25020d",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735050672896%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735050672896_1735050674806_1000006031.jpg?alt=media&token=1f15f679-f646-4c26-8341-0b26d097e980",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735050672896%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735050672896_1735050675782_1000006030.jpg?alt=media&token=cbf3862c-58b2-4261-999c-49ff43198eab"
+                ],
+                "state": 1,
+                "__collections__": {}
+            },
+            "gNtmvxOAmpNSFRNiMszJxUWIuUt11735053341915": {
+                "dishesStyle": [
+                    "Kiểu Pháp",
+                    "Bữa tối"
+                ],
+                "highestPrice": 1200000,
+                "lowestPrice": 150000,
+                "description": "Chúng tôi là Le Comptoir Danang - nhà hàng Pháp nằm thành phố Đà Nẵng với ẩm thực độc đáo, quán bar và cửa hàng đáp ứng nhu cầu ẩm thực của bạn!",
+                "ownerId": "gNtmvxOAmpNSFRNiMszJxUWIuUt1",
+                "createdAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735053342,
+                        "_nanoseconds": 616467000
+                    }
+                },
+                "phone": "02363689005",
+                "name": "Le Comptoir Danang",
+                "closeTime": "21:00",
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 16.042674599999998,
+                        "_longitude": 108.2454296
+                    }
+                },
+                "openTime": "17:00",
+                "openDates": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday"
+                ],
+                "updatedAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735053342,
+                        "_nanoseconds": 617007000
+                    }
+                },
+                "photos": [
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735053341915%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735053341915_1735053342885_1000006035.jpg?alt=media&token=71eaa02d-7eb1-4adb-931c-90047d50a899",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735053341915%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735053341915_1735053343960_1000006034.jpg?alt=media&token=f80e1a05-abc8-4b3c-bf78-655a0261fbfc",
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735053341915%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735053341915_1735053344649_1000006033.jpg?alt=media&token=c2a5f18d-0160-44d5-bc50-76fbd7029bd6"
+                ],
+                "state": 1,
+                "rating": 3,
+                "__collections__": {
+                    "reviews": {
+                        "BwPxNFUeoXVIfNspRIfd": {
+                            "rating": 3,
+                            "created_at": {
+                                "__datatype__": "timestamp",
+                                "value": {
+                                    "_seconds": 1735054469,
+                                    "_nanoseconds": 866970000
+                                }
+                            },
+                            "comment": "dở, ảnh mang tích chất minh họa",
+                            "reply": "",
+                            "userID": "R3dj6LCcuSazkcd2BObBofqMdfN2",
+                            "photos": [
+                                "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FgNtmvxOAmpNSFRNiMszJxUWIuUt11735053341915%2Freview_images%2FBwPxNFUeoXVIfNspRIfd%2F1000005897.png?alt=media&token=2ca10bb2-7c69-4172-8634-a364687ddbd9"
+                            ],
+                            "__collections__": {}
+                        }
+                    }
+                }
+            },
+            "gqiUBKmMpuh67nW6HFnZt0LUGJ431735092193923": {
+                "dishesStyle": [
+                    "Kiểu Trung Quốc"
+                ],
+                "highestPrice": 44,
+                "lowestPrice": 33,
+                "rating": 0,
+                "description": "huu\n",
+                "ownerId": "gqiUBKmMpuh67nW6HFnZt0LUGJ43",
+                "createdAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735092194,
+                        "_nanoseconds": 400883000
+                    }
+                },
+                "phone": "1111111111",
+                "name": "tuedj",
+                "closeTime": "9:02 PM",
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 15.9787646,
+                        "_longitude": 108.23675120000001
+                    }
+                },
+                "openTime": "9:02 AM",
+                "openDates": [
+                    "Monday",
+                    "Wednesday",
+                    "Friday",
+                    "Sunday"
+                ],
+                "updatedAt": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735092194,
+                        "_nanoseconds": 400903000
+                    }
+                },
+                "photos": [
+                    "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/restaurant_pictures%2FgqiUBKmMpuh67nW6HFnZt0LUGJ431735092193923%2FgqiUBKmMpuh67nW6HFnZt0LUGJ431735092193923_1735092194965_1000002395.jpg?alt=media&token=6293e9aa-1d27-416e-890d-95949c936845"
+                ],
+                "state": 1,
+                "__collections__": {
+                    "floors": {
+                        "UH0i6AgP4OURnpBqRytB": {
+                            "name": "1",
+                            "__collections__": {
+                                "tables": {
+                                    "046TCpXkJQJgpeMp7tZ8": {
+                                        "seats": 0,
+                                        "tableNumber": "5",
+                                        "userId": "rC0Wg1QQ7rg22P2hRnkNl0UhDBg2",
+                                        "state": 2,
+                                        "__collections__": {
+                                            "reservations": {
+                                                "UH0i6AgP4OURnpBqRytB-046TCpXkJQJgpeMp7tZ8-1735135832033": {
+                                                    "notes": "",
+                                                    "created_at": {
+                                                        "__datatype__": "timestamp",
+                                                        "value": {
+                                                            "_seconds": 1735135832,
+                                                            "_nanoseconds": 33914000
+                                                        }
+                                                    },
+                                                    "restaurantId": "gqiUBKmMpuh67nW6HFnZt0LUGJ431735092193923",
+                                                    "userId": "rC0Wg1QQ7rg22P2hRnkNl0UhDBg2",
+                                                    "seats": 0,
+                                                    "tableName": "5",
+                                                    "ref": "restaurants/gqiUBKmMpuh67nW6HFnZt0LUGJ431735092193923/floors/UH0i6AgP4OURnpBqRytB/tables/046TCpXkJQJgpeMp7tZ8/reservations/UH0i6AgP4OURnpBqRytB-046TCpXkJQJgpeMp7tZ8-1735135832033",
+                                                    "restaurantName": "tuedj",
+                                                    "startTime": {
+                                                        "__datatype__": "timestamp",
+                                                        "value": {
+                                                            "_seconds": 1735135800,
+                                                            "_nanoseconds": 0
+                                                        }
+                                                    },
+                                                    "id": "UH0i6AgP4OURnpBqRytB-046TCpXkJQJgpeMp7tZ8-1735135832033",
+                                                    "floorName": "1",
+                                                    "endTime": {
+                                                        "__datatype__": "timestamp",
+                                                        "value": {
+                                                            "_seconds": 1735135800,
+                                                            "_nanoseconds": 0
+                                                        }
+                                                    },
+                                                    "reserveDate": {
+                                                        "__datatype__": "timestamp",
+                                                        "value": {
+                                                            "_seconds": 1735059600,
+                                                            "_nanoseconds": 0
+                                                        }
+                                                    },
+                                                    "status": true,
+                                                    "__collections__": {}
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "DzAC9qxI0BOV76RMg2M9": {
+                                        "state": 0,
+                                        "seats": 1,
+                                        "tableNumber": "1",
+                                        "__collections__": {}
+                                    },
+                                    "H7F0yLDqLmxT4Vv75VSv": {
+                                        "state": 0,
+                                        "seats": 0,
+                                        "tableNumber": "4",
+                                        "__collections__": {}
+                                    },
+                                    "ta3eCkmIIgwqPdq3rHYf": {
+                                        "state": 0,
+                                        "seats": 0,
+                                        "tableNumber": "2",
+                                        "__collections__": {}
+                                    },
+                                    "uXQCbTIWFWAk0WMr1QC5": {
+                                        "state": 0,
+                                        "seats": 0,
+                                        "tableNumber": "6",
+                                        "__collections__": {}
+                                    },
+                                    "vP6ocID7yMxKP4fcFxI7": {
+                                        "state": 0,
+                                        "seats": 0,
+                                        "tableNumber": "3",
+                                        "__collections__": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "users": {
+            "LKBA7wXOmSSipI3gJpGzfNJbb4v2": {
+                "reservations": [],
+                "role": "user",
+                "phone": "",
+                "name": "dat",
+                "email": "dat47707@gmail.com",
+                "profilePicture": "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/profile_Images%2FLKBA7wXOmSSipI3gJpGzfNJbb4v2%2Fprofile_picture.jpg?alt=media&token=d332cb50-1a41-4f06-ba0e-9e582e9d4c88",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1733239371,
+                        "_nanoseconds": 190702000
+                    }
+                },
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 15.9746701,
+                        "_longitude": 108.2524324
+                    }
+                },
+                "__collections__": {}
+            },
+            "M46UiW7HzeTJ0IE43rS88Ta6qyH2": {
+                "reservations": [],
+                "role": "user",
+                "email": "nam@gmail.com",
+                "phone": "0867894782",
+                "name": "Hoàng Văn Nam",
+                "profilePicture": "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/profile_Images%2FM46UiW7HzeTJ0IE43rS88Ta6qyH2%2Fprofile_picture.jpg?alt=media&token=97c227ed-2a74-4f73-9350-ba4c7f7a4e41",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735050928,
+                        "_nanoseconds": 332646000
+                    }
+                },
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 15.9746814,
+                        "_longitude": 108.2524273
+                    }
+                },
+                "__collections__": {}
+            },
+            "R3dj6LCcuSazkcd2BObBofqMdfN2": {
+                "reservations": [],
+                "role": "user",
+                "phone": "",
+                "email": "hoang@gmail.com",
+                "profilePicture": "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/profile_Images%2FR3dj6LCcuSazkcd2BObBofqMdfN2%2Fprofile_picture.jpg?alt=media&token=6875460f-1bd3-4a18-b34d-80a96dc528cc",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1734841311,
+                        "_nanoseconds": 485590000
+                    }
+                },
+                "name": "Hoàng Trần",
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 16.0135028,
+                        "_longitude": 108.255075
+                    }
+                },
+                "__collections__": {}
+            },
+            "WbdnTrCwU1WTJ9Aa5tfeDeUDDXU2": {
+                "reservations": [],
+                "profilePicture": "",
+                "role": "user",
+                "phone": "",
+                "name": "BoTran",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735048444,
+                        "_nanoseconds": 351450000
+                    }
+                },
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 0,
+                        "_longitude": 0
+                    }
+                },
+                "email": "botran@gmail.com",
+                "__collections__": {}
+            },
+            "ZAC7OFUm2lTnxA2ohIa2sHYxhYK2": {
+                "reservations": [],
+                "role": "user",
+                "phone": "",
+                "name": "jkPham",
+                "email": "chunhatlanhat@gmail.com",
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 0,
+                        "_longitude": 0
+                    }
+                },
+                "profilePicture": "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/profile_Images%2FZAC7OFUm2lTnxA2ohIa2sHYxhYK2%2Fprofile_picture.jpg?alt=media&token=910b3a8a-15fa-4a5f-b39c-d33bcc86dab2",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735054280,
+                        "_nanoseconds": 971163000
+                    }
+                },
+                "__collections__": {}
+            },
+            "gNtmvxOAmpNSFRNiMszJxUWIuUt1": {
+                "reservations": [],
+                "role": "user",
+                "phone": "",
+                "name": "Dat Haong",
+                "email": "datthq.21it@vku.udn.vn",
+                "profilePicture": "https://firebasestorage.googleapis.com/v0/b/mangaapp-d064a.appspot.com/o/profile_Images%2FgNtmvxOAmpNSFRNiMszJxUWIuUt1%2Fprofile_picture.jpg?alt=media&token=a517726b-e012-4667-9fa6-f8a716a740d8",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735050708,
+                        "_nanoseconds": 981739000
+                    }
+                },
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 15.9746891,
+                        "_longitude": 108.2524279
+                    }
+                },
+                "__collections__": {}
+            },
+            "r28nSnRjL9T1OTBnBrOhXD46gkE3": {
+                "reservations": [],
+                "profilePicture": "",
+                "role": "user",
+                "phone": "",
+                "name": "LuyK122",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735048577,
+                        "_nanoseconds": 661391000
+                    }
+                },
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 0,
+                        "_longitude": 0
+                    }
+                },
+                "email": "luuky@gmail.com",
+                "__collections__": {}
+            },
+            "rC0Wg1QQ7rg22P2hRnkNl0UhDBg2": {
+                "reservations": [],
+                "profilePicture": "",
+                "role": "user",
+                "phone": "",
+                "name": "gaasdasd",
+                "created_at": {
+                    "__datatype__": "timestamp",
+                    "value": {
+                        "_seconds": 1735134698,
+                        "_nanoseconds": 218761000
+                    }
+                },
+                "email": "a@gmail.com",
+                "location": {
+                    "__datatype__": "geopoint",
+                    "value": {
+                        "_latitude": 16.07049,
+                        "_longitude": 108.232955
+                    }
+                },
+                "__collections__": {}
+            }
+        }
+    }
+}
