@@ -61,7 +61,7 @@ class BasicRestaurantInformationFormContentState
               decoration: const InputDecoration(
                 labelText: 'Tên nhà hàng',
                 hintText: 'Nhập tên nhà hàng',
-                hintStyle: const TextStyle(color: Colors.grey),
+                hintStyle: TextStyle(color: Colors.grey),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:table_order/src/model/notification_model.dart';
 
@@ -21,7 +22,9 @@ class FirebaseNotificationServices {
       provisional: false,
       sound: true,
     );
-    print('User granted permission: ${settings.authorizationStatus}');
+    if (kDebugMode) {
+      print('User granted permission: ${settings.authorizationStatus}');
+    }
   }
 
   Future<void> initNotification() async {
@@ -98,9 +101,13 @@ class FirebaseNotificationServices {
         FirebaseFirestore.instance.collection('notifications');
     try {
       await notificationsRef.add(notification.toFirestore());
-      print("Thông báo đã được lưu thành công.");
+      if (kDebugMode) {
+        print("Thông báo đã được lưu thành công.");
+      }
     } catch (e) {
-      print("Lỗi khi lưu thông báo: $e");
+      if (kDebugMode) {
+        print("Lỗi khi lưu thông báo: $e");
+      }
     }
   }
 
@@ -121,9 +128,13 @@ class FirebaseNotificationServices {
 
     try {
       await notificationsRef.add(sampleData);
-      print("Dữ liệu mẫu đã được thêm thành công.");
+      if (kDebugMode) {
+        print("Dữ liệu mẫu đã được thêm thành công.");
+      }
     } catch (e) {
-      print("Lỗi khi thêm dữ liệu mẫu: $e");
+      if (kDebugMode) {
+        print("Lỗi khi thêm dữ liệu mẫu: $e");
+      }
     }
   }
 }

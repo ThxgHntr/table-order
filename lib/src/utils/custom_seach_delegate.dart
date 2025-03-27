@@ -43,7 +43,8 @@ class CustomSeachDelegate extends SearchDelegate<String> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final restaurantData = snapshot.data![index];
-              final restaurant = restaurantData['restaurant'] as RestaurantModel;
+              final restaurant =
+                  restaurantData['restaurant'] as RestaurantModel;
               final distance = restaurantData['distance'] as double;
 
               return ListTile(
@@ -105,7 +106,8 @@ class CustomSeachDelegate extends SearchDelegate<String> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final restaurantData = snapshot.data![index];
-              final restaurant = restaurantData['restaurant'] as RestaurantModel;
+              final restaurant =
+                  restaurantData['restaurant'] as RestaurantModel;
               final distance = restaurantData['distance'] as double?;
 
               return ListTile(
@@ -153,8 +155,10 @@ class CustomSeachDelegate extends SearchDelegate<String> {
   }
 
   String removeDiacritics(String str) {
-    final withDiacritics = 'áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ';
-    final withoutDiacritics = 'aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd';
+    final withDiacritics =
+        'áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ';
+    final withoutDiacritics =
+        'aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd';
     for (int i = 0; i < withDiacritics.length; i++) {
       str = str.replaceAll(withDiacritics[i], withoutDiacritics[i]);
     }
@@ -169,33 +173,38 @@ class CustomSeachDelegate extends SearchDelegate<String> {
 
     Position? currentPosition;
     try {
-      currentPosition = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+      currentPosition = await Geolocator.getCurrentPosition();
     } catch (e) {
       currentPosition = null;
     }
 
     final lowerCaseQuery = removeDiacritics(query.toLowerCase());
 
-    return snapshot.docs.map((doc) {
-      final restaurant = RestaurantModel.fromFirestore(doc);
-      final distance = currentPosition != null
-          ? Geolocator.distanceBetween(
-        currentPosition.latitude,
-        currentPosition.longitude,
-        restaurant.location.latitude,
-        restaurant.location.longitude,
-      ) / 1000 // Convert to kilometers
-          : null;
+    return snapshot.docs
+        .map((doc) {
+          final restaurant = RestaurantModel.fromFirestore(doc);
+          final distance = currentPosition != null
+              ? Geolocator.distanceBetween(
+                    currentPosition.latitude,
+                    currentPosition.longitude,
+                    restaurant.location.latitude,
+                    restaurant.location.longitude,
+                  ) /
+                  1000 // Convert to kilometers
+              : null;
 
-      if (removeDiacritics(restaurant.name.toLowerCase()).contains(lowerCaseQuery)) {
-        return {
-          'restaurant': restaurant,
-          'distance': distance,
-        };
-      } else {
-        return null;
-      }
-    }).where((element) => element != null).cast<Map<String, dynamic>>().toList();
+          if (removeDiacritics(restaurant.name.toLowerCase())
+              .contains(lowerCaseQuery)) {
+            return {
+              'restaurant': restaurant,
+              'distance': distance,
+            };
+          } else {
+            return null;
+          }
+        })
+        .where((element) => element != null)
+        .cast<Map<String, dynamic>>()
+        .toList();
   }
 }

@@ -12,7 +12,7 @@ android {
     namespace = "com.table_order.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion "25.1.8937393"
-    compileSdkVersion 34
+    compileSdkVersion 35
 
     compileOptions {
         coreLibraryDesugaringEnabled true

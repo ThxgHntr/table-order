@@ -56,7 +56,7 @@ class FirebaseReviewServices {
     if (ownerId != null) {
       final userName = await _userService.getUserName(user.uid);
       final notification = NotificationModel(
-        notificationId: reviewRef.id + '_' + ownerId,
+        notificationId: '${reviewRef.id}_$ownerId',
         recipientId: ownerId,
         relatedId: reviewRef.id,
         type: 'review',

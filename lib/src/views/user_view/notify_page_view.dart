@@ -18,7 +18,8 @@ class NotifyPageView extends StatefulWidget {
 
 class _NotifyPageViewState extends State<NotifyPageView> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseNotificationServices _notificationServices = FirebaseNotificationServices();
+  final FirebaseNotificationServices _notificationServices =
+      FirebaseNotificationServices();
 
   Future<void> _markAllAsRead() async {
     final currentUserId = _auth.currentUser?.uid;
@@ -114,7 +115,8 @@ class _NotifyPageViewState extends State<NotifyPageView> {
               return InkWell(
                 onTap: () async {
                   // Mark the notification as read when clicked
-                  await _notificationServices.markNotificationAsRead(notificationId);
+                  await _notificationServices
+                      .markNotificationAsRead(notificationId);
 
                   // Navigate to the corresponding screen
                   Navigator.push(
@@ -128,7 +130,8 @@ class _NotifyPageViewState extends State<NotifyPageView> {
                   );
                 },
                 child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
@@ -176,7 +179,8 @@ class _NotifyPageViewState extends State<NotifyPageView> {
                       ),
                       isRead
                           ? const Icon(Icons.check_circle, color: Colors.green)
-                          : const Icon(Icons.mark_chat_read, color: Colors.grey),
+                          : const Icon(Icons.mark_chat_read,
+                              color: Colors.grey),
                     ],
                   ),
                 ),
